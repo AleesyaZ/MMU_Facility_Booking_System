@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,4 +113,67 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
     </div>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="auth-container">
+        <!-- Left Side: Form -->
+        <div class="auth-form-side">
+            <div class="auth-form-wrapper">
+
+                <div class="auth-header">
+                    <h2>Welcome Back!</h2>
+                    <p>Enter your MMU credentials to access the portal.</p>
+                </div>
+
+                <form>
+                    <div class="form-group">
+                        <label>MMU Email</label>
+                        <input type="email" class="form-control" placeholder="studentID@student.mmu.edu.my">
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label style="margin-bottom: 0;">Password</label>
+                            <a href="#" style="font-size: 13px; color: var(--primary); font-weight: 500;">Forgot password?</a>
+                        </div>
+                        <input type="password" class="form-control" placeholder="••••••••" style="margin-top: 8px;">
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="remember">
+                        <label for="remember" style="margin-bottom: 0; font-weight: 400; color: var(--text-muted); cursor: pointer;">Remember my device</label>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-full">Secure Login</button>
+                </form>
+
+                <div class="auth-footer">
+                    First time logging in? <a href="activate.html">Activate Account</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Image -->
+        <div class="auth-image-side">
+            <img src="/public/img/melakalibrary.jpg" alt="Campus">
+            <div class="auth-image-text">
+                <h3>Fair. Secure. Accessible.</h3>
+                <p>The new quota-based booking engine ensures every student gets equal access to premium campus facilities.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+>>>>>>> 787b11dda5336e51b677c0059da04d7f67bb53fd
 </html>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -131,4 +132,78 @@ document.getElementById("activateForm").addEventListener("submit", function(even
     </div>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Activate Account - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="auth-container">
+        <!-- Left Side: Form -->
+        <div class="auth-form-side">
+            <div class="auth-form-wrapper">
+                <div class="auth-header">
+                    <h2>Activate Account</h2>
+                    <p>Verify your MMU email to start booking facilities.</p>
+                </div>
+
+                <form>
+                    <div class="form-group">
+                        <label>MMU Email</label>
+                        <input type="email" class="form-control" placeholder="studentID@student.mmu.edu.my">
+                    </div>
+
+                    <!-- OTP Input with Button Inside -->
+                    <div class="form-group">
+                        <label>OTP Verification</label>
+                        <div class="input-with-button">
+                            <input type="text" class="form-control" placeholder="Enter 6-digit OTP">
+                            <button type="button" class="btn-inside">Get OTP</button>
+                        </div>
+                        <span class="form-help">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">info</span>
+                            OTP will be sent to your student/staff email.
+                        </span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Set Password</label>
+                        <input type="password" class="form-control" placeholder="Create a secure password">
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: flex-start; gap: 8px;">
+                        <input type="checkbox" id="terms" style="margin-top: 4px;">
+                        <label for="terms" style="margin-bottom: 0; font-weight: 400; color: var(--text-muted); cursor: pointer; line-height: 1.4;">
+                            I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> and Facility Booking Quota Rules.
+                        </label>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-full">Activate & Login</button>
+                </form>
+
+                <div class="auth-footer">
+                    Already activated? <a href="login.html">Sign In Here</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Image -->
+        <div class="auth-image-side">
+            <img src="/public/img/meetingroom.jpg" alt="Campus">
+            <div class="auth-image-text">
+                <h3>Ready when you are.</h3>
+                <p>Activate your profile to instantly reserve study rooms, labs, and event spaces without staff dependency.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+>>>>>>> 787b11dda5336e51b677c0059da04d7f67bb53fd
 </html>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -151,4 +152,159 @@
     </main>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Student Dashboard - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <!-- Logged-in Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="student-dashboard.html" class="nav-logo">
+                <img src="https://www.mmu.edu.my/wp-content/themes/mmu2018/assets/images/logo-mmu.png" alt="MMU Logo">
+                <div class="logo-divider"></div>
+                <span class="system-name">Facility Booking</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="student-dashboard.html" class="active">Dashboard</a>
+                <a href="#">My Bookings</a>
+                <a href="#">Report Issue</a>
+            </nav>
+            
+            <div class="nav-profile">
+                <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
+                <div class="avatar">JD</div>
+                <span style="font-weight: 500; font-size: 14px;">John Doe</span>
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <h2>Welcome back, John!</h2>
+            <p>Here is your campus facility overview for today.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <!-- LEFT COLUMN (Main Info) -->
+            <div>
+                <!-- Quota & Strikes Card -->
+                <div class="card">
+                    <h3 class="card-title">
+                        <span class="material-symbols-outlined">analytics</span> Account Standing
+                    </h3>
+                    <div class="stat-grid">
+                        <div class="stat-box success">
+                            <span class="stat-label">Booking Quota Used</span>
+                            <span class="stat-value">2 / 5</span>
+                        </div>
+                        <div class="stat-box warning">
+                            <span class="stat-label">Penalty Strikes</span>
+                            <span class="stat-value">0 / 3</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">Quotas reset at the beginning of each semester. 3 penalty strikes result in a 30-day suspension.</p>
+                </div>
+
+                <!-- Upcoming Bookings Card -->
+                <div class="card">
+                    <h3 class="card-title" style="justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="material-symbols-outlined">event</span> Upcoming Bookings
+                        </div>
+                        <a href="#" style="font-size: 13px; font-weight: 500; color: var(--text-muted);">View All</a>
+                    </h3>
+                    
+                    <div class="list-group">
+                        <!-- Booking 1 -->
+                        <div class="list-item">
+                            <div class="item-icon">
+                                <span class="material-symbols-outlined">meeting_room</span>
+                            </div>
+                            <div class="item-details" style="flex: 1;">
+                                <h4>Discussion Room 4 (FCI)</h4>
+                                <p>Today • 2:00 PM - 4:00 PM</p>
+                                <span class="badge badge-approved">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">check_circle</span> Approved
+                                </span>
+                            </div>
+                            <div>
+                                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- Booking 2 -->
+                        <div class="list-item">
+                            <div class="item-icon" style="background-color: rgba(187, 0, 19, 0.1); color: var(--secondary);">
+                                <span class="material-symbols-outlined">sports_basketball</span>
+                            </div>
+                            <div class="item-details" style="flex: 1;">
+                                <h4>Indoor Basketball Court A</h4>
+                                <p>Tomorrow • 5:00 PM - 7:00 PM</p>
+                                <span class="badge badge-pending">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">schedule</span> Pending Approval
+                                </span>
+                            </div>
+                            <div>
+                                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN (Sidebar) -->
+            <div>
+                <!-- Quick Actions Card -->
+                <div class="card">
+                    <h3 class="card-title">
+                        <span class="material-symbols-outlined">bolt</span> Quick Actions
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button class="btn btn-primary" style="width: 100%; justify-content: center;">
+                            <span class="material-symbols-outlined">add_circle</span> New Booking
+                        </button>
+                        <button class="btn btn-outline" style="width: 100%; justify-content: center;">
+                            <span class="material-symbols-outlined">warning</span> Report an Issue
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Announcements Card -->
+                <div class="card">
+                    <h3 class="card-title">
+                        <span class="material-symbols-outlined">campaign</span> Campus Announcements
+                    </h3>
+                    <div class="list-group">
+                        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
+                            <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">FCI Lab Maintenance</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">Labs 1 & 2 will be closed this Friday for software upgrades. Please plan accordingly.</p>
+                            <span style="font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block;">Posted 2 hours ago</span>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">New Sports Nets Available</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">You can now request badminton and volleyball nets via the Add-on Equipment feature during booking!</p>
+                            <span style="font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block;">Posted Yesterday</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+>>>>>>> 787b11dda5336e51b677c0059da04d7f67bb53fd
 </html>
