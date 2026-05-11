@@ -593,7 +593,7 @@ a {
    8. DASHBOARD ELEMENTS
    ========================================= */
 .dashboard-main {
-    padding: 112px 24px 64px; /* Account for fixed navbar */
+    padding: 112px 24px 64px;
     max-width: 1280px;
     margin: 0 auto;
 }
@@ -602,15 +602,10 @@ a {
     margin-bottom: 32px;
 }
 
-.dashboard-header h2 {
-    font-size: 28px;
-    color: var(--text-main);
-}
+.dashboard-header h2 { font-size: 28px; color: var(--text-main); }
+.dashboard-header p { color: var(--text-muted); }
 
-.dashboard-header p {
-    color: var(--text-muted);
-}
-
+/* The updated Grid System */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -619,28 +614,26 @@ a {
 
 @media (min-width: 1024px) {
     .dashboard-grid {
-        grid-template-columns: 2fr 1fr; /* 2/3 left, 1/3 right */
+        grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    }
+    .col-span-2 {
+        grid-column: span 2; /* Takes up 2/3 of the screen */
+    }
+    .col-span-1 {
+        grid-column: span 1; /* Takes up 1/3 of the screen */
     }
 }
 
-/* Cards */
+/* Updated Card to stretch to equal height */
 .card {
     background-color: var(--surface);
     border: 1px solid rgba(194, 198, 211, 0.4);
     border-radius: 12px;
     padding: 24px;
-    margin-bottom: 24px;
     box-shadow: var(--shadow-soft);
-}
-
-.card-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 20px;
+    height: 100%; /* Forces card to stretch to match the tallest card in the row */
     display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--primary);
+    flex-direction: column;
 }
 
 /* Stat Boxes (For Quota and Strikes) */
