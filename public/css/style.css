@@ -283,63 +283,127 @@ a {
 }
 
 /* =========================================
-   5. FEATURES SECTION
+   5. FEATURES SECTION (Creative Layout)
    ========================================= */
 .features {
     background-color: var(--surface);
-    padding: 80px 24px;
+    padding: 120px 24px;
+    position: relative; 
+    overflow: hidden;
     border-top: 1px solid rgba(194, 198, 211, 0.2);
 }
 
 .section-header {
-    text-center: center;
-    margin-bottom: 64px;
+    text-align: center;
+    margin-bottom: 80px;
+    position: relative;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .section-header h2 {
-    font-size: 32px;
+    font-size: 36px;
+    color: var(--primary); 
     margin-bottom: 16px;
 }
 
 .section-header p {
     color: var(--text-muted);
     max-width: 600px;
-    text-align: center;
+    font-size: 16px;
 }
 
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+/* Creative Card Showcase */
+.feature-showcase {
+    display: flex;
+    flex-direction: column;
     gap: 32px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
 }
 
-.feature-card {
-    background-color: var(--background);
-    padding: 32px;
-    border-radius: 16px;
-    border: 1px solid rgba(194, 198, 211, 0.3);
-    transition: box-shadow 0.3s ease;
+@media (min-width: 1024px) {
+    .feature-showcase {
+        flex-direction: row;
+        gap: 24px;
+        align-items: stretch;
+    }
 }
 
-.feature-card:hover {
-    box-shadow: var(--shadow-soft);
+.creative-card {
+    background-color: var(--surface);
+    padding: 48px 32px;
+    border-radius: 24px; 
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04); 
+    text-align: center;
+    transition: all 0.4s ease;
+    flex: 1;
+    max-width: 380px;
+    border: 1px solid rgba(194, 198, 211, 0.1);
 }
 
-.feature-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+/* The Popping Up Center Card */
+@media (min-width: 1024px) {
+    .creative-card.center-card {
+        transform: translateY(-40px);
+        box-shadow: 0 25px 50px rgba(0, 61, 124, 0.08);
+        border: 1px solid rgba(0, 61, 124, 0.05);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .creative-card:not(.center-card) {
+        margin-top: 30px; /* Push side cards down to exaggerate the middle card */
+    }
+}
+
+.creative-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 1024px) {
+    .creative-card.center-card:hover {
+        transform: translateY(-50px); 
+    }
+}
+
+/* Image Wrapper for your future custom illustrations */
+.feature-img-wrapper {
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
-.icon-blue { background-color: rgba(0, 61, 124, 0.1); color: var(--primary); }
-.icon-red { background-color: rgba(187, 0, 19, 0.1); color: var(--secondary); }
+.feature-img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+}
+
+.creative-card:hover .feature-img-wrapper img {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.creative-card h3 {
+    font-size: 22px;
+    color: var(--text-main);
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.creative-card p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
 
 /* =========================================
    6. FOOTER
@@ -546,6 +610,25 @@ html, body {
 .form-control:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(0, 61, 124, 0.1);
+}
+
+/* Custom Back Link */
+.back-link-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    margin-top: 16px; 
+    width: 100%; 
+}
+
+.back-link-custom:hover {
+    color: var(--primary);
 }
 
 /* Input with inside button (For OTP) */
