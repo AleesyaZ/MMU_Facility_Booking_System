@@ -20,13 +20,14 @@
                     <p>Enter your MMU credentials to access the portal.</p>
                 </div>
 
-                <form id="loginForm">
+                <!-- DATABASE INTEGRATION: Added action to point to the logic file and method POST -->
+                <form id="loginForm" action="../PHP/login_process.php" method="POST">
 
                     <div class="form-group">
                         <label>MMU Email</label>
-
                         <input 
                             type="email" 
+                            name="email" 
                             id="loginEmail"
                             class="form-control" 
                             placeholder="studentID@student.mmu.edu.my"
@@ -35,10 +36,8 @@
                     </div>
 
                     <div class="form-group">
-
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <label style="margin-bottom: 0;">Password</label>
-
                             <a href="#" style="font-size: 13px; color: var(--primary); font-weight: 500;">
                                 Forgot password?
                             </a>
@@ -46,6 +45,7 @@
 
                         <input 
                             type="password" 
+                            name="password" 
                             id="loginPassword"
                             class="form-control" 
                             placeholder="••••••••" 
@@ -57,50 +57,29 @@
 
                     <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
                         <input type="checkbox" id="remember">
-
                         <label for="remember" style="margin-bottom: 0; font-weight: 400; color: var(--text-muted); cursor: pointer;">
                             Remember my device
                         </label>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-full">
+                    <!-- DATABASE INTEGRATION: Added name="login_btn" -->
+                    <button type="submit" name="login_btn" class="btn btn-primary btn-full">
                         Secure Login
                     </button>
 
                      <!-- Back to Home Link -->
-                    <div style="margin-bottom: 16px; display: flex; justify-content: flex-start;">
-                        <a href="index.html" class="back-link-custom">
+                    <div style="margin-top: 24px; display: flex; justify-content: flex-start;">
+                        <a href="index.html" class="back-link-custom" style="text-decoration: none; display: flex; align-items: center; gap: 4px; color: var(--text-muted); font-size: 14px;">
                             <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
                             Back to Home
                         </a>
                     </div>
                 </form>
 
-<script>
-document.getElementById("loginForm").addEventListener("submit", function(event) {
-
-    event.preventDefault();
-
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    // Email validation
-    if (!email.includes("@")) {
-        alert("Please enter a valid email address.");
-        return;
-    }
-
-    // Password validation
-    if (password.length < 8) {
-        alert("Password must be at least 8 characters.");
-        return;
-    }
-
-    // Redirect after successful login
-    window.location.href = "student-dashboard.html";
-
-});
-</script>
+                <!-- 
+                    NOTE: The <script> block was removed. 
+                    Redirection and validation are now handled by login_process.php 
+                -->
 
                 <div class="auth-footer">
                     First time logging in? <a href="activate.html">Activate Account</a>
