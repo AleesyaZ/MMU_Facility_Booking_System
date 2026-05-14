@@ -31,8 +31,8 @@ CREATE TABLE `annoucement` (
   `annoucement_id` int(11) NOT NULL COMMENT 'Announcement Identification',
   `admin_id` int(11) NOT NULL COMMENT 'Admin Identification',
   `title` varchar(255) NOT NULL COMMENT 'Announcement Title',
-  `content` text NOT NULL COMMENT 'Announcement Detils',
-  `publish_date` date NOT NULL DEFAULT current_timestamp() COMMENT 'Date Published'
+  `content` text NOT NULL COMMENT 'Announcement Details',
+  `publish_date` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date Published'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
