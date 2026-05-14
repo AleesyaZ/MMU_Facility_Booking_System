@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Login - MMU Campus Space</title>
+    <title>Login - MMU Facility Booking</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
@@ -20,7 +20,7 @@
                     <p>Enter your MMU credentials to access the portal.</p>
                 </div>
 
-                <!-- DATABASE INTEGRATION: Added action to point to the logic file and method POST -->
+                <!-- DATABASE INTEGRATION -->
                 <form id="loginForm" action="../PHP/login_process.php" method="POST">
 
                     <div class="form-group">
@@ -62,7 +62,7 @@
                         </label>
                     </div>
 
-                    <!-- DATABASE INTEGRATION: Added name="login_btn" -->
+                    <!-- DATABASE INTEGRATION: name="login_btn" -->
                     <button type="submit" name="login_btn" class="btn btn-primary btn-full">
                         Secure Login
                     </button>
@@ -75,11 +75,6 @@
                         </a>
                     </div>
                 </form>
-
-                <!-- 
-                    NOTE: The <script> block was removed. 
-                    Redirection and validation are now handled by login_process.php 
-                -->
 
                 <div class="auth-footer">
                     First time logging in? <a href="activate.html">Activate Account</a>
