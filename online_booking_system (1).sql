@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2026 at 11:37 AM
+-- Generation Time: May 30, 2026 at 09:19 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,9 +31,16 @@ CREATE TABLE `annoucement` (
   `annoucement_id` int(11) NOT NULL COMMENT 'Announcement Identification',
   `admin_id` int(11) NOT NULL COMMENT 'Admin Identification',
   `title` varchar(255) NOT NULL COMMENT 'Announcement Title',
-  `content` text NOT NULL COMMENT 'Announcement Details',
-  `publish_date` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date Published'
+  `content` text NOT NULL COMMENT 'Announcement Detils',
+  `publish_date` date NOT NULL DEFAULT current_timestamp() COMMENT 'Date Published'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `annoucement`
+--
+
+INSERT INTO `annoucement` (`annoucement_id`, `admin_id`, `title`, `content`, `publish_date`) VALUES
+(10, 10000004, 'FCI CQAR2002 Under Maintenance ', 'The projector and the laboratory computers will be having an update. As for now, the laboratory remains unavailable for a short time.', '2026-05-01');
 
 -- --------------------------------------------------------
 
@@ -52,6 +59,13 @@ CREATE TABLE `booking` (
   `status` varchar(50) NOT NULL COMMENT 'Booking Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`) VALUES
+(1000, 10000000, 100, '2026-05-01', '14:56:16', '16:56:16', 'To play badminton', 'Pending');
+
 -- --------------------------------------------------------
 
 --
@@ -63,6 +77,13 @@ CREATE TABLE `booking_equipment` (
   `equip_id` int(11) NOT NULL COMMENT 'Equipment Identification',
   `quantity` int(11) NOT NULL COMMENT 'Quantity Requested'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `booking_equipment`
+--
+
+INSERT INTO `booking_equipment` (`booking_id`, `equip_id`, `quantity`) VALUES
+(1000, 1003, 4);
 
 -- --------------------------------------------------------
 
@@ -77,6 +98,16 @@ CREATE TABLE `equipment` (
   `avail_qty` int(11) NOT NULL COMMENT 'Currently Available Qty',
   `status` varchar(50) NOT NULL COMMENT 'Equipment Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `equipment`
+--
+
+INSERT INTO `equipment` (`equip_id`, `name`, `total_qty`, `avail_qty`, `status`) VALUES
+(1000, 'Badminton Racket', 10, 7, 'Available'),
+(1001, 'Ping Pong Racket', 10, 10, 'Available'),
+(1003, 'Badminton Net', 4, 2, 'Available'),
+(1004, 'Ping Pong Table', 4, 4, 'Available');
 
 -- --------------------------------------------------------
 
@@ -93,6 +124,21 @@ CREATE TABLE `facility` (
   `status` varchar(50) NOT NULL COMMENT 'Current Facility Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `facility`
+--
+
+INSERT INTO `facility` (`facility_id`, `facility_name`, `location`, `category`, `capacity`, `status`) VALUES
+(100, 'Indoor Court', 'MMU Cyberjaya', 'Sport', 50, 'Available'),
+(101, 'Outdoor Court', 'MMU Cyberjaya', 'Sport', 100, 'Available'),
+(102, 'Outdoor Swimming Pool', 'MMU Cyberjaya', 'Sport', 20, 'Available'),
+(103, 'MPH CNMX1001', 'MMU Cyberjaya', 'Lecture Hall', 80, 'Available'),
+(104, 'MPH CNMX1002', 'MMU Cyberjaya', 'Lecture Hall', 80, 'Available'),
+(105, 'MPH CNMX1003', 'MMU Cyberjaya', 'Lecture Hall', 80, 'Available'),
+(106, 'MPH CNMX1004', 'MMU Cyberjaya', 'Lecture Hall', 80, 'Available'),
+(107, 'FCI CQAR2001', 'FCI Building, Second Floor, MMU Cyberjaya', 'Laboratory', 40, 'Available'),
+(108, 'FCI CQAR2002', 'FCI Building, Second Floor, MMU Cyberjaya', 'Laboratory', 40, 'Unavailable ');
+
 -- --------------------------------------------------------
 
 --
@@ -108,6 +154,13 @@ CREATE TABLE `issue report` (
   `report_date` date NOT NULL COMMENT 'Date of Report Submission',
   `status` varchar(50) NOT NULL COMMENT 'Report Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `issue report`
+--
+
+INSERT INTO `issue report` (`report_id`, `user_id`, `facility_id`, `issue_type`, `description`, `report_date`, `status`) VALUES
+(1, 10000001, 102, 'Swimming Pool Odor', 'The swimming pool had a terrible odor.', '2026-05-01', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -160,7 +213,11 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`) VALUES
-(10000000, 'IDRIS BIN SHAH NAHAR', 'IDRIS.SHAH.NAHAR@student.mmu.edu.my', 'Stophe_3', 'Student', '01164425881', 5);
+(10000000, 'IDRIS BIN SHAH NAHAR', 'IDRIS.SHAH.NAHAR@student.mmu.edu.my', 'Stophe_3', 'Student', '01164425881', 5),
+(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', 'abcd1234', 'Student', '01154067900', 5),
+(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', 'abcd1234', 'Student', '0123211695', 5),
+(10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', 'abcd1234', 'Lecturer', '0112223333', 5),
+(10000004, 'MR ADMIN', 'admin1@mmu.edu.my', 'abcd1234', 'Admin', '0112223333', 5);
 
 --
 -- Indexes for dumped tables
@@ -178,8 +235,8 @@ ALTER TABLE `annoucement`
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`booking_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `facility_id` (`facility_id`);
+  ADD KEY `facility_id` (`facility_id`),
+  ADD KEY `user_id` (`user_id`) USING BTREE;
 
 --
 -- Indexes for table `booking_equipment`
@@ -238,31 +295,31 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `annoucement`
 --
 ALTER TABLE `annoucement`
-  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification';
+  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification', AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification';
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1001;
 
 --
 -- AUTO_INCREMENT for table `equipment`
 --
 ALTER TABLE `equipment`
-  MODIFY `equip_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Equipment Identification';
+  MODIFY `equip_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Equipment Identification', AUTO_INCREMENT=1005;
 
 --
 -- AUTO_INCREMENT for table `facility`
 --
 ALTER TABLE `facility`
-  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ';
+  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT for table `issue report`
 --
 ALTER TABLE `issue report`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification';
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification', AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `notification`
@@ -280,7 +337,38 @@ ALTER TABLE `penalty`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'User Identification', AUTO_INCREMENT=10000001;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'User Identification', AUTO_INCREMENT=10000005;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `annoucement`
+--
+ALTER TABLE `annoucement`
+  ADD CONSTRAINT `fk_annoucement_user` FOREIGN KEY (`admin_id`) REFERENCES `user` (`user_id`);
+
+--
+-- Constraints for table `booking`
+--
+ALTER TABLE `booking`
+  ADD CONSTRAINT `fk_booking_facility` FOREIGN KEY (`facility_id`) REFERENCES `facility` (`facility_id`),
+  ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
+
+--
+-- Constraints for table `booking_equipment`
+--
+ALTER TABLE `booking_equipment`
+  ADD CONSTRAINT `fk_book_equip_booking` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`booking_id`),
+  ADD CONSTRAINT `fk_book_equip_equipment` FOREIGN KEY (`equip_id`) REFERENCES `equipment` (`equip_id`);
+
+--
+-- Constraints for table `issue report`
+--
+ALTER TABLE `issue report`
+  ADD CONSTRAINT `fk_issue_facility` FOREIGN KEY (`facility_id`) REFERENCES `facility` (`facility_id`),
+  ADD CONSTRAINT `fk_issue_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
