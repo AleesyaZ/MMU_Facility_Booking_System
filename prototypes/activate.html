@@ -19,17 +19,18 @@
                     <p>Verify your MMU email to start booking facilities.</p>
                 </div>
 
-                <form id="activateForm">
+                <!-- Form sends data to PHP folder -->
+                <form id="activateForm" action="../PHP/activate_process.php" method="POST">
 
                     <div class="form-group">
                         <label>MMU Email</label>
                         <input 
                             type="email" 
+                            name="email" 
                             id="email"
                             class="form-control" 
                             placeholder="studentID@student.mmu.edu.my"
                             required
-                            pattern=".+@.+"
                         >
                     </div>
 
@@ -39,6 +40,7 @@
                         <div class="input-with-button">
                             <input 
                                 type="text" 
+                                name="otp"
                                 id="otp"
                                 class="form-control" 
                                 placeholder="Enter 6-digit OTP"
@@ -46,13 +48,12 @@
                                 pattern="\d{6}"
                                 maxlength="6"
                             >
-
-                            <button type="button" class="btn-inside">Get OTP</button>
+                            <button type="button" class="btn-inside" id="getOtpBtn">Get OTP</button>
                         </div>
 
                         <span class="form-help">
                             <span class="material-symbols-outlined" style="font-size: 14px;">info</span>
-                            OTP will be sent to your student/staff email.
+                            OTP will be generated in the database for testing.
                         </span>
                     </div>
 
@@ -60,6 +61,7 @@
                         <label>Set Password</label>
                         <input 
                             type="password" 
+                            name="password"
                             id="password"
                             class="form-control" 
                             placeholder="Create a secure password"
@@ -68,8 +70,9 @@
                         >
                     </div>
 
+                    <!-- RE-ADDED: Terms and Guidelines Checkbox -->
                     <div class="form-group" style="display: flex; align-items: flex-start; gap: 8px;">
-                        <input type="checkbox" id="terms" required style="margin-top: 4px;">
+                        <input type="checkbox" id="terms" name="terms" required style="margin-top: 4px;">
 
                         <label for="terms" style="margin-bottom: 0; font-weight: 400; color: var(--text-muted); cursor: pointer; line-height: 1.4;">
                             I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> and Facility Booking Rules.
@@ -81,45 +84,13 @@
                     </button>
 
                     <!-- Back to Home Link -->
-                    <div style="margin-bottom: 16px; display: flex; justify-content: flex-start;">
-                        <a href="index.html" class="back-link-custom">
+                    <div style="margin-top: 24px; display: flex; justify-content: flex-start;">
+                        <a href="index.html" class="back-link-custom" style="text-decoration: none; display: flex; align-items: center; gap: 4px; color: var(--text-muted); font-size: 14px;">
                             <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
                             Back to Home
                         </a>
                     </div>
                 </form>
-
-<script>
-document.getElementById("activateForm").addEventListener("submit", function(event) {
-
-    event.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const otp = document.getElementById("otp").value;
-    const password = document.getElementById("password").value;
-
-    // Email validation
-    if (!email.includes("@")) {
-        alert("Please enter a valid email address.");
-        return;
-    }
-
-    // OTP validation
-    if (!/^\d{6}$/.test(otp)) {
-        alert("OTP must be exactly 6 digits.");
-        return;
-    }
-
-    // Password validation
-    if (password.length < 8) {
-        alert("Password must be at least 8 characters.");
-        return;
-    }
-
-    // Redirect to dashboard
-    window.location.href = "student-dashboard.html";
-});
-</script>
 
                 <div class="auth-footer">
                     Already activated? <a href="login.html">Sign In Here</a>
@@ -136,6 +107,40 @@ document.getElementById("activateForm").addEventListener("submit", function(even
             </div>
         </div>
     </div>
+
+    <!-- JavaScript to handle OTP Request without page refresh -->
+    <script>
+    document.getElementById("getOtpBtn").addEventListener("click", function() {
+        const emailInput = document.getElementById("email").value;
+        if(!emailInput) { alert("Please enter your email first"); return; }
+
+        const formData = new FormData();
+        formData.append('email', emailInput);
+
+        fetch('../PHP/send_otp.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            const result = data.trim();
+
+            if(result === "success") {
+                alert("Success! Check the 'otp_code' column in phpMyAdmin for your code.");
+            } else if(result === "already_active") {
+                alert("This account is already activated. Please sign in.");
+            } else if(result === "not_found") {
+                alert("Email not found in our records.");
+            } else {
+                alert("System Message: " + result);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Connection error. Ensure XAMPP is running.");
+        });
+    });
+    </script>
 
 </body>
 </html>

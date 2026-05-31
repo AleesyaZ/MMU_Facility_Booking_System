@@ -1,12 +1,13 @@
 <?php
 session_start();
-include('db_config.php'); // No change here since they are in the same folder
+include('db_config.php');
 
 if (isset($_POST['login_btn'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']); 
 
-    $query = "SELECT * FROM USER WHERE email = '$email' AND password = '$password' LIMIT 1";
+    // Added is_activated = 1 to the check
+    $query = "SELECT * FROM USER WHERE email = '$email' AND password = '$password' AND is_activated = 1 LIMIT 1";
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) == 1) {
@@ -14,8 +15,8 @@ if (isset($_POST['login_btn'])) {
         
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['role'] = $user['role'];
+        $_SESSION['name'] = $user['name'];
 
-        // PATH UPDATE: Go up one level to find the prototypes folder
         if ($user['role'] == 'Admin') {
             header("Location: ../prototypes/admin-dashboard.html");
         } elseif ($user['role'] == 'Lecturer') {
@@ -25,14 +26,7 @@ if (isset($_POST['login_btn'])) {
         }
         exit();
     } else {
-        // PATH UPDATE: Go up one level to go back to login.html
-        echo "<script>
-                alert('Invalid MMU Email or Password'); 
-                window.location.href='../prototypes/login.html';
-              </script>";
+        echo "<script>alert('Account not activated or invalid credentials.'); window.location.href='../prototypes/login.html';</script>";
     }
-} else {
-    header("Location: ../prototypes/login.html");
-    exit();
 }
 ?>
