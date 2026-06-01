@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 31, 2026 at 01:19 PM
+-- Generation Time: Jun 01, 2026 at 08:48 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -202,7 +202,7 @@ CREATE TABLE `user` (
   `user_id` int(11) NOT NULL COMMENT 'User Identification',
   `name` varchar(255) NOT NULL COMMENT 'User Full Name',
   `email` varchar(255) NOT NULL COMMENT 'User Login Email Address',
-  `password` varchar(255) NOT NULL COMMENT 'Encrypted User Password',
+  `password` varchar(255) DEFAULT NULL COMMENT 'Encrypted User Password',
   `role` varchar(50) NOT NULL COMMENT 'User Role',
   `contact_no` varchar(50) NOT NULL COMMENT 'User Contact Number',
   `booking_quota` int(11) NOT NULL COMMENT 'Booking Quota Limit',
@@ -216,11 +216,11 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`, `otp_code`, `otp_sent_at`, `is_activated`) VALUES
-(10000000, 'IDRIS BIN SHAH NAHAR', 'IDRIS.SHAH.NAHAR@student.mmu.edu.my', 'Stophe_3', 'Student', '01164425881', 5, NULL, NULL, 0),
-(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', 'abcd1234', 'Student', '01154067900', 5, NULL, NULL, 0),
-(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', 'abcd1234', 'Student', '0123211695', 5, NULL, NULL, 0),
-(10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', 'abcd1234', 'Lecturer', '0112223333', 5, NULL, NULL, 0),
-(10000004, 'MR ADMIN', 'admin1@mmu.edu.my', 'abcd1234', 'Admin', '0112223333', 5, NULL, NULL, 0);
+(10000000, 'IDRIS BIN SHAH NAHAR', 'idris@student.mmu.edu.my', 'Stophe_3', 'Student', '01164425881', 5, NULL, NULL, 1),
+(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', NULL, 'Student', '01154067900', 5, NULL, NULL, 0),
+(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', NULL, 'Student', '0123211695', 5, NULL, NULL, 0),
+(10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', NULL, 'Lecturer', '0112223333', 5, NULL, NULL, 0),
+(10000004, 'MR ADMIN', 'admin1@mmu.edu.my', NULL, 'Admin', '0112223333', 5, NULL, NULL, 0);
 
 --
 -- Indexes for dumped tables
