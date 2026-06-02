@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 01, 2026 at 08:48 AM
+-- Generation Time: Jun 02, 2026 at 08:36 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -64,7 +64,9 @@ CREATE TABLE `booking` (
 --
 
 INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`) VALUES
-(1000, 10000000, 100, '2026-05-01', '14:56:16', '16:56:16', 'To play badminton', 'Pending');
+(1000, 10000000, 100, '2026-05-01', '14:56:16', '16:56:16', 'To play badminton', 'Approved'),
+(1001, 10000001, 102, '2026-05-02', '14:33:07', '17:33:07', 'Swimming around', 'Pending'),
+(1002, 10000001, 101, '2026-06-01', '18:34:25', '19:34:25', 'playing sports', 'Approved');
 
 -- --------------------------------------------------------
 
@@ -192,6 +194,13 @@ CREATE TABLE `penalty` (
   `status` varchar(50) NOT NULL COMMENT 'Penalty Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `penalty`
+--
+
+INSERT INTO `penalty` (`penalty_id`, `user_id`, `booking_id`, `reason`, `strike_count`, `status`) VALUES
+(100000, 10000000, 1000, 'Didn\'t use the facility at the arranged time and date. Wasting facility resources for others to use.', 1, 'Active');
+
 -- --------------------------------------------------------
 
 --
@@ -217,8 +226,8 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`, `otp_code`, `otp_sent_at`, `is_activated`) VALUES
 (10000000, 'IDRIS BIN SHAH NAHAR', 'idris@student.mmu.edu.my', 'Stophe_3', 'Student', '01164425881', 5, NULL, NULL, 1),
-(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', NULL, 'Student', '01154067900', 5, NULL, NULL, 0),
-(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', NULL, 'Student', '0123211695', 5, NULL, NULL, 0),
+(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', 'abcd1234', 'Student', '01154067900', 5, NULL, NULL, 1),
+(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', 'abcd1234', 'Student', '0123211695', 5, NULL, NULL, 1),
 (10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', NULL, 'Lecturer', '0112223333', 5, NULL, NULL, 0),
 (10000004, 'MR ADMIN', 'admin1@mmu.edu.my', NULL, 'Admin', '0112223333', 5, NULL, NULL, 0);
 
@@ -304,7 +313,7 @@ ALTER TABLE `annoucement`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1001;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1003;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -334,7 +343,7 @@ ALTER TABLE `notification`
 -- AUTO_INCREMENT for table `penalty`
 --
 ALTER TABLE `penalty`
-  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification';
+  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification', AUTO_INCREMENT=100001;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -372,6 +381,13 @@ ALTER TABLE `booking_equipment`
 ALTER TABLE `issue report`
   ADD CONSTRAINT `fk_issue_facility` FOREIGN KEY (`facility_id`) REFERENCES `facility` (`facility_id`),
   ADD CONSTRAINT `fk_issue_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
+
+--
+-- Constraints for table `penalty`
+--
+ALTER TABLE `penalty`
+  ADD CONSTRAINT `fk_penalty_booking` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`booking_id`),
+  ADD CONSTRAINT `fk_penalty_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

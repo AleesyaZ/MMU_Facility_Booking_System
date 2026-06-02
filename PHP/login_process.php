@@ -18,11 +18,11 @@ if (isset($_POST['login_btn'])) {
         $_SESSION['name'] = $user['name'];
 
         if ($user['role'] == 'Admin') {
-            header("Location: ../prototypes/admin-dashboard.html");
+            header("Location: ../prototypes/admin-dashboard.php");
         } elseif ($user['role'] == 'Lecturer') {
-            header("Location: ../prototypes/lecturer-dashboard.html");
+            header("Location: ../prototypes/lecturer-dashboard.php");
         } else {
-            header("Location: ../prototypes/student-dashboard.html");
+            header("Location: ../prototypes/student-dashboard.php");
         }
         exit();
     } else {
