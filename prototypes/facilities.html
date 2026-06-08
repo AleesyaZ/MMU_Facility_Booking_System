@@ -1,0 +1,139 @@
+
+
+<!-- 
+  IDRIS!!!!!!!!!!!:
+  This is the Browse Facilities page. 
+  Logic needed later: If user is NOT logged in, show the Public Navbar here instead.
+  If user IS logged in, show this Student Navbar.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Browse Facilities - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <!-- Logged-in Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="student-dashboard.php" class="nav-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
+                <div class="logo-divider"></div>
+                <span class="system-name">Facility Booking</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="student-dashboard.php">Dashboard</a>
+                <a href="facilities.html" class="active">Browse Facilities</a>
+                <a href="#">My Bookings</a>
+                <a href="#">Report Issue</a>
+            </nav>
+            
+            <div class="nav-profile">
+                <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
+                <div class="avatar">JD</div>
+                <span style="font-weight: 500; font-size: 14px;">John Doe</span>
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Browse Campus Facilities</h1>
+        <p>Find and book available lecture halls, discussion rooms, labs, and sports courts across MMU campuses.</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Filter Bar -->
+        <form class="filter-bar" action="#" method="GET">
+            <div class="filter-group">
+                <label>Campus Location</label>
+                <select name="campus">
+                    <option value="all">All Campuses</option>
+                    <option value="cyberjaya">Cyberjaya Campus</option>
+                    <option value="melaka">Melaka Campus</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Facility Type</label>
+                <select name="category">
+                    <option value="all">All Categories</option>
+                    <option value="hall">Lecture Hall</option>
+                    <option value="room">Discussion Room</option>
+                    <option value="lab">Computer Lab</option>
+                    <option value="sports">Sports Court</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Search by Name</label>
+                <input type="text" name="search" placeholder="e.g. FCI Lab 3">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 24px; height: 42px;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">search</span> Filter
+            </button>
+        </form>
+
+        <!-- Facility Grid -->
+        <div class="facility-grid">
+            
+            <!-- Card 1 (Available) -->
+            <div class="facility-card">
+                <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80" alt="Meeting Room" class="facility-img">
+                <div class="facility-info">
+                    <h3>Discussion Room 4</h3>
+                    <div class="facility-meta">
+                        <span class="meta-item"><span class="material-symbols-outlined">location_on</span> Cyberjaya (FCI)</span>
+                        <span class="meta-item"><span class="material-symbols-outlined">group</span> Max 8</span>
+                    </div>
+                    <p class="facility-desc">A quiet discussion room equipped with a whiteboard and power outlets. Perfect for group assignments.</p>
+                    <a href="booking-form.html" class="btn btn-primary" style="justify-content: center; width: 100%;">Book Now</a>
+                </div>
+            </div>
+
+            <!-- Card 2 (Available) -->
+            <div class="facility-card">
+                <img src="https://images.unsplash.com/photo-1577415124269-fc1140a69e91?auto=format&fit=crop&w=600&q=80" alt="Lecture Hall" class="facility-img">
+                <div class="facility-info">
+                    <h3>Main Lecture Hall (MLH)</h3>
+                    <div class="facility-meta">
+                        <span class="meta-item"><span class="material-symbols-outlined">location_on</span> Melaka Campus</span>
+                        <span class="meta-item"><span class="material-symbols-outlined">group</span> Max 250</span>
+                    </div>
+                    <p class="facility-desc">Large tiered lecture hall suitable for major events and core subject lectures. Projector included.</p>
+                    <a href="booking-form.html" class="btn btn-primary" style="justify-content: center; width: 100%;">Book Now</a>
+                </div>
+            </div>
+
+            <!-- Card 3 (Unavailable / Maintenance) -->
+            <div class="facility-card">
+                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80" alt="Computer Lab" class="facility-img">
+                <div class="facility-info">
+                    <h3>Computer Lab B</h3>
+                    <div class="facility-meta">
+                        <span class="meta-item"><span class="material-symbols-outlined">location_on</span> Cyberjaya (FOE)</span>
+                        <span class="meta-item"><span class="material-symbols-outlined">group</span> Max 40</span>
+                    </div>
+                    <p class="facility-desc">High-performance computing lab equipped with latest design and engineering software.</p>
+                    
+                    <!-- Grayed out button -->
+                    <button class="btn btn-disabled" disabled>Maintenance (Unavailable)</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

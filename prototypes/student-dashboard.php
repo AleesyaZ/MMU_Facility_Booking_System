@@ -122,14 +122,14 @@ function time_ago($timestamp) {
                 <div class="stat-grid">
                     <div class="stat-box success">
                         <span class="stat-label">Booking Quota Used</span>
-                        <span class="stat-value"><?php echo $used_quota; ?> / 5</span>
+                        <span class="stat-value"><?php echo $used_quota; ?> / 2</span>
                     </div>
                     <div class="stat-box warning">
                         <span class="stat-label">Penalty Strikes</span>
                         <span class="stat-value"><?php echo $strikes; ?> / 3</span>
                     </div>
                 </div>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">Quotas reset at the beginning of each semester. 3 penalty strikes result in a 30-day suspension.</p>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">Quotas resets on a weekly basis. 3 penalty strikes result in a 30-day suspension.</p>
             </div>
 
             <!-- Quick Actions Card -->
