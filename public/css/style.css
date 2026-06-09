@@ -26,6 +26,11 @@
     font-family: var(--font-main);
 }
 
+html, body {
+    height: 100%;
+    overflow-x: hidden; /* Prevent extra horizontal scrolling space */
+}
+
 body {
     background-color: var(--background);
     color: var(--text-main);
@@ -86,10 +91,11 @@ a {
 .navbar {
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
     background-color: var(--surface);
     border-bottom: 1px solid rgba(194, 198, 211, 0.3);
-    z-index: 50;
+    z-index: 100; /* Bumped up to sit securely above all page contents */
     box-shadow: var(--shadow-soft);
     height: 80px;
     display: flex;
@@ -192,7 +198,7 @@ a {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    margin-top: 80px; 
+    margin-top: 80px; /* Offset for the fixed header */
     z-index: 1;
 }
 
@@ -260,7 +266,6 @@ a {
     text-align: center;
     border-right: 1px solid rgba(194, 198, 211, 0.3);
 }
-
 
 .stat-item:last-child {
     border-right: none;
@@ -387,7 +392,6 @@ a {
         transform: translateY(-50px); 
     }
 }
-
 
 .feature-img-wrapper {
     height: 140px;
@@ -531,12 +535,6 @@ a {
 /* =========================================
    7. AUTHENTICATION PAGES (Login & Activate)
    ========================================= */
-   /* Prevent extra scrolling space */
-html, body {
-    height: 100%;
-    overflow-x: hidden;
-}
-
 .auth-container {
     display: flex;
     overflow: hidden;
@@ -600,8 +598,7 @@ html, body {
 /* Form Elements */
 .auth-header { margin-bottom: 32px; }
 .auth-header h2 { font-size: 32px; margin-bottom: 8px; text-align: center; }
-.auth-header p { color: var(--text-muted); }
-.auth-header p { text-align: center; }
+.auth-header p { color: var(--text-muted); text-align: center; }
 
 .form-group { margin-bottom: 20px; }
 
@@ -711,7 +708,6 @@ html, body {
 .dashboard-header h2 { font-size: 28px; color: var(--text-main); }
 .dashboard-header p { color: var(--text-muted); }
 
-
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -729,7 +725,6 @@ html, body {
         grid-column: span 1; 
     }
 }
-
 
 .card {
     background-color: var(--surface);
@@ -832,14 +827,7 @@ html, body {
 .badge-pending { background-color: #fff3cd; color: #856404; }
 .badge-approved { background-color: var(--success-bg); color: var(--success-text); }
 
-/* User Profile Navbar */
-.nav-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-}
-
+/* User Profile Navbar Base Configuration */
 .avatar {
     width: 36px;
     height: 36px;
@@ -852,7 +840,6 @@ html, body {
     font-weight: 600;
     font-size: 14px;
 }
-
 
 /* =========================================
    9. BROWSE FACILITIES & CARDS
@@ -1041,10 +1028,17 @@ html, body {
     }
 }
 
+/* FIX: Changed from absolute dual-columns to responsive setup to prevent squishing on phones */
 .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 16px;
+}
+
+@media (min-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 textarea.form-control {
@@ -1236,4 +1230,91 @@ textarea.form-control {
     background-color: rgba(0, 61, 124, 0.05);
     border-color: var(--primary);
     transform: scale(1.02);
+}
+
+/* =========================================
+   12. PROFILE DROPDOWN STYLES
+   ========================================= */
+/* Combined and unified duplicated dropdown targets */
+.nav-profile {
+    position: relative; /* Anchor for the dropdown menu */
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important; /* Prevents icons and names from stacking on mobile */
+    gap: 10px !important;
+    min-width: fit-content;
+    cursor: pointer;
+}
+
+.nav-profile:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 200px;
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    display: none; /* Controlled via JS toggle classes */
+    flex-direction: column;
+    padding: 8px 0;
+    z-index: 110;
+}
+
+.profile-dropdown.show {
+    display: flex;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: var(--background);
+    color: var(--primary);
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 8px 0;
+    opacity: 0.5;
+}
+
+.logout-item {
+    color: var(--secondary) !important;
+}
+
+.logout-item:hover {
+    background-color: #fff5f5;
+}
+
+.profile-name {
+    display: block !important;    /* Block layout required for text ellipsis behavior */
+    max-width: 150px !important;  /* Standard truncation block fallback width */
+    white-space: nowrap !important; 
+    overflow: hidden !important; 
+    text-overflow: ellipsis !important; /* Generates standard dynamic trailing dots "..." */
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-main);
+    flex-shrink: 1;               /* Enables responsive name scale contraction */
+}
+
+/* Ensure structural icon indicators do not contract or shift wrappers */
+.nav-profile .material-symbols-outlined {
+    flex-shrink: 0; 
 }
