@@ -88,7 +88,7 @@ function time_ago($timestamp) {
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
                 <a href="student-dashboard.php" class="active">Dashboard</a>
                 <a href="facilities.php">Browse Facilities</a>
-                <a href="#">My Bookings</a>
+                <a href="my-bookings.html">My Bookings</a>
                 <a href="#">Report Issue</a>
             </nav>
             
@@ -130,7 +130,7 @@ function time_ago($timestamp) {
                     <span class="material-symbols-outlined">analytics</span> Account Standing
                 </h3>
                 <div class="stat-grid">
-                    <div class="stat-box success">
+                    <div class="stat-box primary">
                         <span class="stat-label">Booking Quota Used</span>
                         <span class="stat-value"><?php echo $used_quota; ?> / <?php echo $max_quota; ?></span>
                     </div>
@@ -173,38 +173,60 @@ function time_ago($timestamp) {
                     <?php 
                     if (mysqli_num_rows($bookings_result) > 0) {
                         while ($row = mysqli_fetch_assoc($bookings_result)) { 
-                            $icon = "event"; 
+                            
+                            // IMAGE LOGIC: Match a default image URL based on the category
+                            $img_url = "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=300&q=80"; // Default (Room)
                             $cat = strtolower($row['category']);
-                            if (strpos($cat, 'room') !== false) $icon = "meeting_room";
-                            elseif (strpos($cat, 'court') !== false || strpos($cat, 'sport') !== false) $icon = "sports_basketball";
-                            elseif (strpos($cat, 'lab') !== false) $icon = "biotech";
+                            
+                            if (strpos($cat, 'hall') !== false) {
+                                $img_url = "https://images.unsplash.com/photo-1577415124269-fc1140a69e91?auto=format&fit=crop&w=300&q=80";
+                            } elseif (strpos($cat, 'court') !== false || strpos($cat, 'sport') !== false) {
+                                $img_url = "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=300&q=80"; // Replace with sports image later
+                            } elseif (strpos($cat, 'lab') !== false) {
+                                $img_url = "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=300&q=80";
+                            }
 
                             $formatted_date = date("d M Y", strtotime($row['booking_date']));
                             $formatted_time = date("g:i A", strtotime($row['start_time'])) . " - " . date("g:i A", strtotime($row['end_time']));
                             $status = $row['status'];
                             $badge_class = ($status == "Approved") ? "badge-approved" : "badge-pending";
                     ?>
-                            <div class="list-item">
-                                <div class="item-icon">
-                                    <span class="material-symbols-outlined"><?php echo $icon; ?></span>
+                            <div class="list-item" style="align-items: center;">
+                                
+                                <!-- Left: Image -->
+                                <div class="booking-img-wrapper">
+                                    <img src="<?php echo $img_url; ?>" alt="<?php echo htmlspecialchars($row['category']); ?>">
                                 </div>
-                                <div class="item-details" style="flex: 1;">
+                                
+                                <!-- Middle: Text Details -->
+                                <div class="item-details booking-details" style="flex: 1;">
                                     <h4><?php echo htmlspecialchars($row['facility_name']); ?></h4>
-                                    <p><?php echo $formatted_date; ?> • <?php echo $formatted_time; ?></p>
-                                    <span class="badge <?php echo $badge_class; ?>">
-                                        <span class="material-symbols-outlined" style="font-size: 12px;">
+                                    <p style="margin-bottom: 0;"><?php echo $formatted_date; ?> • <?php echo $formatted_time; ?></p>
+                                </div>
+                                
+                                <!-- Right: Badge and Button -->
+                                <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
+                                    
+                                    <!-- Status Badge -->
+                                    <span class="badge <?php echo $badge_class; ?>" style="height: 28px; padding: 0 12px; display: inline-flex; align-items: center; box-sizing: border-box;">
+                                        <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">
                                             <?php echo ($status == 'Approved' ? 'check_circle' : 'schedule'); ?>
                                         </span> 
                                         <?php echo $status; ?>
                                     </span>
+                                    
                                     <!-- Priority Badge for Lecturers -->
-                                    <?php if($row['is_priority']): ?>
-                                        <span class="badge" style="background: #fff3cd; color: #856404; margin-left: 5px;">
-                                            <span class="material-symbols-outlined" style="font-size: 12px;">star</span> Priority
+                                    <?php if(isset($row['is_priority']) && $row['is_priority']): ?>
+                                        <span class="badge" style="background: #fff3cd; color: #856404; height: 28px; padding: 0 12px; display: inline-flex; align-items: center; box-sizing: border-box;">
+                                            <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">star</span> Priority
                                         </span>
                                     <?php endif; ?>
+                                    
+                                    <!-- Cancel Button -->
+                                    <button class="btn btn-outline" style="height: 28px; padding: 0 14px; border-radius: 50px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                                        Cancel
+                                    </button>
                                 </div>
-                                <div><button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">Cancel</button></div>
                             </div>
                     <?php 
                         } 

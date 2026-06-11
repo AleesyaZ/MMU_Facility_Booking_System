@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Report Issue - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <!-- Link to your JS file for the upload zone -->
+    <script src="../public/js/script.js" defer></script> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <!-- Logged-in Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="student-dashboard.php" class="nav-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
+                <div class="logo-divider"></div>
+                <span class="system-name">Facility Booking</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="student-dashboard.php">Dashboard</a>
+                <a href="facilities.html">Browse Facilities</a>
+                <a href="my-bookings.html">My Bookings</a>
+                <a href="report-issue.html" class="active">Report Issue</a>
+            </nav>
+            
+            <div class="nav-profile">
+                <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
+                <div class="avatar">JD</div>
+                <span style="font-weight: 500; font-size: 14px;">John Doe</span>
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header" style="padding-bottom: 40px; background-color: var(--background);">
+        <h1 style="color: var(--text-main);">Report a Facility Issue</h1>
+        <p style="color: var(--text-muted);">Help us keep our campus in top condition. Report damages, cleanliness issues, or faulty equipment.</p>
+    </div>
+
+    <main class="container booking-layout" style="padding-top: 32px;">
+        
+        <!-- LEFT COLUMN: The Form -->
+        <div class="card" style="margin-bottom: 0;">
+            <form action="student-dashboard.php" method="POST">
+                
+                <!-- Facility Selection (Searchable Datalist) -->
+                <div class="form-group">
+                    <label>Which facility has an issue?</label>
+                    <input class="form-control" list="facility-list" name="facility_name" placeholder="Start typing to search (e.g., Lab)..." required>
+                    
+                    <!-- The Datalist acts as an autocomplete dropdown -->
+                    <datalist id="facility-list">
+                        <option value="Discussion Room 4 (FCI)"></option>
+                        <option value="Main Lecture Hall (Melaka)"></option>
+                        <option value="Computer Lab B (FOE)"></option>
+                        <option value="Indoor Basketball Court A"></option>
+                        <option value="FCI Lab 1"></option>
+                        <option value="FCI Lab 2"></option>
+                        <option value="Library Study Pod 1"></option>
+                    </datalist>
+                    <span class="form-help">Type the building or room name to filter options.</span>
+                </div>
+
+                <!-- Issue Category (Updated for user-behavior reporting) -->
+                <div class="form-group">
+                    <label>Category of Issue</label>
+                    <select class="form-control" name="issue_type" required>
+                        <option value="" disabled selected>Select category...</option>
+                        <option value="Damage">Equipment/Furniture Damage</option>
+                        <option value="Messy">Left messy by previous user</option>
+                        <option value="Furniture">Unauthorized movement of furniture</option>
+                        <option value="Cleanliness">General Cleanliness / Spill</option>
+                        <option value="IT">IT / Network Issue</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label>Detailed Description</label>
+                    <textarea class="form-control" name="description" placeholder="Please describe the issue in detail (e.g., The projector screen is torn, or the air conditioning is leaking water)..." required></textarea>
+                </div>
+
+                <!-- Photo Upload Zone (Reused from Lecturer Form) -->
+                <div class="form-group">
+                    <label>Photo Evidence (Optional)</label>
+                    <label class="upload-zone" id="dropZone" for="proofUpload" style="margin-top: 8px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <span class="material-symbols-outlined upload-icon">add_a_photo</span>
+                            <span class="upload-text">Click or drag photo to upload</span>
+                        </div>
+                        <span class="upload-hint">Upload JPG or PNG (Max 5MB)</span>
+                        <input type="file" id="proofUpload" name="proofUpload" accept="image/*">
+                        <div id="fileNameDisplay" style="margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--primary); display: none;"></div>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 16px; margin-top: 32px;">
+                    <a href="student-dashboard.php" class="btn btn-outline" style="flex: 1; justify-content: center;">Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">Submit Report</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- RIGHT COLUMN: Guidelines & Emergency -->
+        <div>
+            <div class="card" style="position: sticky; top: 100px;">
+                <h3 class="card-title" style="color: var(--text-main); font-size: 16px; margin-bottom: 16px;">
+                    <span class="material-symbols-outlined">gpp_maybe</span> What happens next?
+                </h3>
+                
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+                    Once you submit this report, it will be forwarded to the Campus Facilities Management team. 
+                    Depending on the severity, the facility may be temporarily marked as <strong>Maintenance (Unavailable)</strong> in the booking system.
+                </p>
+
+                <div class="quota-alert" style="background-color: #fff3cd; color: #856404; flex-direction: column; align-items: flex-start; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">warning</span>
+                        <strong>Emergency Maintenance</strong>
+                    </div>
+                    <div style="font-size: 13px; line-height: 1.4;">
+                        If this is a dangerous emergency (e.g., active water leak, exposed wiring, or fire hazard), please do not wait. Immediately call the 24/7 Security & Maintenance Hotline:
+                        <br><br>
+                        <strong>Cyberjaya:</strong> 03-8312 5999<br>
+                        <strong>Melaka:</strong> 06-252 3999
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
