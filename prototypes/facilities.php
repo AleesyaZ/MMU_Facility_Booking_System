@@ -97,8 +97,8 @@ $facility_result = mysqli_query($conn, $base_query);
                 <?php if ($is_logged_in): ?>
                     <a href="student-dashboard.php">Dashboard</a>
                     <a href="facilities.php" class="active">Browse Facilities</a>
-                    <a href="#">My Bookings</a>
-                    <a href="#">Report Issue</a>
+                    <a href="my-bookings.php">My Bookings</a>
+                    <a href="report-issue.php">Report Issue</a>
                 <?php else: ?>
                     <a href="index.php">Home</a>
                     <a href="facilities.php" class="active">Browse Facilities</a>

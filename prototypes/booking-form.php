@@ -28,23 +28,24 @@ $user_data = mysqli_fetch_assoc(mysqli_query($conn, $user_query));
 $full_name = $user_data['name'];
 $max_quota = $user_data['booking_quota'];
 
-// Get initials for avatar
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
 // 4. FETCH DYNAMIC EQUIPMENTS
 $safe_cat = mysqli_real_escape_string($conn, $facility['category']);
-
 $equip_query = "SELECT * FROM equipment 
                 WHERE status = 'Available' 
                 AND (category = '$safe_cat' OR category = 'General') 
                 ORDER BY name ASC";
-
 $equip_result = mysqli_query($conn, $equip_query);
 
-if (!$equip_result) {
-    echo "Query Error: " . mysqli_error($conn);
-}
+// --- NEW: 5. FETCH EXISTING BOOKINGS TO SHOW OCCUPIED SLOTS ---
+$occupied_query = "SELECT booking_date, start_time, end_time FROM booking 
+                   WHERE facility_id = '$facility_id' 
+                   AND status IN ('Approved', 'Pending') 
+                   AND booking_date >= CURDATE()
+                   ORDER BY booking_date ASC, start_time ASC";
+$occupied_result = mysqli_query($conn, $occupied_query);
 ?>
 
 <!DOCTYPE html>
@@ -70,8 +71,8 @@ if (!$equip_result) {
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
                 <a href="student-dashboard.php">Dashboard</a>
                 <a href="facilities.php" class="active">Browse Facilities</a>
-                <a href="#">My Bookings</a>
-                <a href="#">Report Issue</a>
+                <a href="my-bookings.php">My Bookings</a>
+                <a href="report-issue.php">Report Issue</a>
             </nav>
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
@@ -113,6 +114,22 @@ if (!$equip_result) {
                 <div class="form-group">
                     <label>Select Date</label>
                     <input type="date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
+                    
+                    <!-- NEW: BOOKED SLOTS PREVIEW -->
+                    <div style="margin-top: 12px; padding: 12px; background: #f0f2f5; border-radius: 8px; border-left: 4px solid var(--secondary);">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 5px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">event_busy</span> OCCUPIED SLOTS:
+                        </span>
+                        <ul style="font-size: 11px; color: var(--text-muted); list-style: none; padding-left: 0;">
+                            <?php if(mysqli_num_rows($occupied_result) > 0): ?>
+                                <?php while($occ = mysqli_fetch_assoc($occupied_result)): ?>
+                                    <li>• <?php echo date("d M", strtotime($occ['booking_date'])); ?>: <?php echo date("g:i A", strtotime($occ['start_time'])); ?> - <?php echo date("g:i A", strtotime($occ['end_time'])); ?></li>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <li>No existing bookings. All slots available!</li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -192,20 +209,10 @@ if (!$equip_result) {
     </main>
 
     <script>
-        // Dropdown Logic
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
-
-        trigger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menu.classList.toggle('show');
-        });
-
-        window.addEventListener('click', function() {
-            if (menu.classList.contains('show')) {
-                menu.classList.remove('show');
-            }
-        });
+        trigger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.toggle('show'); });
+        window.addEventListener('click', function() { if (menu.classList.contains('show')) { menu.classList.remove('show'); } });
     </script>
 
 </body>

@@ -41,8 +41,8 @@ if ($is_logged_in) {
                 <?php if ($is_logged_in): ?>
                     <a href="student-dashboard.php">Dashboard</a>
                     <a href="facilities.php">Browse Facilities</a>
-                    <a href="#">My Bookings</a>
-                    <a href="#">Report Issue</a>
+                    <a href="my-bookings.html">My Bookings</a>
+                    <a href="report-issue.html">Report Issue</a>
                 <?php else: ?>
                     <a href="index.php" class="active">Home</a>
                     <a href="facilities.php">Browse Facilities</a>

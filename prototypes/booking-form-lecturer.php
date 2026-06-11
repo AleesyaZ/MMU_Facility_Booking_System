@@ -36,17 +36,19 @@ $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name
 
 // 4. FETCH DYNAMIC EQUIPMENTS
 $safe_cat = mysqli_real_escape_string($conn, $facility['category']);
-
 $equip_query = "SELECT * FROM equipment 
                 WHERE status = 'Available' 
                 AND (category = '$safe_cat' OR category = 'General') 
                 ORDER BY name ASC";
-
 $equip_result = mysqli_query($conn, $equip_query);
 
-if (!$equip_result) {
-    echo "Query Error: " . mysqli_error($conn);
-}
+// --- NEW: 5. FETCH EXISTING BOOKINGS (For Lecturers to see what to override) ---
+$occupied_query = "SELECT booking_date, start_time, end_time, is_priority FROM booking 
+                   WHERE facility_id = '$facility_id' 
+                   AND status IN ('Approved', 'Pending') 
+                   AND booking_date >= CURDATE()
+                   ORDER BY booking_date ASC, start_time ASC";
+$occupied_result = mysqli_query($conn, $occupied_query);
 ?>
 
 <!DOCTYPE html>
@@ -72,8 +74,8 @@ if (!$equip_result) {
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
                 <a href="student-dashboard.php">Dashboard</a>
                 <a href="facilities.php" class="active">Browse Facilities</a>
-                <a href="#">My Bookings</a>
-                <a href="#">Report Issue</a>
+                <a href="my-bookings.php">My Bookings</a>
+                <a href="report-issue.php">Report Issue</a>
             </nav>
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
@@ -116,6 +118,34 @@ if (!$equip_result) {
                 <div class="form-group">
                     <label>Select Date</label>
                     <input type="date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
+                    
+                    <!-- NEW: OCCUPIED SLOTS PREVIEW FOR LECTURER -->
+                    <div style="margin-top: 12px; padding: 12px; background: #fdf2f2; border-radius: 8px; border-left: 4px solid var(--secondary);">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 5px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">event_busy</span> CURRENT SCHEDULE (Occupied):
+                        </span>
+                        <ul style="font-size: 11px; color: var(--text-muted); list-style: none; padding-left: 0;">
+                        <?php if(mysqli_num_rows($occupied_result) > 0): ?>
+                            <?php while($occ = mysqli_fetch_assoc($occupied_result)): ?>
+                                <li style="margin-bottom: 5px; padding: 4px; border-radius: 4px; <?php echo $occ['is_priority'] ? 'background: #ffebee;' : ''; ?>">
+                                    • <?php echo date("d M", strtotime($occ['booking_date'])); ?>: 
+                                    <?php echo date("g:i A", strtotime($occ['start_time'])); ?> - <?php echo date("g:i A", strtotime($occ['end_time'])); ?>
+                                    
+                                    <?php if($occ['is_priority']): ?>
+                                        <strong style="color:var(--secondary);">[LOCKED: Priority]</strong>
+                                    <?php else: ?>
+                                        <span style="color: #666;">(Standard - Overridable)</span>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endwhile; ?>
+                            <li style="margin-top: 8px; color: #856404; font-style: italic;">
+                                Note: You can only book over "Standard" slots using Priority Override. "Locked" slots cannot be overridden.
+                            </li>
+                        <?php else: ?>
+                            <li>No existing bookings. All slots available!</li>
+                        <?php endif; ?>
+                    </ul>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -214,25 +244,13 @@ if (!$equip_result) {
     </main>
 
     <script>
-        // 1. Profile Dropdown Logic
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
+        trigger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.toggle('show'); });
+        window.addEventListener('click', function() { if (menu.classList.contains('show')) { menu.classList.remove('show'); } });
 
-        trigger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menu.classList.toggle('show');
-        });
-
-        window.addEventListener('click', function() {
-            if (menu.classList.contains('show')) {
-                menu.classList.remove('show');
-            }
-        });
-
-        // 2. File Name Display for Upload
         const fileInput = document.getElementById('proofUpload');
         const fileNameDisplay = document.getElementById('fileNameDisplay');
-
         fileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
                 fileNameDisplay.innerText = "Selected: " + this.files[0].name;

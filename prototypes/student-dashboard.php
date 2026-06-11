@@ -37,7 +37,8 @@ $penalty_result = mysqli_query($conn, $penalty_query);
 $penalty_row = mysqli_fetch_assoc($penalty_result);
 $strikes = $penalty_row['total_strikes'] ?? 0;
 
-$bookings_query = "SELECT b.*, f.facility_name, f.category 
+// Added f.image_path to the SELECT query
+$bookings_query = "SELECT b.*, f.facility_name, f.category, f.image_path 
                    FROM booking b 
                    JOIN facility f ON b.facility_id = f.facility_id 
                    WHERE b.user_id = '$user_id' 
@@ -88,8 +89,8 @@ function time_ago($timestamp) {
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
                 <a href="student-dashboard.php" class="active">Dashboard</a>
                 <a href="facilities.php">Browse Facilities</a>
-                <a href="my-bookings.html">My Bookings</a>
-                <a href="#">Report Issue</a>
+                <a href="my-bookings.php">My Bookings</a>
+                <a href="report-issue.php">Report Issue</a>
             </nav>
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
@@ -139,7 +140,6 @@ function time_ago($timestamp) {
                         <span class="stat-value"><?php echo $strikes; ?> / 3</span>
                     </div>
                 </div>
-                <!-- Conditional Text for Lecturers -->
                 <?php if($user_role === 'Lecturer'): ?>
                     <p style="font-size: 11px; color: var(--secondary); margin-top: 12px; font-weight: 600;">Note: Priority academic bookings are excluded from this quota count.</p>
                 <?php else: ?>
@@ -147,7 +147,7 @@ function time_ago($timestamp) {
                 <?php endif; ?>
             </div>
 
-            <div class="card col-span-1" style="align-self: start; height: auto;">
+            <div class="card col-span-1">
                 <h3 class="card-title">
                     <span class="material-symbols-outlined">bolt</span> Quick Actions
                 </h3>
@@ -161,7 +161,7 @@ function time_ago($timestamp) {
                 </div>
             </div>
 
-            <div class="card col-span-2">
+            <div class="card col-span-2" style="align-self: start; height: auto;">
                 <h3 class="card-title" style="justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="material-symbols-outlined">event</span> Upcoming Bookings
@@ -174,17 +174,8 @@ function time_ago($timestamp) {
                     if (mysqli_num_rows($bookings_result) > 0) {
                         while ($row = mysqli_fetch_assoc($bookings_result)) { 
                             
-                            // IMAGE LOGIC: Match a default image URL based on the category
-                            $img_url = "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=300&q=80"; // Default (Room)
-                            $cat = strtolower($row['category']);
-                            
-                            if (strpos($cat, 'hall') !== false) {
-                                $img_url = "https://images.unsplash.com/photo-1577415124269-fc1140a69e91?auto=format&fit=crop&w=300&q=80";
-                            } elseif (strpos($cat, 'court') !== false || strpos($cat, 'sport') !== false) {
-                                $img_url = "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=300&q=80"; // Replace with sports image later
-                            } elseif (strpos($cat, 'lab') !== false) {
-                                $img_url = "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=300&q=80";
-                            }
+                            $image_name = !empty($row['image_path']) ? $row['image_path'] : "default.jpg";
+                            $img_url = "../public/img/facilities/" . $image_name;
 
                             $formatted_date = date("d M Y", strtotime($row['booking_date']));
                             $formatted_time = date("g:i A", strtotime($row['start_time'])) . " - " . date("g:i A", strtotime($row['end_time']));
@@ -193,21 +184,17 @@ function time_ago($timestamp) {
                     ?>
                             <div class="list-item" style="align-items: center;">
                                 
-                                <!-- Left: Image -->
                                 <div class="booking-img-wrapper">
-                                    <img src="<?php echo $img_url; ?>" alt="<?php echo htmlspecialchars($row['category']); ?>">
+                                    <img src="<?php echo $img_url; ?>" alt="Facility" onerror="this.src='../public/img/mmulogo.jpg'">
                                 </div>
                                 
-                                <!-- Middle: Text Details -->
                                 <div class="item-details booking-details" style="flex: 1;">
                                     <h4><?php echo htmlspecialchars($row['facility_name']); ?></h4>
                                     <p style="margin-bottom: 0;"><?php echo $formatted_date; ?> • <?php echo $formatted_time; ?></p>
                                 </div>
                                 
-                                <!-- Right: Badge and Button -->
                                 <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
                                     
-                                    <!-- Status Badge -->
                                     <span class="badge <?php echo $badge_class; ?>" style="height: 28px; padding: 0 12px; display: inline-flex; align-items: center; box-sizing: border-box;">
                                         <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">
                                             <?php echo ($status == 'Approved' ? 'check_circle' : 'schedule'); ?>
@@ -215,17 +202,18 @@ function time_ago($timestamp) {
                                         <?php echo $status; ?>
                                     </span>
                                     
-                                    <!-- Priority Badge for Lecturers -->
                                     <?php if(isset($row['is_priority']) && $row['is_priority']): ?>
                                         <span class="badge" style="background: #fff3cd; color: #856404; height: 28px; padding: 0 12px; display: inline-flex; align-items: center; box-sizing: border-box;">
                                             <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">star</span> Priority
                                         </span>
                                     <?php endif; ?>
                                     
-                                    <!-- Cancel Button -->
-                                    <button class="btn btn-outline" style="height: 28px; padding: 0 14px; border-radius: 50px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
-                                        Cancel
-                                    </button>
+                                    <a href="../PHP/cancel_booking.php?id=<?php echo $row['booking_id']; ?>&source=dashboard" 
+                                       class="btn btn-outline" 
+                                       style="height: 28px; padding: 0 14px; border-radius: 50px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; text-decoration: none;"
+                                       onclick="return confirm('Are you sure you want to cancel this reservation?')">
+                                         Cancel
+                                    </a>
                                 </div>
                             </div>
                     <?php 

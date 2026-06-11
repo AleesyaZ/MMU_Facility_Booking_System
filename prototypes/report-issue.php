@@ -1,3 +1,27 @@
+<?php
+session_start();
+include('../PHP/db_config.php');
+
+// 1. SECURITY CHECK
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.html");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+// 2. GET USER DETAILS (For Navbar)
+$user_query = mysqli_query($conn, "SELECT name FROM user WHERE user_id = '$user_id' LIMIT 1");
+$user_data = mysqli_fetch_assoc($user_query);
+$full_name = $user_data['name'] ?? "User";
+
+$name_parts = explode(' ', trim($full_name));
+$initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
+
+// 3. FETCH ALL FACILITIES (For the searchable datalist)
+$fac_list_result = mysqli_query($conn, "SELECT facility_name FROM facility ORDER BY facility_name ASC");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,39 +29,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Report Issue - MMU Campus Space</title>
     <link rel="stylesheet" href="../public/css/style.css">
-    <!-- link to JS file for the upload zone -->
-    <script src="../public/js/script.js" defer></script> 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
-    <!-- Logged-in Navbar -->
     <header class="navbar">
-        <div class="container nav-container">
-            <a href="student-dashboard.php" class="nav-logo">
+        <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="student-dashboard.php" class="nav-logo" style="display: flex; align-items: center; flex-shrink: 0;">
                 <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
                 <div class="logo-divider"></div>
                 <span class="system-name">Facility Booking</span>
             </a>
             
-            <nav class="nav-links">
+            <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
                 <a href="student-dashboard.php">Dashboard</a>
-                <a href="facilities.html">Browse Facilities</a>
-                <a href="my-bookings.html">My Bookings</a>
-                <a href="report-issue.html" class="active">Report Issue</a>
+                <a href="facilities.php">Browse Facilities</a>
+                <a href="my-bookings.php">My Bookings</a>
+                <a href="report-issue.php" class="active">Report Issue</a>
             </nav>
             
-            <div class="nav-profile">
-                <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
-                <div class="avatar">JD</div>
-                <span style="font-weight: 500; font-size: 14px;">John Doe</span>
-                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
+            <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
+                <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
+                <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
+                
+                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="<?php echo htmlspecialchars($full_name); ?>">
+                    <?php echo htmlspecialchars($full_name); ?>
+                </span>
+                
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
+
+                <div class="profile-dropdown" id="profileMenu">
+                    <a href="#" class="dropdown-item">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">account_circle</span>
+                        My Profile
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="../PHP/logout.php" class="dropdown-item logout-item">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
+                        Logout
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Page Header -->
     <div class="page-header" style="padding-bottom: 40px; background-color: var(--background);">
         <h1 style="color: var(--text-main);">Report a Facility Issue</h1>
         <p style="color: var(--text-muted);">Help us keep our campus in top condition. Report damages, cleanliness issues, or faulty equipment.</p>
@@ -45,29 +81,21 @@
 
     <main class="container booking-layout" style="padding-top: 32px;">
         
-        <!-- LEFT COLUMN: The Form -->
         <div class="card" style="margin-bottom: 0;">
-            <form action="student-dashboard.php" method="POST">
+            <form action="../PHP/report_process.php" method="POST" enctype="multipart/form-data">
                 
-                <!-- facility selection searchable datalist -->
                 <div class="form-group">
                     <label>Which facility has an issue?</label>
                     <input class="form-control" list="facility-list" name="facility_name" placeholder="Start typing to search (e.g., Lab)..." required>
                     
-                    <!-- datalist acts as an autocomplete dropdown -->
                     <datalist id="facility-list">
-                        <option value="Discussion Room 4 (FCI)"></option>
-                        <option value="Main Lecture Hall (Melaka)"></option>
-                        <option value="Computer Lab B (FOE)"></option>
-                        <option value="Indoor Basketball Court A"></option>
-                        <option value="FCI Lab 1"></option>
-                        <option value="FCI Lab 2"></option>
-                        <option value="Library Study Pod 1"></option>
+                        <?php while($f = mysqli_fetch_assoc($fac_list_result)): ?>
+                            <option value="<?php echo htmlspecialchars($f['facility_name']); ?>"></option>
+                        <?php endwhile; ?>
                     </datalist>
                     <span class="form-help">Type the building or room name to filter options.</span>
                 </div>
 
-                <!-- issue category -->
                 <div class="form-group">
                     <label>Category of Issue</label>
                     <select class="form-control" name="issue_type" required>
@@ -81,19 +109,17 @@
                     </select>
                 </div>
 
-                <!-- description -->
                 <div class="form-group">
                     <label>Detailed Description</label>
-                    <textarea class="form-control" name="description" placeholder="Please describe the issue in detail (e.g., The projector screen is torn, or the air conditioning is leaking water)..." required></textarea>
+                    <textarea class="form-control" name="description" placeholder="Please describe the issue in detail..." required></textarea>
                 </div>
 
-                <!-- photo upload zone -->
                 <div class="form-group">
                     <label>Photo Evidence (Optional)</label>
                     <label class="upload-zone" id="dropZone" for="proofUpload" style="margin-top: 8px;">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 8px;">
                             <span class="material-symbols-outlined upload-icon">add_a_photo</span>
-                            <span class="upload-text">Click or drag photo to upload</span>
+                            <span class="upload-text">Click to upload photo</span>
                         </div>
                         <span class="upload-hint">Upload JPG or PNG (Max 5MB)</span>
                         <input type="file" id="proofUpload" name="proofUpload" accept="image/*">
@@ -101,7 +127,6 @@
                     </label>
                 </div>
 
-                <!-- action buttons -->
                 <div style="display: flex; gap: 16px; margin-top: 32px;">
                     <a href="student-dashboard.php" class="btn btn-outline" style="flex: 1; justify-content: center;">Cancel</a>
                     <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">Submit Report</button>
@@ -109,16 +134,13 @@
             </form>
         </div>
 
-        <!-- RIGHT COLUMN: guidelines & emergency -->
         <div>
             <div class="card" style="position: sticky; top: 100px;">
                 <h3 class="card-title" style="color: var(--text-main); font-size: 16px; margin-bottom: 16px;">
                     <span class="material-symbols-outlined">gpp_maybe</span> What happens next?
                 </h3>
-                
                 <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
-                    Once you submit this report, it will be forwarded to the Campus Facilities Management team. 
-                    Depending on the severity, the facility may be temporarily marked as <strong>Maintenance (Unavailable)</strong> in the booking system.
+                    Once you submit this report, it will be forwarded to the Campus Facilities Management team.
                 </p>
 
                 <div class="quota-alert" style="background-color: #fff3cd; color: #856404; flex-direction: column; align-items: flex-start; gap: 12px;">
@@ -127,8 +149,7 @@
                         <strong>Emergency Maintenance</strong>
                     </div>
                     <div style="font-size: 13px; line-height: 1.4;">
-                        If this is a dangerous emergency (e.g., active water leak, exposed wiring, or fire hazard), please do not wait. Immediately call the 24/7 Security & Maintenance Hotline:
-                        <br><br>
+                        Immediately call the 24/7 Security Hotline:<br><br>
                         <strong>Cyberjaya:</strong> 03-8312 5999<br>
                         <strong>Melaka:</strong> 06-252 3999
                     </div>
@@ -137,6 +158,23 @@
         </div>
 
     </main>
+
+    <script>
+        // Dropdown toggle
+        const trigger = document.getElementById('profileTrigger');
+        const menu = document.getElementById('profileMenu');
+        trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('show'); });
+        window.addEventListener('click', () => { if (menu.classList.contains('show')) menu.classList.remove('show'); });
+
+        // Show selected file name
+        document.getElementById('proofUpload').addEventListener('change', function() {
+            const display = document.getElementById('fileNameDisplay');
+            if(this.files.length > 0) {
+                display.innerText = "Selected: " + this.files[0].name;
+                display.style.display = "block";
+            }
+        });
+    </script>
 
 </body>
 </html>
