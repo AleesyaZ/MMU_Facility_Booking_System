@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Report Issue - MMU Campus Space</title>
     <link rel="stylesheet" href="../public/css/style.css">
-    <!-- Link to your JS file for the upload zone -->
+    <!-- link to JS file for the upload zone -->
     <script src="../public/js/script.js" defer></script> 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
@@ -49,12 +49,12 @@
         <div class="card" style="margin-bottom: 0;">
             <form action="student-dashboard.php" method="POST">
                 
-                <!-- Facility Selection (Searchable Datalist) -->
+                <!-- facility selection searchable datalist -->
                 <div class="form-group">
                     <label>Which facility has an issue?</label>
                     <input class="form-control" list="facility-list" name="facility_name" placeholder="Start typing to search (e.g., Lab)..." required>
                     
-                    <!-- The Datalist acts as an autocomplete dropdown -->
+                    <!-- datalist acts as an autocomplete dropdown -->
                     <datalist id="facility-list">
                         <option value="Discussion Room 4 (FCI)"></option>
                         <option value="Main Lecture Hall (Melaka)"></option>
@@ -67,7 +67,7 @@
                     <span class="form-help">Type the building or room name to filter options.</span>
                 </div>
 
-                <!-- Issue Category (Updated for user-behavior reporting) -->
+                <!-- issue category -->
                 <div class="form-group">
                     <label>Category of Issue</label>
                     <select class="form-control" name="issue_type" required>
@@ -81,13 +81,13 @@
                     </select>
                 </div>
 
-                <!-- Description -->
+                <!-- description -->
                 <div class="form-group">
                     <label>Detailed Description</label>
                     <textarea class="form-control" name="description" placeholder="Please describe the issue in detail (e.g., The projector screen is torn, or the air conditioning is leaking water)..." required></textarea>
                 </div>
 
-                <!-- Photo Upload Zone (Reused from Lecturer Form) -->
+                <!-- photo upload zone -->
                 <div class="form-group">
                     <label>Photo Evidence (Optional)</label>
                     <label class="upload-zone" id="dropZone" for="proofUpload" style="margin-top: 8px;">
@@ -101,7 +101,7 @@
                     </label>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- action buttons -->
                 <div style="display: flex; gap: 16px; margin-top: 32px;">
                     <a href="student-dashboard.php" class="btn btn-outline" style="flex: 1; justify-content: center;">Cancel</a>
                     <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">Submit Report</button>
@@ -109,7 +109,7 @@
             </form>
         </div>
 
-        <!-- RIGHT COLUMN: Guidelines & Emergency -->
+        <!-- RIGHT COLUMN: guidelines & emergency -->
         <div>
             <div class="card" style="position: sticky; top: 100px;">
                 <h3 class="card-title" style="color: var(--text-main); font-size: 16px; margin-bottom: 16px;">
