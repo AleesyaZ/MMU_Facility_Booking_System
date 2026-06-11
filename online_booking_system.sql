@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 09, 2026 at 12:39 PM
+-- Generation Time: Jun 11, 2026 at 10:19 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,8 @@ CREATE TABLE `annoucement` (
 
 INSERT INTO `annoucement` (`annoucement_id`, `admin_id`, `title`, `content`, `publish_date`) VALUES
 (10, 10000004, 'FCI CQAR2002 Under Maintenance ', 'The projector and the laboratory computers will be having an update. As for now, the laboratory remains unavailable for a short time.', '2026-05-01'),
-(14, 10000004, 'I AM UNDER MAINTENCENCE', 'so like hello guys, today i am under maintence and i lowk probably need your help or someone help lol', '2026-06-09');
+(14, 10000004, 'I AM UNDER MAINTENCENCE', 'so like hello guys, today i am under maintence and i lowk probably need your help or someone help lol', '2026-06-09'),
+(15, 10000004, 'lolololo', 'sadagdyuat ysgyus gdyuast ysua tuadt syud asy udtau ytsayu dauy tasy asu as tsutasu as', '2026-06-11');
 
 -- --------------------------------------------------------
 
@@ -67,7 +68,12 @@ CREATE TABLE `booking` (
 --
 
 INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`, `is_priority`, `proof_file`) VALUES
-(1018, 10000000, 101, '2026-06-09', '18:03:00', '19:03:00', 'a', 'Approved', 0, NULL);
+(1027, 10000003, 100, '2026-06-12', '12:42:00', '14:42:00', '', 'Cancelled', 0, ''),
+(1031, 10000003, 100, '2026-06-11', '14:39:00', '16:39:00', 'a', 'Cancelled', 1, ''),
+(1032, 10000003, 101, '2026-06-10', '14:56:16', '16:56:16', 'a', 'Cancelled', 0, NULL),
+(1033, 10000003, 100, '2026-06-11', '15:49:00', '16:49:00', 'a', 'Approved', 1, ''),
+(1034, 10000003, 100, '2026-06-11', '23:50:00', '00:50:00', 'a', 'Approved', 0, ''),
+(1035, 10000000, 101, '2026-06-11', '23:00:00', '00:00:00', 'zzzzz', 'Approved', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -141,25 +147,27 @@ INSERT INTO `facility` (`facility_id`, `facility_name`, `location`, `category`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `issue report`
+-- Table structure for table `issue_report`
 --
 
-CREATE TABLE `issue report` (
+CREATE TABLE `issue_report` (
   `report_id` int(11) NOT NULL COMMENT 'Report Identification',
   `user_id` int(11) NOT NULL COMMENT 'User Who Submitted Report Identification',
   `facility_id` int(11) NOT NULL COMMENT 'Reported Facility Identification',
   `issue_type` varchar(100) NOT NULL COMMENT 'Category of Issue Reported',
   `description` text NOT NULL COMMENT 'Detailed Issue Description',
+  `issue_image` varchar(255) DEFAULT NULL,
   `report_date` date NOT NULL COMMENT 'Date of Report Submission',
   `status` varchar(50) NOT NULL COMMENT 'Report Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `issue report`
+-- Dumping data for table `issue_report`
 --
 
-INSERT INTO `issue report` (`report_id`, `user_id`, `facility_id`, `issue_type`, `description`, `report_date`, `status`) VALUES
-(1, 10000001, 102, 'Swimming Pool Odor', 'The swimming pool had a terrible odor.', '2026-05-01', 'Pending');
+INSERT INTO `issue_report` (`report_id`, `user_id`, `facility_id`, `issue_type`, `description`, `issue_image`, `report_date`, `status`) VALUES
+(1, 10000001, 102, 'Swimming Pool Odor', 'The swimming pool had a terrible odor.', NULL, '2026-05-01', 'Open'),
+(2, 10000003, 107, 'IT', 'so like i died i think lowk', 'issue_1781163843_10000003.jpg', '2026-06-11', 'Open');
 
 -- --------------------------------------------------------
 
@@ -229,7 +237,8 @@ INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`
 -- Indexes for table `annoucement`
 --
 ALTER TABLE `annoucement`
-  ADD PRIMARY KEY (`annoucement_id`);
+  ADD PRIMARY KEY (`annoucement_id`),
+  ADD KEY `fk_annoucement_user` (`admin_id`);
 
 --
 -- Indexes for table `booking`
@@ -259,9 +268,9 @@ ALTER TABLE `facility`
   ADD PRIMARY KEY (`facility_id`);
 
 --
--- Indexes for table `issue report`
+-- Indexes for table `issue_report`
 --
-ALTER TABLE `issue report`
+ALTER TABLE `issue_report`
   ADD PRIMARY KEY (`report_id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `facility_id` (`facility_id`);
@@ -296,13 +305,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `annoucement`
 --
 ALTER TABLE `annoucement`
-  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification', AUTO_INCREMENT=15;
+  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification', AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1026;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1036;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -317,10 +326,10 @@ ALTER TABLE `facility`
   MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=109;
 
 --
--- AUTO_INCREMENT for table `issue report`
+-- AUTO_INCREMENT for table `issue_report`
 --
-ALTER TABLE `issue report`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification', AUTO_INCREMENT=2;
+ALTER TABLE `issue_report`
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification', AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `notification`
@@ -365,9 +374,9 @@ ALTER TABLE `booking_equipment`
   ADD CONSTRAINT `fk_book_equip_equipment` FOREIGN KEY (`equip_id`) REFERENCES `equipment` (`equip_id`);
 
 --
--- Constraints for table `issue report`
+-- Constraints for table `issue_report`
 --
-ALTER TABLE `issue report`
+ALTER TABLE `issue_report`
   ADD CONSTRAINT `fk_issue_facility` FOREIGN KEY (`facility_id`) REFERENCES `facility` (`facility_id`),
   ADD CONSTRAINT `fk_issue_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
 
