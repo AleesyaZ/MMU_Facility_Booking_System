@@ -27,8 +27,6 @@ if ($is_logged_in) {
     $name_parts = explode(' ', trim($full_name));
     $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-    // --- UPDATED QUOTA CALCULATION (Handover Notes Logic) ---
-    // FIX: Added 'is_priority = 0' so priority bookings don't count towards the limit
     $quota_query = "SELECT COUNT(*) as total FROM booking 
                     WHERE user_id = '$user_id' 
                     AND status NOT IN ('Cancelled', 'Rejected') 
@@ -38,9 +36,6 @@ if ($is_logged_in) {
     $usage_data = mysqli_fetch_assoc($quota_res);
     $used_quota = $usage_data['total'];
 
-    // LOGIC FIX: 
-    // Students are blocked if they hit the limit.
-    // Lecturers are NEVER blocked on this page because they need to access the form to use "Priority Override".
     if ($role === 'Student' && $used_quota >= $max_quota) {
         $has_quota = false;
     } else {
@@ -48,14 +43,19 @@ if ($is_logged_in) {
     }
 }
 
-// 2. FETCH DYNAMIC CATEGORIES
+// 2. FETCH DYNAMIC CATEGORIES & FACULTIES
 $cat_list_result = mysqli_query($conn, "SELECT DISTINCT category FROM facility ORDER BY category ASC");
+$fac_list_result = mysqli_query($conn, "SELECT DISTINCT faculty FROM facility WHERE faculty IS NOT NULL ORDER BY faculty ASC");
 
 // 3. FILTERING LOGIC
 $where_clauses = [];
 if (isset($_GET['campus']) && $_GET['campus'] !== 'all') {
     $campus = mysqli_real_escape_string($conn, $_GET['campus']);
     $where_clauses[] = "location LIKE '%$campus%'";
+}
+if (isset($_GET['faculty']) && $_GET['faculty'] !== 'all') {
+    $faculty_val = mysqli_real_escape_string($conn, $_GET['faculty']);
+    $where_clauses[] = "faculty = '$faculty_val'";
 }
 if (isset($_GET['category']) && $_GET['category'] !== 'all') {
     $cat = mysqli_real_escape_string($conn, $_GET['category']);
@@ -110,23 +110,14 @@ $facility_result = mysqli_query($conn, $base_query);
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
-                    
                     <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="<?php echo htmlspecialchars($full_name); ?>">
                         <?php echo htmlspecialchars($full_name); ?>
                     </span>
-                    
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
-
                     <div class="profile-dropdown" id="profileMenu">
-                        <a href="#" class="dropdown-item">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">account_circle</span>
-                            My Profile
-                        </a>
+                        <a href="#" class="dropdown-item">My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="../PHP/logout.php" class="dropdown-item logout-item">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
-                            Logout
-                        </a>
+                        <a href="../PHP/logout.php" class="dropdown-item logout-item">Logout</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -144,8 +135,9 @@ $facility_result = mysqli_query($conn, $base_query);
     </div>
 
     <main class="container">
-        <form class="filter-bar" action="facilities.php" method="GET">
-            <div class="filter-group">
+        <!-- UI FIX: Reduced min-width on groups so all items stay on one line -->
+        <form class="filter-bar" action="facilities.php" method="GET" style="flex-wrap: nowrap; gap: 12px;">
+            <div class="filter-group" style="min-width: 160px;">
                 <label>Campus Location</label>
                 <select name="campus">
                     <option value="all">All Campuses</option>
@@ -153,8 +145,21 @@ $facility_result = mysqli_query($conn, $base_query);
                     <option value="Melaka" <?php if(isset($_GET['campus']) && $_GET['campus'] == 'Melaka') echo 'selected'; ?>>Melaka</option>
                 </select>
             </div>
+
+            <div class="filter-group" style="min-width: 160px;">
+                <label>Faculty Type</label>
+                <select name="faculty">
+                    <option value="all">All Faculties</option>
+                    <?php while ($fac_row = mysqli_fetch_assoc($fac_list_result)): 
+                        $fac_name = $fac_row['faculty'];
+                        $selected = (isset($_GET['faculty']) && $_GET['faculty'] == $fac_name) ? 'selected' : '';
+                    ?>
+                        <option value="<?php echo $fac_name; ?>" <?php echo $selected; ?>><?php echo $fac_name; ?></option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
             
-            <div class="filter-group">
+            <div class="filter-group" style="min-width: 160px;">
                 <label>Facility Type</label>
                 <select name="category">
                     <option value="all">All Categories</option>
@@ -167,12 +172,13 @@ $facility_result = mysqli_query($conn, $base_query);
                 </select>
             </div>
 
-            <div class="filter-group">
+            <div class="filter-group" style="min-width: 160px;">
                 <label>Search by Name</label>
-                <input type="text" name="search" placeholder="e.g. FCI Lab 3" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                <input type="text" name="search" placeholder="e.g. Lab 3" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
             </div>
 
-            <button type="submit" class="btn btn-primary" style="padding: 10px 24px; height: 42px;">
+            <!-- Button is now on the same line -->
+            <button type="submit" class="btn btn-primary" style="padding: 10px 20px; height: 42px; flex-shrink: 0;">
                 <span class="material-symbols-outlined" style="font-size: 18px;">search</span> Filter
             </button>
         </form>
@@ -194,13 +200,13 @@ $facility_result = mysqli_query($conn, $base_query);
                                 <span class="meta-item"><span class="material-symbols-outlined">location_on</span> <?php echo htmlspecialchars($row['location']); ?></span>
                                 <span class="meta-item"><span class="material-symbols-outlined">group</span> Max <?php echo $row['capacity']; ?></span>
                             </div>
+                            <p style="font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 8px;">Faculty: <?php echo htmlspecialchars($row['faculty']); ?></p>
                             <p class="facility-desc"><?php echo htmlspecialchars($row['description']); ?></p>
                             
                             <?php if ($is_available): ?>
                                 <?php if ($has_quota): ?>
                                     <a href="<?php echo $booking_page; ?>?id=<?php echo $row['facility_id']; ?>" class="btn btn-primary" style="justify-content: center; width: 100%;">Book Now</a>
                                 <?php else: ?>
-                                    <!-- Student reached limit -->
                                     <button class="btn btn-disabled" style="background-color: #ffebee; color: #bb0013; cursor: not-allowed;" title="You have reached your weekly booking limit" disabled>
                                         Quota Full (<?php echo $used_quota; ?>/<?php echo $max_quota; ?>)
                                     </button>
