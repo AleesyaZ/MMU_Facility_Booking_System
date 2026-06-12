@@ -1,9 +1,9 @@
--- phpMyAdmin SQL Dump
+gi-- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 11, 2026 at 10:19 AM
+-- Generation Time: Jun 12, 2026 at 06:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -126,23 +126,28 @@ CREATE TABLE `facility` (
   `capacity` int(11) NOT NULL COMMENT 'Maximum Numbers of Users Allowed',
   `description` text DEFAULT NULL COMMENT 'Description of the Facilities',
   `status` varchar(50) NOT NULL COMMENT 'Current Facility Status',
-  `image_path` varchar(255) DEFAULT NULL COMMENT 'The path of the image within img/facilities file'
+  `image_path` varchar(255) DEFAULT NULL COMMENT 'The path of the image within img/facilities file',
+  `faculty` varchar(255) NOT NULL COMMENT 'Faculty of Facility'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `facility`
 --
 
-INSERT INTO `facility` (`facility_id`, `facility_name`, `location`, `category`, `capacity`, `description`, `status`, `image_path`) VALUES
-(100, 'Indoor Court', 'MMU Cyberjaya', 'Sport', 50, 'an indoor court lol', 'Available', 'LAB.jpg'),
-(101, 'Outdoor Court', 'MMU Cyberjaya', 'Sport', 100, 'an outdoor court?', 'Available', 'LAB.jpg'),
-(102, 'Outdoor Swimming Pool', 'MMU Cyberjaya', 'Sport', 20, 'swimming pool with bodies!', 'Available', 'LAB.jpg'),
-(103, 'MPH CNMX1001', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a lecture hall...', 'Available', 'LAB.jpg'),
-(104, 'MPH CNMX1002', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a boring lecture hall', 'Available', NULL),
-(105, 'MPH CNMX1003', 'MMU Cyberjaya', 'Lecture Hall', 80, 'wow a lecture hall', 'Available', NULL),
-(106, 'MPH CNMX1004', 'MMU Cyberjaya', 'Lecture Hall', 80, 'this lecture hall sucks', 'Available', NULL),
-(107, 'FCI CQAR2001', 'MMU Melaka', 'Laboratory', 40, 'a lab?', 'Available', NULL),
-(108, 'FCI CQAR2002', 'MMU Melaka', 'Laboratory', 40, 'a broken lab with broken dreams', 'Unavailable ', NULL);
+INSERT INTO `facility` (`facility_id`, `facility_name`, `location`, `category`, `capacity`, `description`, `status`, `image_path`, `faculty`) VALUES
+(100, 'Indoor Court', 'MMU Cyberjaya', 'Sport', 50, 'an indoor court lol', 'Available', 'LAB.jpg', 'All'),
+(101, 'Outdoor Court', 'MMU Cyberjaya', 'Sport', 100, 'an outdoor court?', 'Available', 'LAB.jpg', 'All'),
+(102, 'Outdoor Swimming Pool', 'MMU Cyberjaya', 'Sport', 20, 'swimming pool with bodies!', 'Available', 'LAB.jpg', 'All'),
+(103, 'MPH CNMX1001', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a lecture hall...', 'Available', 'LAB.jpg', 'All'),
+(104, 'MPH CNMX1002', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a boring lecture hall', 'Available', NULL, 'All'),
+(105, 'MPH CNMX1003', 'MMU Cyberjaya', 'Lecture Hall', 80, 'wow a lecture hall', 'Available', NULL, 'All'),
+(106, 'MPH CNMX1004', 'MMU Cyberjaya', 'Lecture Hall', 80, 'this lecture hall sucks', 'Available', NULL, 'All'),
+(107, 'FCI CQAR2001', 'MMU Melaka', 'Laboratory', 40, 'a lab?', 'Available', NULL, 'FCI'),
+(108, 'FCI CQAR2002', 'MMU Melaka', 'Laboratory', 40, 'a broken lab with broken dreams', 'Unavailable ', NULL, 'FCI'),
+(109, 'FAC LECTURE CLASS 1', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a lecture hall for FAC', 'Available', NULL, 'FAC'),
+(110, 'FCM Lecture Hall', 'MMU Cyberjaya', 'Lecture Hall', 80, 'for nerds FCM to \"learn\"', 'Available', NULL, 'FCM'),
+(111, 'FAC Laboratory 1', 'MMU Cyberjaya', 'Laboratory', 40, 'is there really a need for a lab for this faculty?', 'Available', NULL, 'FAC'),
+(112, 'FCM Laboratory 1', 'MMU Melaka', 'Laboratory', 40, 'bro is alllll the way at melaka is crazy', 'Available', NULL, 'FCM');
 
 -- --------------------------------------------------------
 
@@ -323,7 +328,7 @@ ALTER TABLE `equipment`
 -- AUTO_INCREMENT for table `facility`
 --
 ALTER TABLE `facility`
-  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=109;
+  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=113;
 
 --
 -- AUTO_INCREMENT for table `issue_report`
