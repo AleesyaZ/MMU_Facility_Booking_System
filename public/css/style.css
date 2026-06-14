@@ -26,6 +26,10 @@
     font-family: var(--font-main);
 }
 
+html {
+    scroll-behavior: smooth; /* makes anchor links glide smoothly */
+}
+
 html, body {
     height: 100%;
     overflow-x: hidden; /* Prevent extra horizontal scrolling space */
@@ -506,6 +510,17 @@ a {
     justify-content: center;
     color: var(--text-muted);
     transition: all 0.3s ease;
+}
+
+.social-icon img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain; /* prevent image from stretching */
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover img {
+    transform: scale(1.1);
 }
 
 .social-icon:hover {
@@ -1486,9 +1501,371 @@ textarea.form-control {
     object-fit: cover;
 }
 
-/* Adjust the details container to align nicely with the image */
+/* adjust the details container to align nicely with the image */
 .booking-details {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+/* =========================================
+   15. GUIDELINES & DOCUMENTATION PAGE
+   ========================================= */
+.guidelines-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    padding-top: 140px; /* Account for navbar */
+    padding-bottom: 80px;
+    max-width: 1100px; /* Slightly narrower for readability */
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+@media (min-width: 768px) {
+    .guidelines-layout {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+/* Sticky Sidebar */
+.guidelines-sidebar {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid rgba(194, 198, 211, 0.4);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow-soft);
+}
+
+@media (min-width: 768px) {
+    .guidelines-sidebar {
+        width: 280px;
+        position: sticky;
+        top: 100px; /* Sticks just below the navbar */
+        flex-shrink: 0;
+    }
+}
+
+.guidelines-sidebar h3 {
+    font-size: 16px;
+    color: var(--text-main);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.guidelines-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.guidelines-nav a {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.guidelines-nav a:hover {
+    color: var(--primary);
+}
+
+.guidelines-nav a .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* Main Content Area */
+.guidelines-content {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid rgba(194, 198, 211, 0.4);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: var(--shadow-soft);
+}
+
+/* Individual Sections */
+.guide-section {
+    margin-bottom: 48px;
+    scroll-margin-top: 100px; /* Prevents navbar from hiding the title when jumped to */
+}
+
+.guide-section:last-child {
+    margin-bottom: 0;
+}
+
+.guide-section h2 {
+    font-size: 24px;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(194, 198, 211, 0.2);
+}
+
+.guide-section p {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.7;
+}
+
+.guide-section ul {
+    margin-left: 24px;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+}
+
+.guide-section li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+/* Highlight boxes inside text */
+.guide-alert {
+    background-color: var(--success-bg);
+    border-left: 4px solid var(--success-text);
+    padding: 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+    color: var(--success-text);
+    font-size: 14px;
+}
+
+.guide-alert.warning {
+    background-color: #fff3cd;
+    border-color: #856404;
+    color: #856404;
+}
+
+/* =========================================
+   16. PROFILE DROPDOWN MENU
+   ========================================= */
+.nav-profile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.profile-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--surface);
+    border: 1px solid rgba(194, 198, 211, 0.4);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 220px;
+    display: none; /* hidden by default, toggled via JS */
+    flex-direction: column;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.profile-menu.show {
+    display: flex;
+}
+
+.profile-menu a {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.profile-menu a:hover {
+    background-color: var(--surface-container-low);
+    color: var(--primary);
+}
+
+.profile-menu .logout-link {
+    color: var(--secondary);
+    border-top: 1px solid rgba(194, 198, 211, 0.3);
+}
+
+.profile-menu .logout-link:hover {
+    background-color: rgba(187, 0, 19, 0.05);
+    color: var(--secondary);
+}
+
+/* badge specific for reports */
+.badge-info { background-color: #d1ecf1; color: #0c5460; }
+
+
+/* =========================================
+   17. ADMIN LAYOUT & COMPONENTS
+   ========================================= */
+.admin-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--background);
+}
+
+/* admin sidebar */
+.admin-sidebar {
+    width: 260px;
+    background-color: var(--surface);
+    border-right: 1px solid rgba(194, 198, 211, 0.4);
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+}
+
+.admin-logo {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(194, 198, 211, 0.2);
+}
+
+.admin-logo img {
+    height: 36px;
+}
+
+.admin-logo span {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.2;
+}
+
+.admin-nav {
+    flex: 1;
+    padding: 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+}
+
+.admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin: 0 12px; 
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.admin-nav-item:hover {
+    background-color: rgba(0, 61, 124, 0.05);
+    color: var(--primary);
+}
+
+.admin-nav-item.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.admin-nav-item .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* admin main content area */
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.admin-topbar {
+    height: 80px;
+    background-color: var(--surface);
+    border-bottom: 1px solid rgba(194, 198, 211, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+/* admin tables */
+.admin-table-container {
+    background: var(--surface);
+    border: 1px solid rgba(194, 198, 211, 0.4);
+    border-radius: 12px;
+    overflow: hidden; 
+    box-shadow: var(--shadow-soft);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #f1f3f5;
+    padding: 14px 16px; 
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(194, 198, 211, 0.4);
+    white-space: nowrap;
+}
+
+.admin-table td {
+    padding: 16px 16px; 
+    font-size: 14px;
+    color: var(--text-main);
+    border-bottom: 1px solid rgba(194, 198, 211, 0.2);
+    vertical-align: middle;
+}
+
+.admin-table tr:hover td {
+    background-color: rgba(0, 61, 124, 0.02);
+}
+
+.report-summary-item {
+    position: relative;
+    border-bottom: 1px solid rgba(194, 198, 211, 0.3);
+    transition: background 0.2s;
+    overflow: hidden;
+}
+
+.report-item-top {
+    background-color: #f1f3f5;
+    padding: 8px 16px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.report-item-body {
+    padding: 12px 16px; 
+}
+
+.report-summary-item {
+    border-bottom: 1px solid rgba(194, 198, 211, 0.3);
+    transition: background 0.2s;
+}
+
+.report-summary-item:last-child {
+    border-bottom: none;
 }

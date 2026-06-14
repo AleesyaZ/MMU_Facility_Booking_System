@@ -157,20 +157,38 @@ if ($is_logged_in) {
             <div class="footer-links">
                 <h4>Support & Resources</h4>
                 <div class="footer-links-list">
-                    <a href="guidelines.html">Booking Guidelines</a>
-                    <a href="#">Quota & Penalty Rules</a>
-                    <a href="#">Operating Hours</a>
-                    <a href="#">Report an Issue</a>
-                    <a href="#">FAQ / Helpdesk</a>
+                    <a href="guidelines.html#general">Booking Guidelines</a>
+                    <a href="guidelines.html#quota">Quota & Penalty Rules</a>
+                    <a href="guidelines.html#priority">Staff Priority Booking</a>
+                    <a href="guidelines.html#hours">Operating Hours</a>
+                    <a href="guidelines.html#faq">FAQ / Helpdesk</a>
                 </div>
             </div>
+
+            <!-- right column: social media -->
             <div class="footer-social">
                 <h4>Connect with Us</h4>
                 <div class="social-icons">
-                    <div class="social-icon">F</div>
-                    <div class="social-icon">I</div>
-                    <div class="social-icon">Y</div>
-                    <div class="social-icon">X</div>
+
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com/mmumalaysia/" target="_blank" class="social-icon">
+                        <img src="../public/img/facebook.png" alt="Facebook">
+                    </a>
+                    
+                    <!-- Instagram -->
+                    <a href="https://www.instagram.com/mmumalaysia/" target="_blank" class="social-icon">
+                         <img src="../public/img/instagram.png" alt="Instagram">
+                    </a>
+                        
+                    <!-- TikTok -->
+                    <a href="https://www.tiktok.com/@mmumalaysia" target="_blank" class="social-icon">
+                        <img src="../public/img/tiktok.jpg" alt="TikTok">
+                    </a>
+                        
+                    <!-- YouTube -->
+                    <a href="https://www.youtube.com/mmumalaysiatv" target="_blank" class="social-icon">
+                        <img src="../public/img/youtube.png" alt="YouTube">
+                    </a>
                 </div>
             </div>
         </div>

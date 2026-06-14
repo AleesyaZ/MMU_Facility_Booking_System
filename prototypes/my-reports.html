@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Submitted Reports - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <header class="navbar">
+        <!-- Exact same navbar as above... -->
+        <div class="container nav-container">
+            <a href="student-dashboard.php" class="nav-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
+                <div class="logo-divider"></div>
+                <span class="system-name">Facility Booking</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="student-dashboard.php">Dashboard</a>
+                <a href="facilities.html">Browse Facilities</a>
+                <a href="my-bookings.html">My Bookings</a>
+                <a href="report-issue.html">Report Issue</a>
+            </nav>
+            
+            <div class="nav-profile">
+                <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
+                <div class="avatar">IB</div>
+                <span style="font-weight: 500; font-size: 14px;">Idris</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header" style="padding-bottom: 40px;">
+        <h1>My Submitted Reports</h1>
+        <p>Track the status of the facility issues or misuse reports you have submitted.</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" style="max-width: 1000px; margin-top: 32px;">
+        
+        <div class="booking-list">
+            
+            <!-- Report 1 (Open/Pending) -->
+            <div class="booking-card">
+                <div class="booking-info">
+                    <div class="booking-icon" style="background-color: #fff3cd; color: #856404;">
+                        <span class="material-symbols-outlined">broken_image</span>
+                    </div>
+                    <div class="booking-details">
+                        <h3>Projector Screen Torn</h3>
+                        <div class="booking-meta">
+                            <span><strong>Facility:</strong> Discussion Room 4 (FCI)</span>
+                            <span><strong>Category:</strong> Equipment Damage</span>
+                            <span><strong>Submitted On:</strong> Oct 24, 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-actions">
+                    <span class="badge badge-pending">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">visibility</span> Under Review
+                    </span>
+                </div>
+            </div>
+
+            <!-- Report 2 (In Progress) -->
+            <div class="booking-card">
+                <div class="booking-info">
+                    <div class="booking-icon" style="background-color: #e6eeff; color: var(--primary);">
+                        <span class="material-symbols-outlined">engineering</span>
+                    </div>
+                    <div class="booking-details">
+                        <h3>Aircond Leaking</h3>
+                        <div class="booking-meta">
+                            <span><strong>Facility:</strong> Main Lecture Hall (Melaka)</span>
+                            <span><strong>Category:</strong> Maintenance</span>
+                            <span><strong>Submitted On:</strong> Oct 20, 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-actions">
+                    <span class="badge badge-info">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">build</span> Action Taken
+                    </span>
+                </div>
+            </div>
+
+            <!-- Report 3 (Resolved) -->
+            <div class="booking-card" style="opacity: 0.8;">
+                <div class="booking-info">
+                    <div class="booking-icon" style="background-color: var(--success-bg); color: var(--success-text);">
+                        <span class="material-symbols-outlined">delete</span>
+                    </div>
+                    <div class="booking-details">
+                        <h3>Room Left Messy</h3>
+                        <div class="booking-meta">
+                            <span><strong>Facility:</strong> Computer Lab B</span>
+                            <span><strong>Category:</strong> Misuse by Previous User</span>
+                            <span><strong>Submitted On:</strong> Oct 15, 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-actions">
+                    <span class="badge badge-approved">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Resolved
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

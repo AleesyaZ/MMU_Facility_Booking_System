@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Dashboard - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="admin-layout">
+        
+        <!-- Left Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo" style="height: 32px; object-fit: contain;">
+                <div class="logo-divider" style="height: 24px;"></div>
+                <span style="font-size: 16px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Admin Panel</span>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="admin-nav-item active">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard Overview
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">cable</span> Manage Equipment
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">group</span> Manage Users & Quotas
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">gavel</span> Penalty System
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">report</span> Issue Reports
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">campaign</span> Announcements
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="admin-main">
+            
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <!-- Page Title -->
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Dashboard Overview</h2>
+                </div>
+                
+                <!-- Safe Dropdown Menu -->
+                <div class="nav-profile" id="profileTrigger">
+                    <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
+                    <div class="avatar" style="background-color: var(--secondary);">AD</div>
+                    <span style="font-weight: 500; font-size: 14px;">System Admin</span>
+                    <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
+                    
+                    <!-- The Dropdown Box -->
+                    <div class="profile-menu" id="profileMenu">
+                        <a href="#"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="#"><span class="material-symbols-outlined">settings</span> System Settings</a>
+                        <div style="border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 4px 0;"></div>
+                        <a href="login.html" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="admin-content">
+                
+                <!-- Metrics Grid -->
+                <div class="dashboard-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-bottom: 32px;">
+                    
+                    <div class="card" style="margin-bottom: 0; padding: 20px;">
+                        <span class="stat-label" style="color: var(--secondary);">Action Required</span>
+                        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 8px;">
+                            <span class="stat-value">3</span>
+                            <span style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Priority Overrides</span>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0; padding: 20px;">
+                        <span class="stat-label" style="color: #856404;">Pending Review</span>
+                        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 8px;">
+                            <span class="stat-value">5</span>
+                            <span style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Open Issue Reports</span>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0; padding: 20px;">
+                        <span class="stat-label">Active Penalties</span>
+                        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 8px;">
+                            <span class="stat-value">12</span>
+                            <span style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Suspended Users</span>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0; padding: 20px;">
+                        <span class="stat-label">Today's Usage</span>
+                        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 8px;">
+                            <span class="stat-value">84</span>
+                            <span style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Active Bookings</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Split Content: Tables -->
+                <div class="dashboard-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
+                    
+                    <!-- Left: Pending Overrides Table -->
+                    <div style="grid-column: span 3;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: var(--text-main);">Pending Priority Overrides</h3>
+                        </div>
+                        
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Lecturer</th>
+                                        <th>Facility</th>
+                                        <th>Date & Time</th>
+                                        <th>Proof</th>
+                                        <th style="text-align: left;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong style="color: var(--primary);">Dr. Ahmad</strong><br>
+                                            <span style="font-size: 12px; color: var(--text-muted);">ahmad@mmu.edu.my</span>
+                                        </td>
+                                        <td style="font-weight: 500;">MLH (Melaka)</td>
+                                        <td style="color: var(--text-muted); white-space: nowrap;">Oct 24 • 10:00 AM</td>
+                                        <td>
+                                            <a href="#" style="color: var(--primary); font-size: 13px; display: inline-flex; align-items: center; gap: 4px; background: rgba(0,61,124,0.05); padding: 4px 8px; border-radius: 6px; font-weight: 500; white-space: nowrap;">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">description</span> memo.pdf
+                                            </a>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                                <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;">Approve</button>
+                                                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; color: var(--secondary); border-color: rgba(187,0,19,0.3); background: rgba(187,0,19,0.02);">Reject</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right: Latest Issue Reports -->
+                    <div style="grid-column: span 1;">
+                        <div style="margin-bottom: 16px;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: var(--text-main);">Recent Issue Reports</h3>
+                        </div>
+
+                        <div class="card" style="padding: 0; overflow: hidden;">
+                            <div class="list-group" style="padding-bottom: 0; gap: 0;">
+                                
+                                <!-- Report Item 1 -->
+                                <div class="report-summary-item">
+                                    <div class="report-item-top">
+                                        <h4 style="font-size: 13px; font-weight: 700; color: var(--text-main); text-transform: uppercase;">Equipment Damage</h4>
+                                        <span class="badge" style="background: #fee2e2; color: #991b1b; padding: 2px 8px; font-size: 10px;">New</span>
+                                    </div>
+                                    <div class="report-item-body">
+                                        <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;">Projector Broken</p>
+                                        <p style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">FCI Lab 3 • Reported by Ali</p>
+                                    </div>
+                                </div>
+
+                                <!-- Report Item 2 -->
+                                <div class="report-summary-item">
+                                    <div class="report-item-top">
+                                        <h4 style="font-size: 13px; font-weight: 700; color: var(--text-main); text-transform: uppercase;">Room Misuse</h4>
+                                        <span class="badge" style="background: #fef3c7; color: #92400e; padding: 2px 8px; font-size: 10px;">Open</span>
+                                    </div>
+                                    <div class="report-item-body">
+                                        <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;">Room Left Messy</p>
+                                        <p style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">Disc. Room 1 • Reported by Sarah</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        const trigger = document.getElementById('profileTrigger');
+        const menu = document.getElementById('profileMenu');
+        trigger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.toggle('show'); });
+        window.addEventListener('click', function() { if (menu.classList.contains('show')) { menu.classList.remove('show'); } });
+    </script>
+</body>
+</html>
