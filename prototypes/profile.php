@@ -103,7 +103,7 @@ $strikes = $penalty_row['total_strikes'] ?? 0;
                 
                 <div class="profile-menu" id="profileMenu">
                     <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
-                    <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                    <a href="my-reports.php"><span class="material-symbols-outlined">report</span> My Reports</a>
                     <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
                     <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                 </div>

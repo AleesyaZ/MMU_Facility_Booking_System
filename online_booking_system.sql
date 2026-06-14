@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 12, 2026 at 06:08 AM
+-- Generation Time: Jun 14, 2026 at 02:20 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,8 +41,7 @@ CREATE TABLE `annoucement` (
 
 INSERT INTO `annoucement` (`annoucement_id`, `admin_id`, `title`, `content`, `publish_date`) VALUES
 (10, 10000004, 'FCI CQAR2002 Under Maintenance ', 'The projector and the laboratory computers will be having an update. As for now, the laboratory remains unavailable for a short time.', '2026-05-01'),
-(14, 10000004, 'I AM UNDER MAINTENCENCE', 'so like hello guys, today i am under maintence and i lowk probably need your help or someone help lol', '2026-06-09'),
-(15, 10000004, 'lolololo', 'sadagdyuat ysgyus gdyuast ysua tuadt syud asy udtau ytsayu dauy tasy asu as tsutasu as', '2026-06-11');
+(14, 10000004, 'I AM UNDER MAINTENCENCE', 'so like hello guys, today i am under maintence and i lowk probably need your help or someone help lol', '2026-06-09');
 
 -- --------------------------------------------------------
 
@@ -68,12 +67,7 @@ CREATE TABLE `booking` (
 --
 
 INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`, `is_priority`, `proof_file`) VALUES
-(1027, 10000003, 100, '2026-06-12', '12:42:00', '14:42:00', '', 'Cancelled', 0, ''),
-(1031, 10000003, 100, '2026-06-11', '14:39:00', '16:39:00', 'a', 'Cancelled', 1, ''),
-(1032, 10000003, 101, '2026-06-10', '14:56:16', '16:56:16', 'a', 'Cancelled', 0, NULL),
-(1033, 10000003, 100, '2026-06-11', '15:49:00', '16:49:00', 'a', 'Approved', 1, ''),
-(1034, 10000003, 100, '2026-06-11', '23:50:00', '00:50:00', 'a', 'Approved', 0, ''),
-(1035, 10000000, 101, '2026-06-11', '23:00:00', '00:00:00', 'zzzzz', 'Approved', 0, NULL);
+(1018, 10000000, 101, '2026-06-09', '18:03:00', '19:03:00', 'a', 'Approved', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -127,7 +121,7 @@ CREATE TABLE `facility` (
   `description` text DEFAULT NULL COMMENT 'Description of the Facilities',
   `status` varchar(50) NOT NULL COMMENT 'Current Facility Status',
   `image_path` varchar(255) DEFAULT NULL COMMENT 'The path of the image within img/facilities file',
-  `faculty` varchar(255) NOT NULL COMMENT 'Faculty of Facility'
+  `faculty` varchar(255) NOT NULL COMMENT 'Type of Faculty'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -135,19 +129,61 @@ CREATE TABLE `facility` (
 --
 
 INSERT INTO `facility` (`facility_id`, `facility_name`, `location`, `category`, `capacity`, `description`, `status`, `image_path`, `faculty`) VALUES
-(100, 'Indoor Court', 'MMU Cyberjaya', 'Sport', 50, 'an indoor court lol', 'Available', 'LAB.jpg', 'All'),
-(101, 'Outdoor Court', 'MMU Cyberjaya', 'Sport', 100, 'an outdoor court?', 'Available', 'LAB.jpg', 'All'),
-(102, 'Outdoor Swimming Pool', 'MMU Cyberjaya', 'Sport', 20, 'swimming pool with bodies!', 'Available', 'LAB.jpg', 'All'),
-(103, 'MPH CNMX1001', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a lecture hall...', 'Available', 'LAB.jpg', 'All'),
-(104, 'MPH CNMX1002', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a boring lecture hall', 'Available', NULL, 'All'),
-(105, 'MPH CNMX1003', 'MMU Cyberjaya', 'Lecture Hall', 80, 'wow a lecture hall', 'Available', NULL, 'All'),
-(106, 'MPH CNMX1004', 'MMU Cyberjaya', 'Lecture Hall', 80, 'this lecture hall sucks', 'Available', NULL, 'All'),
-(107, 'FCI CQAR2001', 'MMU Melaka', 'Laboratory', 40, 'a lab?', 'Available', NULL, 'FCI'),
-(108, 'FCI CQAR2002', 'MMU Melaka', 'Laboratory', 40, 'a broken lab with broken dreams', 'Unavailable ', NULL, 'FCI'),
-(109, 'FAC LECTURE CLASS 1', 'MMU Cyberjaya', 'Lecture Hall', 80, 'a lecture hall for FAC', 'Available', NULL, 'FAC'),
-(110, 'FCM Lecture Hall', 'MMU Cyberjaya', 'Lecture Hall', 80, 'for nerds FCM to \"learn\"', 'Available', NULL, 'FCM'),
-(111, 'FAC Laboratory 1', 'MMU Cyberjaya', 'Laboratory', 40, 'is there really a need for a lab for this faculty?', 'Available', NULL, 'FAC'),
-(112, 'FCM Laboratory 1', 'MMU Melaka', 'Laboratory', 40, 'bro is alllll the way at melaka is crazy', 'Available', NULL, 'FCM');
+(100, 'Indoor Court', 'MMU Cyberjaya', 'Sport', 50, 'an indoor court lol', 'Available', 'LAB.jpg', ''),
+(101, 'Outdoor Court', 'MMU Cyberjaya', 'Sport', 100, 'an outdoor court?', 'Available', 'LAB.jpg', ''),
+(102, 'Outdoor Swimming Pool', 'MMU Cyberjaya', 'Sport', 20, 'swimming pool with bodies!', 'Available', 'LAB.jpg', ''),
+(103, 'MPH CNMX1001', 'MMU Cyberjaya', 'Lecture Hall', 150, 'a lecture hall...', 'Available', 'LAB.jpg', ''),
+(104, 'MPH CNMX1002', 'MMU Cyberjaya', 'Lecture Hall', 150, 'a boring lecture hall', 'Available', NULL, ''),
+(105, 'MPH CNMX1003', 'MMU Cyberjaya', 'Lecture Hall', 150, 'wow a lecture hall', 'Available', NULL, ''),
+(106, 'MPH CNMX1004', 'MMU Cyberjaya', 'Lecture Hall', 150, 'this lecture hall sucks', 'Available', NULL, ''),
+(107, 'FCI CQAR2001', 'MMU Melaka', 'Laboratory', 40, 'a lab?', 'Available', NULL, ''),
+(108, 'FCI CQAR2002', 'MMU Melaka', 'Laboratory', 40, 'a broken lab with broken dreams', 'Unavailable ', NULL, ''),
+(109, 'MPH CNMX1005', 'MMU Cyberjaya', 'Lecture Hall\r\n', 150, 'Lecture Hall\r\n', 'Available', NULL, ''),
+(110, 'FCI CQMX0001', 'MMU Cyberjaya', 'Lecture Hall', 150, 'Lecture Purposes', 'Available', NULL, ''),
+(111, 'FCI CQAR1001', 'MMU Cyberjaya', 'Laboratory', 40, 'Laboratory first floor 1st', 'Available', NULL, ''),
+(112, 'FCI CQAR1002', 'MMU Cyberjaya', 'Laboratory ', 40, NULL, 'Available', NULL, ''),
+(113, 'FCI CQAR1003', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available ', NULL, ''),
+(114, 'FCI CQAR1004', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(115, 'FCI CQAR1005', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(116, 'FCI CQAR1006', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(117, 'FCI CQAR1007', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(118, 'FCI CQCR1001', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(119, 'FCI CQCR1002', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(120, 'FCI CQCR1003', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(121, 'FCI CQCR1004', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(122, 'FCI CQAR2001', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(123, 'FCI CQAR2002', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(124, 'FCI CQAR2003', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(125, 'FCI CQAR2004', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(126, 'FCI CQAR2005', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available ', NULL, ''),
+(127, 'FCI CQAR2006', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(128, 'FCI CQAR2007', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(133, 'FCI CQCR2001', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(134, 'FCI CQCR2002', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(135, 'FCI CQCR2003', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(136, 'FCI CQCR2004', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(137, 'FCI CQAR3001', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(138, 'FCI CQAR3002', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(139, 'FCI CQAR3003', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(140, 'FCI CQAR3004', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(141, 'FCI CQAR3005', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available ', NULL, ''),
+(142, 'FCI CQAR3006', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(143, 'FCI CQAR3007', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(144, 'FCI CQCR3001', 'MMU Cyberjaya \r\n', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(145, 'FCI CQCR3002', 'MMU Cyberjaya \r\n', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(146, 'FCI CQCR3003', 'MMU Cyberjaya \r\n', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(147, 'FCI CQCR3004', 'MMU Cyberjaya \r\n', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(148, 'FCI CQAR4001', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(149, 'FCI CQAR4002', 'MMU Cyberjaya', 'Laboratory', 40, '', 'Available', NULL, ''),
+(150, 'FCI CQAR4003', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(151, 'FCI CQAR4004', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(152, 'FCI CQAR4005', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available ', NULL, ''),
+(153, 'FCI CQAR4006', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(154, 'FCI CQAR4007', 'MMU Cyberjaya', 'Laboratory', 40, NULL, 'Available', NULL, ''),
+(155, 'FCI CQCR4001', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(156, 'FCI CQCR4002', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(157, 'FCI CQCR4003', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, ''),
+(158, 'FCI CQCR4004', 'MMU Cyberjaya', 'Tutorial', 40, NULL, 'Available', NULL, '');
 
 -- --------------------------------------------------------
 
@@ -161,18 +197,20 @@ CREATE TABLE `issue_report` (
   `facility_id` int(11) NOT NULL COMMENT 'Reported Facility Identification',
   `issue_type` varchar(100) NOT NULL COMMENT 'Category of Issue Reported',
   `description` text NOT NULL COMMENT 'Detailed Issue Description',
-  `issue_image` varchar(255) DEFAULT NULL,
   `report_date` date NOT NULL COMMENT 'Date of Report Submission',
-  `status` varchar(50) NOT NULL COMMENT 'Report Status'
+  `status` varchar(50) NOT NULL COMMENT 'Report Status',
+  `admin_reply` text DEFAULT NULL,
+  `reply_date` date DEFAULT NULL,
+  `issue_image` varchar(255) DEFAULT NULL COMMENT 'Image of Issues'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `issue_report`
 --
 
-INSERT INTO `issue_report` (`report_id`, `user_id`, `facility_id`, `issue_type`, `description`, `issue_image`, `report_date`, `status`) VALUES
-(1, 10000001, 102, 'Swimming Pool Odor', 'The swimming pool had a terrible odor.', NULL, '2026-05-01', 'Open'),
-(2, 10000003, 107, 'IT', 'so like i died i think lowk', 'issue_1781163843_10000003.jpg', '2026-06-11', 'Open');
+INSERT INTO `issue_report` (`report_id`, `user_id`, `facility_id`, `issue_type`, `description`, `report_date`, `status`, `admin_reply`, `reply_date`, `issue_image`) VALUES
+(1, 10000001, 102, 'Swimming Pool Odor', 'The swimming pool had a terrible odor.', '2026-05-01', 'Under Review', NULL, NULL, NULL),
+(2, 10000000, 111, 'Equipment/Furniture Damage', 'a', '2026-06-14', 'Under Review', NULL, NULL, 'issue_1781439526_10000000.jpg');
 
 -- --------------------------------------------------------
 
@@ -310,13 +348,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `annoucement`
 --
 ALTER TABLE `annoucement`
-  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification', AUTO_INCREMENT=16;
+  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification', AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1036;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1026;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -328,7 +366,7 @@ ALTER TABLE `equipment`
 -- AUTO_INCREMENT for table `facility`
 --
 ALTER TABLE `facility`
-  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=113;
+  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=159;
 
 --
 -- AUTO_INCREMENT for table `issue_report`

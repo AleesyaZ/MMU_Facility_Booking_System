@@ -61,7 +61,7 @@ $fac_list_result = mysqli_query($conn, "SELECT facility_name FROM facility ORDER
 
                 <div class="profile-menu" id="profileMenu">
                     <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
-                    <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                    <a href="my-reports.php"><span class="material-symbols-outlined">report</span> My Reports</a>
                     <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
                     <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                 </div>
@@ -95,11 +95,11 @@ $fac_list_result = mysqli_query($conn, "SELECT facility_name FROM facility ORDER
                     <label>Category of Issue</label>
                     <select class="form-control" name="issue_type" required>
                         <option value="" disabled selected>Select category...</option>
-                        <option value="Damage">Equipment/Furniture Damage</option>
-                        <option value="Messy">Left messy by previous user</option>
-                        <option value="Furniture">Unauthorized movement of furniture</option>
-                        <option value="Cleanliness">General Cleanliness / Spill</option>
-                        <option value="IT">IT / Network Issue</option>
+                        <option value="Equipment/Furniture Damage">Equipment/Furniture Damage</option>
+                        <option value="Left messy by previous user">Left messy by previous user</option>
+                        <option value="Unauthorized movement of furniture">Unauthorized movement of furniture</option>
+                        <option value="General Cleanliness / Spill">General Cleanliness / Spill</option>
+                        <option value="IT / Network Issue">IT / Network Issue</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>

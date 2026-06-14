@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 3. INSERT INTO DATABASE
     // We added 'issue_image' to the list of columns below
     $sql = "INSERT INTO issue_report (user_id, facility_id, issue_type, description, issue_image, report_date, status) 
-            VALUES ('$user_id', '$facility_id', '$issue_type', '$description', '$photo_name', '$report_date', 'Open')";
+            VALUES ('$user_id', '$facility_id', '$issue_type', '$description', '$photo_name', '$report_date', 'Under Review')";
 
     if (mysqli_query($conn, $sql)) {
         echo "<script>alert('Issue reported successfully. The facilities team has been notified.'); window.location.href='../prototypes/student-dashboard.php';</script>";

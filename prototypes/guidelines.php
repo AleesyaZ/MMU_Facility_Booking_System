@@ -62,7 +62,7 @@ if ($is_logged_in) {
                     
                     <div class="profile-menu" id="profileMenu">
                         <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
-                        <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                        <a href="my-reports.php"><span class="material-symbols-outlined">report</span> My Reports</a>
                         <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
                         <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
@@ -178,40 +178,58 @@ if ($is_logged_in) {
         </main>
     </div>
 
+    <?php if (!$is_logged_in): ?>
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-info">
-                <div class="footer-logo"><img src="../public/img/mmulogo.jpg" alt="MMU Logo"></div>
-                <div style="font-size: 13px; line-height: 1.6; color: #424751; margin-top: 16px;">
-                    <strong>Cyberjaya Campus</strong><br>Persiaran Multimedia, 63100 Cyberjaya, Selangor<br><br>
-                    <strong>Melaka Campus</strong><br>Jalan Ayer Keroh Lama, 75450 Melaka
+                <div class="footer-logo">
+                    <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
+                </div>
+                <div style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-top: 16px;">
+                    <strong>Cyberjaya Campus</strong><br>
+                    Persiaran Multimedia, 63100 Cyberjaya, Selangor<br><br>
+                    <strong>Melaka Campus</strong><br>
+                    Jalan Ayer Keroh Lama, 75450 Bukit Beruang, Melaka
                 </div>
             </div>
             <div class="footer-links">
                 <h4>Support & Resources</h4>
                 <div class="footer-links-list">
-                    <a href="#general">Booking Guidelines</a>
-                    <a href="#quota">Quota & Penalty Rules</a>
-                    <a href="#priority">Staff Priority Booking</a>
-                    <a href="#hours">Operating Hours</a>
-                    <a href="#faq">FAQ / Helpdesk</a>
+                    <a href="guidelines.html#general">Booking Guidelines</a>
+                    <a href="guidelines.html#quota">Quota & Penalty Rules</a>
+                    <a href="guidelines.html#priority">Staff Priority Booking</a>
+                    <a href="guidelines.html#hours">Operating Hours</a>
+                    <a href="guidelines.html#faq">FAQ / Helpdesk</a>
                 </div>
             </div>
+
             <div class="footer-social">
                 <h4>Connect with Us</h4>
                 <div class="social-icons">
-                    <a href="https://www.facebook.com/mmumalaysia/" target="_blank" class="social-icon"><img src="../public/img/facebook.png" alt="F"></a>
-                    <a href="https://www.instagram.com/mmumalaysia/" target="_blank" class="social-icon"><img src="../public/img/instagram.png" alt="I"></a>
-                    <a href="https://www.tiktok.com/@mmumalaysia" target="_blank" class="social-icon"><img src="../public/img/tiktok.jpg" alt="T"></a>
-                    <a href="https://www.youtube.com/@mmumalaysia" target="_blank" class="social-icon"><img src="../public/img/youtube.png" alt="Y"></a>
+                    <a href="https://www.facebook.com/mmumalaysia/" target="_blank" class="social-icon">
+                        <img src="../public/img/facebook.png" alt="Facebook">
+                    </a>
+                    <a href="https://www.instagram.com/mmumalaysia/" target="_blank" class="social-icon">
+                         <img src="../public/img/instagram.png" alt="Instagram">
+                    </a>
+                    <a href="https://www.tiktok.com/@mmumalaysia" target="_blank" class="social-icon">
+                        <img src="../public/img/tiktok.jpg" alt="TikTok">
+                    </a>
+                    <a href="https://www.youtube.com/mmumalaysiatv" target="_blank" class="social-icon">
+                        <img src="../public/img/youtube.png" alt="YouTube">
+                    </a>
                 </div>
             </div>
         </div>
         <div class="container footer-bottom">
             <p>&copy; 2024 MULTIMEDIA UNIVERSITY. ALL RIGHTS RESERVED.</p>
-            <div class="tm-logo"><span style="color: #003d7c; font-weight: 800;">TM Group</span></div>
+            <div class="tm-logo">
+                <span style="font-size: 10px; color: #666; margin-right: 8px;">UNIVERSITY TELEKOM SDN BHD 199701021324 (436821-T)</span>
+                <span style="color: #003d7c; font-weight: 800;">TM Group</span>
+            </div>
         </div>
     </footer>
+    <?php endif; ?>
 
     <script>
         const trigger = document.getElementById('profileTrigger');

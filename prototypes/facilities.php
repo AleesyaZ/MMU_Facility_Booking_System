@@ -117,7 +117,7 @@ $facility_result = mysqli_query($conn, $base_query);
                     
                     <div class="profile-menu" id="profileMenu">
                         <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
-                        <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                        <a href="my-reports.php"><span class="material-symbols-outlined">report</span> My Reports</a>
                         <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
                         <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
@@ -225,6 +225,7 @@ $facility_result = mysqli_query($conn, $base_query);
         </div>
     </main>
     
+    <?php if (!$is_logged_in): ?>
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-info">
@@ -252,19 +253,15 @@ $facility_result = mysqli_query($conn, $base_query);
             <div class="footer-social">
                 <h4>Connect with Us</h4>
                 <div class="social-icons">
-
                     <a href="https://www.facebook.com/mmumalaysia/" target="_blank" class="social-icon">
                         <img src="../public/img/facebook.png" alt="Facebook">
                     </a>
-                    
                     <a href="https://www.instagram.com/mmumalaysia/" target="_blank" class="social-icon">
                          <img src="../public/img/instagram.png" alt="Instagram">
                     </a>
-                        
                     <a href="https://www.tiktok.com/@mmumalaysia" target="_blank" class="social-icon">
                         <img src="../public/img/tiktok.jpg" alt="TikTok">
                     </a>
-                        
                     <a href="https://www.youtube.com/mmumalaysiatv" target="_blank" class="social-icon">
                         <img src="../public/img/youtube.png" alt="YouTube">
                     </a>
@@ -279,6 +276,7 @@ $facility_result = mysqli_query($conn, $base_query);
             </div>
         </div>
     </footer>
+    <?php endif; ?>
 
     <?php if ($is_logged_in): ?>
     <script>
