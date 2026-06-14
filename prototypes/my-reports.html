@@ -41,77 +41,116 @@
     </div>
 
     <!-- Main Content -->
-    <main class="container" style="max-width: 1000px; margin-top: 32px;">
+    <main class="feed-container" style="margin-top: 32px;">
         
-        <div class="booking-list">
-            
-            <!-- Report 1 (Open/Pending) -->
-            <div class="booking-card">
-                <div class="booking-info">
-                    <div class="booking-icon" style="background-color: #fff3cd; color: #856404;">
-                        <span class="material-symbols-outlined">broken_image</span>
-                    </div>
-                    <div class="booking-details">
-                        <h3>Projector Screen Torn</h3>
-                        <div class="booking-meta">
-                            <span><strong>Facility:</strong> Discussion Room 4 (FCI)</span>
-                            <span><strong>Category:</strong> Equipment Damage</span>
-                            <span><strong>Submitted On:</strong> Oct 24, 2024</span>
-                        </div>
+        <!-- Feed Card 1 (With Image - Pending) -->
+        <article class="feed-card">
+            <!-- Header -->
+            <div class="feed-header">
+                <div class="feed-user-info">
+                    <div class="feed-avatar">IB</div>
+                    <div class="feed-meta">
+                        <h4>Idris Bin Shah Nahar</h4>
+                        <p>2 hours ago • Report #RP-1002</p>
                     </div>
                 </div>
-                <div class="booking-actions">
-                    <span class="badge badge-pending">
-                        <span class="material-symbols-outlined" style="font-size: 14px;">visibility</span> Under Review
-                    </span>
+                <span class="badge badge-pending">Under Review</span>
+            </div>
+
+            <!-- Description -->
+            <div class="feed-body">
+                <p class="feed-text">
+                    The projector screen is torn on the left side, and the HDMI cable is missing from the podium. I couldn't connect my laptop for the presentation.
+                </p>
+                <div class="feed-tags">
+                    <span class="feed-tag"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">location_on</span> Discussion Room 4 (FCI)</span>
+                    <span class="feed-tag"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">build</span> Equipment Damage</span>
                 </div>
             </div>
 
-            <!-- Report 2 (In Progress) -->
-            <div class="booking-card">
-                <div class="booking-info">
-                    <div class="booking-icon" style="background-color: #e6eeff; color: var(--primary);">
-                        <span class="material-symbols-outlined">engineering</span>
-                    </div>
-                    <div class="booking-details">
-                        <h3>Aircond Leaking</h3>
-                        <div class="booking-meta">
-                            <span><strong>Facility:</strong> Main Lecture Hall (Melaka)</span>
-                            <span><strong>Category:</strong> Maintenance</span>
-                            <span><strong>Submitted On:</strong> Oct 20, 2024</span>
-                        </div>
+            <!-- Media (Only renders if user uploaded a photo) -->
+            <div class="feed-media">
+                <img src="/public/img/brokenprojector.jpg" alt="Broken Projector">
+            </div>
+        </article>
+
+        <!-- Feed Card 2 (No Image - Resolved) -->
+        <article class="feed-card">
+            <!-- Header -->
+            <div class="feed-header">
+                <div class="feed-user-info">
+                    <div class="feed-avatar">IB</div>
+                    <div class="feed-meta">
+                        <h4>Idris Bin Shah Nahar</h4>
+                        <p>Oct 20, 2024 • Report #RP-0984</p>
                     </div>
                 </div>
-                <div class="booking-actions">
-                    <span class="badge badge-info">
-                        <span class="material-symbols-outlined" style="font-size: 14px;">build</span> Action Taken
-                    </span>
+                <span class="badge badge-approved">Resolved</span>
+            </div>
+
+            <!-- Description -->
+            <div class="feed-body">
+                <p class="feed-text">
+                    The air conditioning unit near the back door is leaking water onto the floor. It's creating a slipping hazard.
+                </p>
+                <div class="feed-tags">
+                    <span class="feed-tag"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">location_on</span> Main Lecture Hall (Melaka)</span>
+                    <span class="feed-tag"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">water_drop</span> Maintenance</span>
                 </div>
             </div>
 
-            <!-- Report 3 (Resolved) -->
-            <div class="booking-card" style="opacity: 0.8;">
-                <div class="booking-info">
-                    <div class="booking-icon" style="background-color: var(--success-bg); color: var(--success-text);">
-                        <span class="material-symbols-outlined">delete</span>
-                    </div>
-                    <div class="booking-details">
-                        <h3>Room Left Messy</h3>
-                        <div class="booking-meta">
-                            <span><strong>Facility:</strong> Computer Lab B</span>
-                            <span><strong>Category:</strong> Misuse by Previous User</span>
-                            <span><strong>Submitted On:</strong> Oct 15, 2024</span>
-                        </div>
+            <!-- NO MEDIA SECTION HERE -->
+
+            <!-- Admin Reply Footer -->
+            <div class="feed-footer">
+                <span class="material-symbols-outlined feed-admin-icon">support_agent</span>
+                <div class="feed-reply">
+                    <h5>Admin Response • Oct 21, 2024</h5>
+                    <p>Thank you for reporting this. Maintenance has repaired the leaking pipe and the floor has been dried. The hall is fully operational.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- Feed Card 3 (With Image - Resolved/Misuse) -->
+        <article class="feed-card">
+            <!-- Header -->
+            <div class="feed-header">
+                <div class="feed-user-info">
+                    <div class="feed-avatar">IB</div>
+                    <div class="feed-meta">
+                        <h4>Idris Bin Shah Nahar</h4>
+                        <p>Oct 15, 2024 • Report #RP-0891</p>
                     </div>
                 </div>
-                <div class="booking-actions">
-                    <span class="badge badge-approved">
-                        <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Resolved
-                    </span>
+                <span class="badge badge-approved">Resolved</span>
+            </div>
+
+            <!-- Description -->
+            <div class="feed-body">
+                <p class="feed-text">
+                    When I arrived for my booking, the previous user had left trash all over the tables and moved all the chairs to the back of the room.
+                </p>
+                <div class="feed-tags">
+                    <span class="feed-tag"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">location_on</span> Computer Lab B</span>
+                    <span class="feed-tag"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">delete</span> Misuse by Previous User</span>
                 </div>
             </div>
 
-        </div>
+            <!-- Media -->
+            <div class="feed-media">
+                <img src="/public/img/messyroom.jpg" alt="Messy Room">
+            </div>
+
+            <!-- Admin Reply Footer -->
+            <div class="feed-footer">
+                <span class="material-symbols-outlined feed-admin-icon" style="color: var(--secondary); background: rgba(187,0,19,0.1);">gavel</span>
+                <div class="feed-reply">
+                    <h5 style="color: var(--secondary);">Admin Response • Oct 16, 2024</h5>
+                    <p>Report verified. We have checked the database logs for the previous booking and a Penalty Strike has been issued to the offending user. Thank you for keeping our campus clean.</p>
+                </div>
+            </div>
+        </article>
+
     </main>
 
 </body>
