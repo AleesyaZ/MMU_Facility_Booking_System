@@ -62,10 +62,10 @@ $result = mysqli_query($conn, $query);
             </a>
             
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
-                    <a href="student-dashboard.php">Dashboard</a>
-                    <a href="facilities.php">Browse Facilities</a>
-                    <a href="my-bookings.php" class="active">My Bookings</a>
-                    <a href="report-issue.php">Report Issue</a>
+                <a href="student-dashboard.php">Dashboard</a>
+                <a href="facilities.php">Browse Facilities</a>
+                <a href="my-bookings.php" class="active">My Bookings</a>
+                <a href="report-issue.php">Report Issue</a>
             </nav>
             
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -73,22 +73,17 @@ $result = mysqli_query($conn, $query);
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
                     
-                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="<?php echo htmlspecialchars($full_name); ?>">
+                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                         <?php echo htmlspecialchars($full_name); ?>
                     </span>
                     
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
 
-                    <div class="profile-dropdown" id="profileMenu">
-                        <a href="#" class="dropdown-item">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">account_circle</span>
-                            My Profile
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="../PHP/logout.php" class="dropdown-item logout-item">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
-                            Logout
-                        </a>
+                    <div class="profile-menu" id="profileMenu">
+                        <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                        <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
+                        <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -146,7 +141,7 @@ $result = mysqli_query($conn, $query);
                                    class="btn btn-outline" 
                                    style="padding: 6px 16px; font-size: 13px;"
                                    onclick="return confirm('Are you sure you want to cancel this booking?')">
-                                    Cancel Booking
+                                     Cancel Booking
                                 </a>
                             <?php endif; ?>
                         </div>

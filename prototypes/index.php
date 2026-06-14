@@ -41,12 +41,12 @@ if ($is_logged_in) {
                 <?php if ($is_logged_in): ?>
                     <a href="student-dashboard.php">Dashboard</a>
                     <a href="facilities.php">Browse Facilities</a>
-                    <a href="my-bookings.html">My Bookings</a>
-                    <a href="report-issue.html">Report Issue</a>
+                    <a href="my-bookings.php">My Bookings</a>
+                    <a href="report-issue.php">Report Issue</a>
                 <?php else: ?>
                     <a href="index.php" class="active">Home</a>
                     <a href="facilities.php">Browse Facilities</a>
-                    <a href="guidelines.html">Guidelines</a>
+                    <a href="guidelines.php">Guidelines</a>
                 <?php endif; ?>
             </nav>
             
@@ -55,16 +55,17 @@ if ($is_logged_in) {
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
                     
-                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="<?php echo htmlspecialchars($full_name); ?>">
+                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                         <?php echo htmlspecialchars($full_name); ?>
                     </span>
                     
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
 
-                    <div class="profile-dropdown" id="profileMenu">
-                        <a href="#" class="dropdown-item"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="../PHP/logout.php" class="dropdown-item logout-item"><span class="material-symbols-outlined">logout</span> Logout</a>
+                    <div class="profile-menu" id="profileMenu">
+                        <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                        <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
+                        <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -157,35 +158,29 @@ if ($is_logged_in) {
             <div class="footer-links">
                 <h4>Support & Resources</h4>
                 <div class="footer-links-list">
-                    <a href="guidelines.html#general">Booking Guidelines</a>
-                    <a href="guidelines.html#quota">Quota & Penalty Rules</a>
-                    <a href="guidelines.html#priority">Staff Priority Booking</a>
-                    <a href="guidelines.html#hours">Operating Hours</a>
-                    <a href="guidelines.html#faq">FAQ / Helpdesk</a>
+                    <a href="guidelines.php#general">Booking Guidelines</a>
+                    <a href="guidelines.php#quota">Quota & Penalty Rules</a>
+                    <a href="guidelines.php#priority">Staff Priority Booking</a>
+                    <a href="guidelines.php#hours">Operating Hours</a>
+                    <a href="guidelines.php#faq">FAQ / Helpdesk</a>
                 </div>
             </div>
 
-            <!-- right column: social media -->
             <div class="footer-social">
                 <h4>Connect with Us</h4>
                 <div class="social-icons">
-
-                    <!-- Facebook -->
                     <a href="https://www.facebook.com/mmumalaysia/" target="_blank" class="social-icon">
                         <img src="../public/img/facebook.png" alt="Facebook">
                     </a>
                     
-                    <!-- Instagram -->
                     <a href="https://www.instagram.com/mmumalaysia/" target="_blank" class="social-icon">
                          <img src="../public/img/instagram.png" alt="Instagram">
                     </a>
                         
-                    <!-- TikTok -->
                     <a href="https://www.tiktok.com/@mmumalaysia" target="_blank" class="social-icon">
                         <img src="../public/img/tiktok.jpg" alt="TikTok">
                     </a>
                         
-                    <!-- YouTube -->
                     <a href="https://www.youtube.com/mmumalaysiatv" target="_blank" class="social-icon">
                         <img src="../public/img/youtube.png" alt="YouTube">
                     </a>
@@ -205,8 +200,15 @@ if ($is_logged_in) {
     <script>
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
-        trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('show'); });
-        window.addEventListener('click', () => { if (menu.classList.contains('show')) menu.classList.remove('show'); });
+        if (trigger && menu) {
+            trigger.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                menu.classList.toggle('show'); 
+            });
+            window.addEventListener('click', () => { 
+                if (menu.classList.contains('show')) menu.classList.remove('show'); 
+            });
+        }
     </script>
     <?php endif; ?>
 

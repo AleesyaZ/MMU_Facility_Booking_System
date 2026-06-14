@@ -2,6 +2,9 @@
 session_start();
 include('../PHP/db_config.php');
 
+// Set Timezone to ensure CURDATE() matches Malaysia time
+date_default_timezone_set("Asia/Kuala_Lumpur");
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -9,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Updated to fetch 'role' as well
+// 1. FETCH USER DETAILS
 $user_query = "SELECT name, booking_quota, role FROM user WHERE user_id = '$user_id' LIMIT 1";
 $user_result = mysqli_query($conn, $user_query);
 $user_data = mysqli_fetch_assoc($user_result);
@@ -22,31 +25,34 @@ $name_parts = explode(' ', trim($full_name));
 $first_name = $name_parts[0]; 
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// Quota Query: Corrected to exclude Priority bookings (is_priority = 0) for Lecturers
+// 2. FIXED QUOTA QUERY
 $quota_query = "SELECT COUNT(*) as total FROM booking 
                 WHERE user_id = '$user_id' 
                 AND status NOT IN ('Cancelled', 'Rejected') 
-                AND is_priority = 0 
-                AND YEARWEEK(booking_date, 1) = YEARWEEK(CURDATE(), 1)";
+                AND (is_priority = 0 OR is_priority IS NULL) 
+                AND YEARWEEK(booking_date, 1) >= YEARWEEK(CURDATE(), 1)";
 $quota_result = mysqli_query($conn, $quota_query);
 $quota_data = mysqli_fetch_assoc($quota_result);
 $used_quota = $quota_data['total'];
 
+// 3. FETCH PENALTY STRIKES
 $penalty_query = "SELECT SUM(strike_count) as total_strikes FROM penalty WHERE user_id = '$user_id' AND LOWER(status) = 'active'";
 $penalty_result = mysqli_query($conn, $penalty_query);
 $penalty_row = mysqli_fetch_assoc($penalty_result);
 $strikes = $penalty_row['total_strikes'] ?? 0;
 
-// Added f.image_path to the SELECT query
+// 4. FETCH UPCOMING BOOKINGS
 $bookings_query = "SELECT b.*, f.facility_name, f.category, f.image_path 
                    FROM booking b 
                    JOIN facility f ON b.facility_id = f.facility_id 
                    WHERE b.user_id = '$user_id' 
                    AND b.status != 'Cancelled' 
+                   AND b.booking_date >= CURDATE()
                    ORDER BY b.booking_date ASC, b.start_time ASC 
                    LIMIT 3"; 
 $bookings_result = mysqli_query($conn, $bookings_query);
 
+// 5. FETCH CAMPUS ANNOUNCEMENTS
 $ann_query = "SELECT * FROM annoucement ORDER BY publish_date DESC LIMIT 3";
 $ann_result = mysqli_query($conn, $ann_query);
 
@@ -97,31 +103,26 @@ function time_ago($timestamp) {
                 <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                 <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
                 
-                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="<?php echo htmlspecialchars($full_name); ?>">
+                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                     <?php echo htmlspecialchars($full_name); ?>
                 </span>
                 
                 <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
 
-                <div class="profile-dropdown" id="profileMenu">
-                    <a href="#" class="dropdown-item">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">account_circle</span>
-                        My Profile
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="../PHP/logout.php" class="dropdown-item logout-item">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
-                        Logout
-                    </a>
+                <div class="profile-menu" id="profileMenu">
+                    <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                    <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                    <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
+                    <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="dashboard-main">
-        <div class="dashboard-header">
-            <h2>Welcome back, <?php echo htmlspecialchars($first_name); ?>!</h2>
-            <p>Here is your campus facility overview for today.</p>
+    <main class="container dashboard-main" style="padding-top: 32px;">
+        <div class="dashboard-header" style="margin-bottom: 24px;">
+            <h2 style="color: var(--text-main); margin-bottom: 4px;">Welcome back, <?php echo htmlspecialchars($first_name); ?>!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 0;">Here is your campus facility overview for today.</p>
         </div>
 
         <div class="dashboard-grid">
@@ -173,41 +174,33 @@ function time_ago($timestamp) {
                     <?php 
                     if (mysqli_num_rows($bookings_result) > 0) {
                         while ($row = mysqli_fetch_assoc($bookings_result)) { 
-                            
                             $image_name = !empty($row['image_path']) ? $row['image_path'] : "default.jpg";
                             $img_url = "../public/img/facilities/" . $image_name;
-
                             $formatted_date = date("d M Y", strtotime($row['booking_date']));
                             $formatted_time = date("g:i A", strtotime($row['start_time'])) . " - " . date("g:i A", strtotime($row['end_time']));
                             $status = $row['status'];
                             $badge_class = ($status == "Approved") ? "badge-approved" : "badge-pending";
                     ?>
                             <div class="list-item" style="align-items: center;">
-                                
                                 <div class="booking-img-wrapper">
                                     <img src="<?php echo $img_url; ?>" alt="Facility" onerror="this.src='../public/img/mmulogo.jpg'">
                                 </div>
-                                
                                 <div class="item-details booking-details" style="flex: 1;">
                                     <h4><?php echo htmlspecialchars($row['facility_name']); ?></h4>
                                     <p style="margin-bottom: 0;"><?php echo $formatted_date; ?> • <?php echo $formatted_time; ?></p>
                                 </div>
-                                
                                 <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
-                                    
                                     <span class="badge <?php echo $badge_class; ?>" style="height: 28px; padding: 0 12px; display: inline-flex; align-items: center; box-sizing: border-box;">
                                         <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">
                                             <?php echo ($status == 'Approved' ? 'check_circle' : 'schedule'); ?>
                                         </span> 
                                         <?php echo $status; ?>
                                     </span>
-                                    
                                     <?php if(isset($row['is_priority']) && $row['is_priority']): ?>
                                         <span class="badge" style="background: #fff3cd; color: #856404; height: 28px; padding: 0 12px; display: inline-flex; align-items: center; box-sizing: border-box;">
                                             <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">star</span> Priority
                                         </span>
                                     <?php endif; ?>
-                                    
                                     <a href="../PHP/cancel_booking.php?id=<?php echo $row['booking_id']; ?>&source=dashboard" 
                                        class="btn btn-outline" 
                                        style="height: 28px; padding: 0 14px; border-radius: 50px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; text-decoration: none;"
@@ -253,8 +246,15 @@ function time_ago($timestamp) {
     <script>
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
-        trigger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.toggle('show'); });
-        window.addEventListener('click', function() { if (menu.classList.contains('show')) { menu.classList.remove('show'); } });
+        if (trigger && menu) {
+            trigger.addEventListener('click', function(e) { 
+                e.stopPropagation(); 
+                menu.classList.toggle('show'); 
+            });
+            window.addEventListener('click', function() { 
+                if (menu.classList.contains('show')) { menu.classList.remove('show'); } 
+            });
+        }
     </script>
 </body>
 </html>

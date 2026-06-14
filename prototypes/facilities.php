@@ -102,7 +102,7 @@ $facility_result = mysqli_query($conn, $base_query);
                 <?php else: ?>
                     <a href="index.php">Home</a>
                     <a href="facilities.php" class="active">Browse Facilities</a>
-                    <a href="guidelines.html">Guidelines</a>
+                    <a href="guidelines.php">Guidelines</a>
                 <?php endif; ?>
             </nav>
             
@@ -110,14 +110,16 @@ $facility_result = mysqli_query($conn, $base_query);
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
-                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="<?php echo htmlspecialchars($full_name); ?>">
+                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                         <?php echo htmlspecialchars($full_name); ?>
                     </span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
-                    <div class="profile-dropdown" id="profileMenu">
-                        <a href="#" class="dropdown-item">My Profile</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="../PHP/logout.php" class="dropdown-item logout-item">Logout</a>
+                    
+                    <div class="profile-menu" id="profileMenu">
+                        <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                        <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
+                        <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -135,7 +137,6 @@ $facility_result = mysqli_query($conn, $base_query);
     </div>
 
     <main class="container">
-        <!-- UI FIX: Reduced min-width on groups so all items stay on one line -->
         <form class="filter-bar" action="facilities.php" method="GET" style="flex-wrap: nowrap; gap: 12px;">
             <div class="filter-group" style="min-width: 160px;">
                 <label>Campus Location</label>
@@ -177,7 +178,6 @@ $facility_result = mysqli_query($conn, $base_query);
                 <input type="text" name="search" placeholder="e.g. Lab 3" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
             </div>
 
-            <!-- Button is now on the same line -->
             <button type="submit" class="btn btn-primary" style="padding: 10px 20px; height: 42px; flex-shrink: 0;">
                 <span class="material-symbols-outlined" style="font-size: 18px;">search</span> Filter
             </button>
@@ -249,27 +249,22 @@ $facility_result = mysqli_query($conn, $base_query);
                 </div>
             </div>
 
-            <!-- right column: social media -->
             <div class="footer-social">
                 <h4>Connect with Us</h4>
                 <div class="social-icons">
 
-                    <!-- Facebook -->
                     <a href="https://www.facebook.com/mmumalaysia/" target="_blank" class="social-icon">
                         <img src="../public/img/facebook.png" alt="Facebook">
                     </a>
                     
-                    <!-- Instagram -->
                     <a href="https://www.instagram.com/mmumalaysia/" target="_blank" class="social-icon">
                          <img src="../public/img/instagram.png" alt="Instagram">
                     </a>
                         
-                    <!-- TikTok -->
                     <a href="https://www.tiktok.com/@mmumalaysia" target="_blank" class="social-icon">
                         <img src="../public/img/tiktok.jpg" alt="TikTok">
                     </a>
                         
-                    <!-- YouTube -->
                     <a href="https://www.youtube.com/mmumalaysiatv" target="_blank" class="social-icon">
                         <img src="../public/img/youtube.png" alt="YouTube">
                     </a>

@@ -82,22 +82,17 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                 <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                 <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
                 
-                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="<?php echo htmlspecialchars($full_name); ?>">
+                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                     <?php echo htmlspecialchars($full_name); ?>
                 </span>
                 
                 <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
 
-                <div class="profile-dropdown" id="profileMenu">
-                    <a href="#" class="dropdown-item">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">account_circle</span>
-                        My Profile
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="../PHP/logout.php" class="dropdown-item logout-item">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
-                        Logout
-                    </a>
+                <div class="profile-menu" id="profileMenu">
+                    <a href="profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                    <a href="my-reports.html"><span class="material-symbols-outlined">report</span> My Reports</a>
+                    <a href="guidelines.php"><span class="material-symbols-outlined">help</span> Guidelines</a>
+                    <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                 </div>
             </div>
         </div>
@@ -119,7 +114,6 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     <label>Select Date</label>
                     <input type="date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
                     
-                    <!-- NEW: OCCUPIED SLOTS PREVIEW FOR LECTURER -->
                     <div style="margin-top: 12px; padding: 12px; background: #fdf2f2; border-radius: 8px; border-left: 4px solid var(--secondary);">
                         <span style="font-size: 12px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 5px;">
                             <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">event_busy</span> CURRENT SCHEDULE (Occupied):
@@ -144,7 +138,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                         <?php else: ?>
                             <li>No existing bookings. All slots available!</li>
                         <?php endif; ?>
-                    </ul>
+                        </ul>
                     </div>
                 </div>
 
