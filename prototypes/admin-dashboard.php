@@ -74,7 +74,7 @@ $reports_result = mysqli_query($conn, $reports_query);
                 <a href="admin-dashboard.php" class="admin-nav-item active">
                     <span class="material-symbols-outlined">dashboard</span> Dashboard Overview
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-bookings.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
                 </a>
                 <a href="facilities.php" class="admin-nav-item">
