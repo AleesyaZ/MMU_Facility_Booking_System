@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Manage Facilities - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="admin-layout">
+        
+        <!-- Left Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo" style="height: 32px; object-fit: contain;">
+                <div class="logo-divider" style="height: 24px;"></div>
+                <span style="font-size: 16px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Admin Panel</span>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard Overview
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
+                </a>
+                <!-- ACTIVE TAB -->
+                <a href="admin-facilities.html" class="admin-nav-item active">
+                    <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">cable</span> Manage Equipment
+                </a>
+                <a href="admin-users.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">group</span> Manage Users & Quotas
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">gavel</span> Penalty System
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">report</span> Issue Reports
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">campaign</span> Announcements
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="admin-main">
+            
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Facility Management</h2>
+                </div>
+                <div class="nav-profile">
+                    <div class="avatar" style="background-color: var(--secondary);">AD</div>
+                    <span style="font-weight: 500; font-size: 14px;">System Admin</span>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="admin-content">
+                
+                <!-- Toolbar: Search, Filter, and Add Button -->
+                <div class="admin-toolbar">
+                    <div class="search-wrapper">
+                        <span class="material-symbols-outlined">search</span>
+                        <input type="text" placeholder="Search facility name...">
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <!-- Campus Filter -->
+                        <select class="form-control" style="width: 140px; padding: 8px 12px;">
+                            <option>All Campuses</option>
+                            <option>Cyberjaya</option>
+                            <option>Melaka</option>
+                        </select>
+
+                        <!-- Faculty Filter -->
+                        <select class="form-control" style="width: 140px; padding: 8px 12px;">
+                            <option>All Faculties</option>
+                            <option>FCI</option>
+                            <option>FOE</option>
+                            <option>FCM</option>
+                            <option>FOM</option>
+                            <option>General Campus</option>
+                        </select>
+
+                        <!-- Category Filter -->
+                        <select class="form-control" style="width: 140px; padding: 8px 12px;">
+                            <option>All Categories</option>
+                            <option>Lecture Hall</option>
+                            <option>Discussion Room</option>
+                            <option>Computer Lab</option>
+                            <option>Sports Court</option>
+                        </select>
+
+                        <!-- Add Button -->
+                        <button class="btn btn-primary" style="padding: 8px 16px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Add Facility
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Facilities Table -->
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Facility Name</th>
+                                <th>Location</th>
+                                <th>Category</th>
+                                <th style="text-align: center;">Capacity</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <!-- Row 1: Discussion Room -->
+                            <tr>
+                                <td><strong style="color: var(--text-main);">Discussion Room 4</strong></td>
+                                <td style="color: var(--text-muted);">Cyberjaya (FCI)</td>
+                                <td>Discussion Room</td>
+                                <td style="text-align: center; font-weight: 600;">8</td>
+                                <td><span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Available</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Facility"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon penalty" title="Mark as Maintenance"><span class="material-symbols-outlined" style="font-size: 18px;">build</span></button>
+                                    <button class="btn-icon delete" title="Delete Facility"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2: Lecture Hall -->
+                            <tr>
+                                <td><strong style="color: var(--text-main);">Main Lecture Hall (MLH)</strong></td>
+                                <td style="color: var(--text-muted);">Melaka Campus</td>
+                                <td>Lecture Hall</td>
+                                <td style="text-align: center; font-weight: 600;">250</td>
+                                <td><span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Available</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Facility"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon penalty" title="Mark as Maintenance"><span class="material-symbols-outlined" style="font-size: 18px;">build</span></button>
+                                    <button class="btn-icon delete" title="Delete Facility"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3: Maintenance -->
+                            <tr style="background-color: #fafafa;">
+                                <td><strong style="color: var(--text-main);">Computer Lab B</strong></td>
+                                <td style="color: var(--text-muted);">Cyberjaya (FOE)</td>
+                                <td>Computer Lab</td>
+                                <td style="text-align: center; font-weight: 600;">40</td>
+                                <td><span class="badge badge-maintenance"><span class="material-symbols-outlined" style="font-size: 14px;">handyman</span> Maintenance</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Facility"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon edit" title="Mark as Available"><span class="material-symbols-outlined" style="font-size: 18px;">check_circle</span></button>
+                                    <button class="btn-icon delete" title="Delete Facility"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 4: Sports Court -->
+                            <tr>
+                                <td><strong style="color: var(--text-main);">Indoor Basketball Court A</strong></td>
+                                <td style="color: var(--text-muted);">Cyberjaya</td>
+                                <td>Sports Court</td>
+                                <td style="text-align: center; font-weight: 600;">20</td>
+                                <td><span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Available</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Facility"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon penalty" title="Mark as Maintenance"><span class="material-symbols-outlined" style="font-size: 18px;">build</span></button>
+                                    <button class="btn-icon delete" title="Delete Facility"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

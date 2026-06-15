@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Manage Equipment - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="admin-layout">
+        
+        <!-- Left Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo" style="height: 32px; object-fit: contain;">
+                <div class="logo-divider" style="height: 24px;"></div>
+                <span style="font-size: 16px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Admin Panel</span>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard Overview
+                </a>
+                <a href="admin-bookings.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
+                </a>
+                <a href="admin-facilities.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
+                </a>
+                <!-- ACTIVE TAB -->
+                <a href="admin-equipment.html" class="admin-nav-item active">
+                    <span class="material-symbols-outlined">cable</span> Manage Equipment
+                </a>
+                <a href="admin-users.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">group</span> Manage Users & Quotas
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">gavel</span> Penalty System
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">report</span> Issue Reports
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">campaign</span> Announcements
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="admin-main">
+            
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Equipment Inventory</h2>
+                </div>
+                <div class="nav-profile">
+                    <div class="avatar" style="background-color: var(--secondary);">AD</div>
+                    <span style="font-weight: 500; font-size: 14px;">System Admin</span>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="admin-content">
+                
+                <!-- Toolbar: Search and Add Button -->
+                <div class="admin-toolbar">
+                    <div class="search-wrapper">
+                        <span class="material-symbols-outlined">search</span>
+                        <input type="text" placeholder="Search equipment name...">
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <select class="form-control" style="width: 160px; padding: 8px 12px;">
+                            <option>All Campuses</option>
+                            <option>Cyberjaya</option>
+                            <option>Melaka</option>
+                        </select>
+                        <button class="btn btn-primary" style="padding: 8px 16px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Add Equipment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Equipment Table -->
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Item Code & Name</th>
+                                <th>Assigned Campus</th>
+                                <th>Stock</th>
+                                <th>Availability</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <!-- Row 1: Good Stock -->
+                            <tr>
+                                <td>
+                                    <strong style="color: var(--text-main);">Portable Projector (Epson)</strong><br>
+                                    <span class="table-meta-text">EQ-PROJ-001</span>
+                                </td>
+                                <td>Cyberjaya</td>
+                                <td style="text-align: center; font-weight: 600;">10</td>
+                                <td>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100px;">
+                                        <span class="stock-text" style="color: var(--success-text);">8 Available</span>
+                                    </div>
+                                    <div class="stock-bar-container">
+                                        <div class="stock-bar-fill stock-good" style="width: 80%;"></div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Active</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Item"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon delete" title="Delete Item"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2: Warning Stock -->
+                            <tr>
+                                <td>
+                                    <strong style="color: var(--text-main);">HDMI Cable (2m)</strong><br>
+                                    <span class="table-meta-text">EQ-CBL-045</span>
+                                </td>
+                                <td>Melaka</td>
+                                <td style="text-align: center; font-weight: 600;">20</td>
+                                <td>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100px;">
+                                        <span class="stock-text" style="color: #d97706;">5 Available</span>
+                                    </div>
+                                    <div class="stock-bar-container">
+                                        <div class="stock-bar-fill stock-warning" style="width: 25%;"></div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Active</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Item"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon delete" title="Delete Item"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3: Critical/Out of Stock -->
+                            <tr style="background-color: #fafafa;">
+                                <td>
+                                    <strong style="color: var(--text-muted);">Badminton Net</strong><br>
+                                    <span class="table-meta-text">EQ-SPT-012</span>
+                                </td>
+                                <td>Cyberjaya</td>
+                                <td style="text-align: center; font-weight: 600; color: var(--text-muted);">4</td>
+                                <td>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100px;">
+                                        <span class="stock-text" style="color: var(--secondary);">0 Available</span>
+                                    </div>
+                                    <div class="stock-bar-container">
+                                        <div class="stock-bar-fill stock-critical" style="width: 0%;"></div>
+                                    </div>
+                                </td>
+                                <td><span class="badge" style="background: #fee2e2; color: #991b1b;"><span class="material-symbols-outlined" style="font-size: 14px;">block</span> Out of Stock</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Item"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon edit" title="Restock Item" style="color: var(--success-text); border-color: rgba(22,101,52,0.2);"><span class="material-symbols-outlined" style="font-size: 18px;">inventory</span></button>
+                                    <button class="btn-icon delete" title="Delete Item"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

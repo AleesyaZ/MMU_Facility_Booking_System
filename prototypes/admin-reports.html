@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Issue Reports - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="admin-layout">
+        
+        <!-- Left Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo" style="height: 32px; object-fit: contain;">
+                <div class="logo-divider" style="height: 24px;"></div>
+                <span style="font-size: 16px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Admin Panel</span>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard Overview
+                </a>
+                <a href="admin-bookings.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
+                </a>
+                <a href="admin-facilities.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
+                </a>
+                <a href="admin-equipment.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">cable</span> Manage Equipment
+                </a>
+                <a href="admin-users.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">group</span> Manage Users & Quotas
+                </a>
+                <a href="admin-penalties.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">gavel</span> Penalty System
+                </a>
+                <!-- ACTIVE TAB -->
+                <a href="admin-reports.html" class="admin-nav-item active">
+                    <span class="material-symbols-outlined">report</span> Issue Reports
+                </a>
+                 <a href="#" class="admin-nav-item">
+                    <span class="material-symbols-outlined">campaign</span> Announcements
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="admin-main">
+            
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Issue Reports</h2>
+                </div>
+                <div class="nav-profile">
+                    <div class="avatar" style="background-color: var(--secondary);">AD</div>
+                    <span style="font-weight: 500; font-size: 14px;">System Admin</span>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="admin-content">
+                
+                <!-- Metrics -->
+                <div class="dashboard-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-bottom: 32px;">
+                    <div class="card" style="margin-bottom: 0; padding: 20px;">
+                        <span class="stat-label" style="color: var(--secondary);">Open Reports</span>
+                        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 8px;">
+                            <span class="stat-value">5</span>
+                            <span style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Require immediate review</span>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom: 0; padding: 20px;">
+                        <span class="stat-label" style="color: #0369a1;">In Progress</span>
+                        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 8px;">
+                            <span class="stat-value">2</span>
+                            <span style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Assigned to maintenance</span>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom: 0; padding: 20px;">
+                        <span class="stat-label" style="color: var(--success-text);">Resolved (7 Days)</span>
+                        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 8px;">
+                            <span class="stat-value">14</span>
+                            <span style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Successfully closed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="admin-toolbar">
+                    <div class="search-wrapper">
+                        <span class="material-symbols-outlined">search</span>
+                        <input type="text" placeholder="Search Report ID or Facility...">
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <select class="form-control" style="width: 150px; padding: 8px 12px;">
+                            <option>All Statuses</option>
+                            <option>Open</option>
+                            <option>In Progress</option>
+                            <option>Resolved</option>
+                        </select>
+                        <select class="form-control" style="width: 160px; padding: 8px 12px;">
+                            <option>All Categories</option>
+                            <option>Damage</option>
+                            <option>Cleanliness</option>
+                            <option>Vandalism</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Report Info</th>
+                                <th>Facility & Category</th>
+                                <th>Description & Evidence</th>
+                                <th style="text-align: center;">Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <!-- Row 1: Open Report (Damage) -->
+                            <tr>
+                                <td>
+                                    <strong style="color: var(--text-main);">#RP-1002</strong><br>
+                                    <span class="table-meta-text">By: Idris Bin Shah Nahar<br>Oct 24 • 9:15 AM</span>
+                                </td>
+                                <td>
+                                    <strong style="color: var(--text-main);">Discussion Room 4 (FCI)</strong><br>
+                                    <span class="table-meta-text" style="color: var(--secondary);">Equipment Damage</span>
+                                </td>
+                                <td style="max-width: 300px;">
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <img src="/public/img/brokenprojector.jpg" alt="Broken Projector" class="report-thumbnail" title="Click to view full image">
+                                        <div class="penalty-reason" style="margin-top: 0; white-space: normal; line-height: 1.4;">Projector screen is torn on the left side, HDMI cable missing.</div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;"><span class="badge" style="background: #fef3c7; color: #92400e;">Open</span></td>
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <button class="btn-icon edit" title="Reply & Update Status"><span class="material-symbols-outlined" style="font-size: 18px;">chat</span></button>
+                                    <button class="btn-icon edit" style="color: #0369a1; border-color: rgba(3,105,161,0.2);" title="Mark In Progress"><span class="material-symbols-outlined" style="font-size: 18px;">engineering</span></button>
+                                    <button class="btn-icon delete" title="Issue Penalty to Previous User"><span class="material-symbols-outlined" style="font-size: 18px;">gavel</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2: In Progress -->
+                            <tr style="background-color: rgba(3, 105, 161, 0.02);">
+                                <td>
+                                    <strong style="color: var(--text-main);">#RP-0984</strong><br>
+                                    <span class="table-meta-text">By: Sarah Lee<br>Oct 20 • 2:30 PM</span>
+                                </td>
+                                <td>
+                                    <strong style="color: var(--text-main);">Main Lecture Hall (Melaka)</strong><br>
+                                    <span class="table-meta-text" style="color: #0369a1;">Maintenance</span>
+                                </td>
+                                <td style="max-width: 300px;">
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <!-- No image uploaded example -->
+                                        <div class="report-thumbnail" style="background: #f1f3f5; display: flex; align-items: center; justify-content: center;">
+                                            <span class="material-symbols-outlined" style="color: var(--border-color); font-size: 20px;">image_not_supported</span>
+                                        </div>
+                                        <div class="penalty-reason" style="margin-top: 0; border-left-color: #0369a1; white-space: normal; line-height: 1.4;">Air conditioning unit near the back door is leaking water.</div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;"><span class="badge badge-in-progress">Ongoing</span></td>
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <button class="btn-icon edit" title="Reply & Update Status"><span class="material-symbols-outlined" style="font-size: 18px;">chat</span></button>
+                                    <button class="btn-icon edit" style="color: var(--success-text); border-color: rgba(22,101,52,0.2);" title="Mark Resolved"><span class="material-symbols-outlined" style="font-size: 18px;">check_circle</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3: Resolved -->
+                            <tr>
+                                <td>
+                                    <strong style="color: var(--text-muted);">#RP-0891</strong><br>
+                                    <span class="table-meta-text">By: Ali Bin Abu<br>Oct 15 • 11:00 AM</span>
+                                </td>
+                                <td>
+                                    <strong style="color: var(--text-muted);">Computer Lab B</strong><br>
+                                    <span class="table-meta-text">Misuse by Previous User</span>
+                                </td>
+                                <td style="max-width: 300px; opacity: 0.7;">
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <img src="/public/img/messyroom.jpg" alt="Messy Room" class="report-thumbnail">
+                                        <div class="penalty-reason" style="margin-top: 0; border-left-color: var(--success-text); white-space: normal; line-height: 1.4;">Previous user left trash all over the tables.</div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;"><span class="badge badge-approved">Resolved</span></td>
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <button class="btn-icon edit" title="View Details"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

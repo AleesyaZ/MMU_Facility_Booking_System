@@ -242,11 +242,11 @@ $facility_result = mysqli_query($conn, $base_query);
             <div class="footer-links">
                 <h4>Support & Resources</h4>
                 <div class="footer-links-list">
-                    <a href="guidelines.html#general">Booking Guidelines</a>
-                    <a href="guidelines.html#quota">Quota & Penalty Rules</a>
-                    <a href="guidelines.html#priority">Staff Priority Booking</a>
-                    <a href="guidelines.html#hours">Operating Hours</a>
-                    <a href="guidelines.html#faq">FAQ / Helpdesk</a>
+                    <a href="guidelines.php#general">Booking Guidelines</a>
+                    <a href="guidelines.php#quota">Quota & Penalty Rules</a>
+                    <a href="guidelines.php#priority">Staff Priority Booking</a>
+                    <a href="guidelines.php#hours">Operating Hours</a>
+                    <a href="guidelines.php#faq">FAQ / Helpdesk</a>
                 </div>
             </div>
 

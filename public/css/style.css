@@ -1995,3 +1995,305 @@ textarea.form-control {
     color: var(--text-muted);
     line-height: 1.5;
 }
+
+/* =========================================
+   19. ADMIN SPECIFIC STYLES (Users & Modals)
+   ========================================= */
+
+/* Admin Action Badges */
+.badge-danger { background-color: #fee2e2; color: #991b1b; } /* Red */
+.badge-warning { background-color: #fef3c7; color: #92400e; } /* Orange */
+
+/* Admin Table Search & Filter Bar */
+.admin-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: var(--surface);
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: 1px solid rgba(194, 198, 211, 0.4);
+    box-shadow: var(--shadow-soft);
+}
+
+.search-wrapper {
+    position: relative;
+    width: 300px;
+}
+
+.search-wrapper .material-symbols-outlined {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 20px;
+}
+
+.search-wrapper input {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-wrapper input:focus {
+    border-color: var(--primary);
+}
+
+/* User Action Buttons */
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+}
+
+.btn-icon.edit { color: var(--primary); border-color: rgba(0, 61, 124, 0.2); }
+.btn-icon.edit:hover { background-color: rgba(0, 61, 124, 0.1); }
+
+.btn-icon.penalty { color: #d97706; border-color: rgba(217, 119, 6, 0.2); }
+.btn-icon.penalty:hover { background-color: rgba(217, 119, 6, 0.1); }
+
+.btn-icon.delete { color: var(--secondary); border-color: rgba(187, 0, 19, 0.2); }
+.btn-icon.delete:hover { background-color: rgba(187, 0, 19, 0.1); }
+
+/* Quick Stat Pills inside table */
+.stat-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+}
+.stat-pill.good { background-color: var(--success-bg); color: var(--success-text); }
+.stat-pill.bad { background-color: #fee2e2; color: #991b1b; }
+
+/* Admin Facility Status Badges */
+.badge-maintenance {
+    background-color: #fef3c7; 
+    color: #92400e;
+}
+
+/* Admin Booking Status Badges */
+.badge-cancelled {
+    background-color: #f1f3f5;
+    color: #6b7280;
+}
+
+.table-meta-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    display: block;
+}
+
+/* Inventory Progress Bar */
+.stock-bar-container {
+    width: 100px;
+    height: 8px;
+    background-color: var(--surface-container-low);
+    border-radius: 50px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.stock-bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    transition: width 0.3s ease;
+}
+
+.stock-good { background-color: var(--success-text); }
+.stock-warning { background-color: #d97706; }
+.stock-critical { background-color: var(--secondary); }
+
+.stock-text {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Penalty Specific Styles */
+.strike-tracker {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.strike-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--surface-container-high);
+    border: 1px solid rgba(194, 198, 211, 0.6);
+}
+
+.strike-dot.filled {
+    background-color: var(--secondary); 
+    border-color: var(--secondary);
+}
+
+.penalty-reason {
+    font-size: 13px;
+    color: var(--text-muted);
+    background-color: var(--background);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #d97706; 
+    margin-top: 8px;
+    display: inline-block;
+}
+
+/* Admin Report Specific Styles */
+.report-thumbnail {
+    width: 60px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid rgba(194, 198, 211, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.report-thumbnail:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.badge-in-progress {
+    background-color: #e0f2fe; 
+    color: #0369a1; 
+}
+
+/* Admin Announcement Form */
+.admin-form-panel {
+    background: var(--surface);
+    border: 1px solid rgba(194, 198, 211, 0.4);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-soft);
+    display: none; 
+}
+
+.admin-form-panel.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   20. MODALS & POP-UPS (UX Admin)
+   ========================================= */
+/* Modal Overlay Background */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(18, 28, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal Box */
+.modal-box {
+    background-color: var(--surface);
+    width: 90%;
+    max-width: 450px;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.modal-overlay.show .modal-box {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.modal-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.modal-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Specific Modal Colors */
+.modal-warning .modal-icon { background: #fff3cd; color: #856404; }
+.modal-danger .modal-icon { background: #fee2e2; color: #991b1b; }
+.modal-info .modal-icon { background: #e0f2fe; color: #0369a1; }
+
+/* Booking Details Modal Specifics */
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 12px 16px;
+    font-size: 13px;
+    margin-bottom: 24px;
+    background: var(--background);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(194, 198, 211, 0.4);
+}
+.details-label { font-weight: 600; color: var(--text-muted); }
+.details-value { font-weight: 500; color: var(--text-main); }

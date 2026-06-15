@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Announcements - MMU Campus Space</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="admin-layout">
+        
+        <!-- Left Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <img src="../public/img/mmulogo.jpg" alt="MMU Logo" style="height: 32px; object-fit: contain;">
+                <div class="logo-divider" style="height: 24px;"></div>
+                <span style="font-size: 16px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Admin Panel</span>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard Overview
+                </a>
+                <a href="admin-bookings.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
+                </a>
+                <a href="admin-facilities.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
+                </a>
+                <a href="admin-equipment.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">cable</span> Manage Equipment
+                </a>
+                <a href="admin-users.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">group</span> Manage Users & Quotas
+                </a>
+                <a href="admin-penalties.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">gavel</span> Penalty System
+                </a>
+                <a href="admin-reports.html" class="admin-nav-item">
+                    <span class="material-symbols-outlined">report</span> Issue Reports
+                </a>
+                <!-- ACTIVE TAB -->
+                <a href="admin-announcements.html" class="admin-nav-item active">
+                    <span class="material-symbols-outlined">campaign</span> Announcements
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="admin-main">
+            
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Broadcast Announcements</h2>
+                </div>
+                <div class="nav-profile">
+                    <div class="avatar" style="background-color: var(--secondary);">AD</div>
+                    <span style="font-weight: 500; font-size: 14px;">System Admin</span>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="admin-content">
+                
+                <!-- Toolbar -->
+                <div class="admin-toolbar">
+                    <div class="search-wrapper">
+                        <span class="material-symbols-outlined">search</span>
+                        <input type="text" placeholder="Search announcements...">
+                    </div>
+                    
+                    <button class="btn btn-primary" id="toggleFormBtn" style="padding: 8px 16px;">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">campaign</span> Post New Announcement
+                    </button>
+                </div>
+
+                <!-- Hidden Form Panel (Slides down when button is clicked) -->
+                <div class="admin-form-panel" id="announcementForm">
+                    <h3 style="font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 16px;">Draft New Announcement</h3>
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <label>Title / Headline</label>
+                            <input type="text" class="form-control" placeholder="e.g. FCI Lab Maintenance" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message Content</label>
+                            <textarea class="form-control" placeholder="Write your announcement details here..." style="min-height: 80px;" required></textarea>
+                        </div>
+                        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                            <button type="button" class="btn btn-outline" id="cancelFormBtn" style="padding: 8px 16px;">Cancel</button>
+                            <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">Publish Now</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Announcements Table -->
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Headline & Details</th>
+                                <th>Published By</th>
+                                <th>Date Posted</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <!-- Row 1: Active Announcement -->
+                            <tr>
+                                <td>
+                                    <strong style="color: var(--text-main); font-size: 15px;">FCI Lab Maintenance</strong><br>
+                                    <span style="font-size: 13px; color: var(--text-muted); display: inline-block; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px;">
+                                        Labs 1 & 2 will be closed this Friday for software upgrades. Please plan accordingly.
+                                    </span>
+                                </td>
+                                <td><span style="font-size: 13px; font-weight: 500;">System Admin</span></td>
+                                <td>Oct 24, 2024<br><span class="table-meta-text">10:00 AM</span></td>
+                                <td><span class="badge badge-approved">Live</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Post"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon delete" title="Unpublish"><span class="material-symbols-outlined" style="font-size: 18px;">visibility_off</span></button>
+                                    <button class="btn-icon delete" title="Delete Permanently"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2: Active Announcement -->
+                            <tr>
+                                <td>
+                                    <strong style="color: var(--text-main); font-size: 15px;">New Sports Nets Available</strong><br>
+                                    <span style="font-size: 13px; color: var(--text-muted); display: inline-block; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px;">
+                                        You can now request badminton and volleyball nets via the Add-on Equipment feature during booking!
+                                    </span>
+                                </td>
+                                <td><span style="font-size: 13px; font-weight: 500;">Facilities Staff</span></td>
+                                <td>Oct 23, 2024<br><span class="table-meta-text">2:30 PM</span></td>
+                                <td><span class="badge badge-approved">Live</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Edit Post"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                    <button class="btn-icon delete" title="Unpublish"><span class="material-symbols-outlined" style="font-size: 18px;">visibility_off</span></button>
+                                    <button class="btn-icon delete" title="Delete Permanently"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3: Archived/Hidden -->
+                            <tr style="background-color: #fafafa;">
+                                <td>
+                                    <strong style="color: var(--text-muted); font-size: 15px;">Midterm Exam Week Rules</strong><br>
+                                    <span style="font-size: 13px; color: var(--text-muted); display: inline-block; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px;">
+                                        During exam week, Discussion Room quotas will be strictly enforced.
+                                    </span>
+                                </td>
+                                <td><span style="font-size: 13px; font-weight: 500; color: var(--text-muted);">System Admin</span></td>
+                                <td>Aug 10, 2024<br><span class="table-meta-text">9:00 AM</span></td>
+                                <td><span class="badge" style="background: #f1f3f5; color: #6b7280;">Archived</span></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-icon edit" title="Republish"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
+                                    <button class="btn-icon delete" title="Delete Permanently"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script to toggle the Create Announcement Form -->
+    <script>
+        const toggleBtn = document.getElementById('toggleFormBtn');
+        const cancelBtn = document.getElementById('cancelFormBtn');
+        const formPanel = document.getElementById('announcementForm');
+
+        toggleBtn.addEventListener('click', () => {
+            formPanel.classList.add('show');
+            toggleBtn.style.display = 'none'; // Hide the button while drafting
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            formPanel.classList.remove('show');
+            toggleBtn.style.display = 'inline-flex'; // Bring button back
+        });
+    </script>
+</body>
+</html>
