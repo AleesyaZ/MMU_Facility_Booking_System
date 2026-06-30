@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 14, 2026 at 02:20 PM
+-- Generation Time: Jun 30, 2026 at 11:07 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -67,7 +67,9 @@ CREATE TABLE `booking` (
 --
 
 INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`, `is_priority`, `proof_file`) VALUES
-(1018, 10000000, 101, '2026-06-09', '18:03:00', '19:03:00', 'a', 'Approved', 0, NULL);
+(1040, 10000000, 100, '2026-06-15', '15:50:00', '16:50:00', 'a', 'Approved', 0, NULL),
+(1041, 10000000, 100, '2026-06-30', '13:07:00', '14:07:00', 'a', 'Approved', 0, NULL),
+(1042, 10000001, 101, '2026-06-30', '13:47:00', '14:47:00', 'a', 'Cancelled', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -209,8 +211,9 @@ CREATE TABLE `issue_report` (
 --
 
 INSERT INTO `issue_report` (`report_id`, `user_id`, `facility_id`, `issue_type`, `description`, `report_date`, `status`, `admin_reply`, `reply_date`, `issue_image`) VALUES
-(1, 10000001, 102, 'Swimming Pool Odor', 'The swimming pool had a terrible odor.', '2026-05-01', 'Under Review', NULL, NULL, NULL),
-(2, 10000000, 111, 'Equipment/Furniture Damage', 'a', '2026-06-14', 'Under Review', NULL, NULL, 'issue_1781439526_10000000.jpg');
+(2, 10000000, 111, 'Equipment/Furniture Damage', 'a', '2026-06-14', 'Under Review', '', '2026-06-30', 'issue_1781439526_10000000.jpg'),
+(3, 10000000, 100, 'Unauthorized movement of furniture', 'abcsdsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss', '2026-06-30', 'Resolved', 'stupid you liar', '2026-06-30', 'issue_1782796105_10000000.png'),
+(4, 10000002, 101, 'Equipment/Furniture Damage', 'heh', '2026-06-30', 'Under Review', 'heh', '2026-06-30', 'issue_1782798481_10000002.png');
 
 -- --------------------------------------------------------
 
@@ -227,6 +230,14 @@ CREATE TABLE `notification` (
   `date_sent` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date and Time Sent'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`notify_id`, `user_id`, `title`, `message`, `is_read`, `date_sent`) VALUES
+(1, 10000000, 'Update on Report #RP-3', 'Your report status is now: Resolved. Message: stupid you liar', 0, '2026-06-30 16:02:42'),
+(2, 10000002, 'Update on Report #RP-4', 'Your report status is now: Under Review. Message: heh', 0, '2026-06-30 16:02:46');
+
 -- --------------------------------------------------------
 
 --
@@ -241,6 +252,14 @@ CREATE TABLE `penalty` (
   `strike_count` int(11) NOT NULL COMMENT 'Total Number of Strikes',
   `status` varchar(50) NOT NULL COMMENT 'Penalty Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `penalty`
+--
+
+INSERT INTO `penalty` (`penalty_id`, `user_id`, `booking_id`, `reason`, `strike_count`, `status`) VALUES
+(100011, 10000000, 1041, '[No-Show] c', 0, 'Active'),
+(100012, 10000001, 1042, '[No-Show] a', 0, 'Active');
 
 -- --------------------------------------------------------
 
@@ -258,19 +277,20 @@ CREATE TABLE `user` (
   `booking_quota` int(11) NOT NULL COMMENT 'Booking Quota Limit',
   `otp_code` varchar(6) DEFAULT NULL COMMENT 'Verification Code',
   `otp_sent_at` datetime DEFAULT NULL COMMENT 'Expiration OTP time',
-  `is_activated` tinyint(1) DEFAULT 0 COMMENT 'Account Activation Status'
+  `is_activated` tinyint(1) DEFAULT 0 COMMENT 'Account Activation Status',
+  `status` varchar(20) DEFAULT 'Active' COMMENT 'Penalty Status'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`, `otp_code`, `otp_sent_at`, `is_activated`) VALUES
-(10000000, 'IDRIS BIN SHAH NAHAR', 'idris@student.mmu.edu.my', 'Stophe_3', 'Student', '01164425881', 2, NULL, NULL, 1),
-(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', 'abcd1234', 'Student', '01154067900', 2, NULL, NULL, 1),
-(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', 'Stophe_3', 'Student', '0123211695', 2, NULL, NULL, 1),
-(10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', 'abcd1234', 'Lecturer', '0112223333', 2, NULL, NULL, 1),
-(10000004, 'MR ADMIN', 'admin1@mmu.edu.my', NULL, 'Admin', '0112223333', 2, NULL, NULL, 0);
+INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`, `otp_code`, `otp_sent_at`, `is_activated`, `status`) VALUES
+(10000000, 'IDRIS BIN SHAH NAHAR', 'idris@student.mmu.edu.my', 'Stophe_3', 'Student', '01164425881', 2, NULL, NULL, 1, 'Active'),
+(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', 'abcd1234', 'Student', '01154067900', 2, NULL, NULL, 1, 'Active'),
+(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', 'Stophe_3', 'Student', '0123211695', 2, NULL, NULL, 1, 'Active'),
+(10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', 'abcd1234', 'Lecturer', '0112223333', 2, NULL, NULL, 1, 'Active'),
+(10000004, 'MR ADMIN', 'admin1@mmu.edu.my', '12345678', 'Admin', '0112223333', 2, NULL, NULL, 1, 'Active');
 
 --
 -- Indexes for dumped tables
@@ -354,7 +374,7 @@ ALTER TABLE `annoucement`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1026;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1043;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -372,19 +392,19 @@ ALTER TABLE `facility`
 -- AUTO_INCREMENT for table `issue_report`
 --
 ALTER TABLE `issue_report`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification', AUTO_INCREMENT=3;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification', AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification';
+  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification', AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `penalty`
 --
 ALTER TABLE `penalty`
-  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification', AUTO_INCREMENT=100001;
+  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification', AUTO_INCREMENT=100013;
 
 --
 -- AUTO_INCREMENT for table `user`

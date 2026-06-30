@@ -86,10 +86,10 @@ $reports_result = mysqli_query($conn, $reports_query);
                 <a href="#" class="admin-nav-item">
                     <span class="material-symbols-outlined">group</span> Manage Users & Quotas
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-penalties.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">gavel</span> Penalty System
                 </a>
-                <a href="report-issue.php" class="admin-nav-item">
+                <a href="admin-reports.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">report</span> Issue Reports
                 </a>
                 <a href="#" class="admin-nav-item">
