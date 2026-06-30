@@ -154,10 +154,10 @@ $reports_result = mysqli_query($conn, "
                 <a href="facilities.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="equipment.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">cable</span> Manage Equipment
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="users.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">group</span> Manage Users & Quotas
                 </a>
                 <a href="admin-penalties.php" class="admin-nav-item">
@@ -166,7 +166,7 @@ $reports_result = mysqli_query($conn, "
                 <a href="admin-reports.php" class="admin-nav-item active">
                     <span class="material-symbols-outlined">report</span> Issue Reports
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="announcements.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">campaign</span> Announcements
                 </a>
             </nav>
@@ -371,6 +371,19 @@ $reports_result = mysqli_query($conn, "
     </div>
 
     <script>
+        // Profile Dropdown Logic
+        const trigger = document.getElementById('profileTrigger');
+        const menu = document.getElementById('profileMenu');
+        trigger.addEventListener('click', function(e) { 
+            e.stopPropagation(); 
+            menu.classList.toggle('show'); 
+        });
+        window.addEventListener('click', function() { 
+            if (menu.classList.contains('show')) { 
+                menu.classList.remove('show'); 
+            } 
+        });
+
         function checkGlobalAlerts() {
             const urlParams = new URLSearchParams(window.location.search);
             
