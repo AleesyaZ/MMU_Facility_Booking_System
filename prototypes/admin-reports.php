@@ -151,13 +151,13 @@ $reports_result = mysqli_query($conn, "
                 <a href="admin-bookings.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
                 </a>
-                <a href="facilities.php" class="admin-nav-item">
+                <a href="admin-facilities.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
                 </a>
-                <a href="equipment.php" class="admin-nav-item">
+                <a href="admin-equipment.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">cable</span> Manage Equipment
                 </a>
-                <a href="users.php" class="admin-nav-item">
+                <a href="admin-users.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">group</span> Manage Users & Quotas
                 </a>
                 <a href="admin-penalties.php" class="admin-nav-item">
@@ -166,7 +166,7 @@ $reports_result = mysqli_query($conn, "
                 <a href="admin-reports.php" class="admin-nav-item active">
                     <span class="material-symbols-outlined">report</span> Issue Reports
                 </a>
-                <a href="announcements.php" class="admin-nav-item">
+                <a href="admin-announcements.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">campaign</span> Announcements
                 </a>
             </nav>
@@ -344,7 +344,8 @@ $reports_result = mysqli_query($conn, "
                     </div>
                     <div style="margin-bottom: 24px;">
                         <h4 class="modal-section-title">Detailed Description</h4>
-                        <div class="scrollable-desc" id="modal_desc" style="padding: 16px; font-size: 13px; max-height: 80px; overflow-y: auto; background: #f9fafb; border-radius: 6px;"></div>
+                        <!-- UPDATED CSS FOR VERTICAL SCROLLING AND WRAPPING -->
+                        <div class="scrollable-desc" id="modal_desc" style="padding: 16px; font-size: 13px; max-height: 120px; overflow-y: auto; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; background: #f9fafb; border-radius: 6px;"></div>
                     </div>
                     <div style="background-color: #f8f9ff; border: 1px solid rgba(194, 198, 211, 0.4); border-radius: 8px; padding: 20px;">
                         <h4 class="modal-section-title" style="margin-bottom: 16px;">Admin Action & Reply</h4>

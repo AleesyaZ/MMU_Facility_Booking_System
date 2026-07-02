@@ -65,20 +65,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         move_uploaded_file($_FILES["proofUpload"]["tmp_name"], $target_dir . $proof_filename);
     }
 
-    // 5. INSERT DATA
+    // 5. INSERT DATA & UPDATE EQUIPMENT STOCK
     $sql = "INSERT INTO booking (user_id, facility_id, booking_date, start_time, end_time, purpose, status, is_priority, proof_file) 
             VALUES ('$user_id', '$facility_id', '$date', '$start_time', '$end_time', '$purpose', '$status', '$is_priority', '$proof_filename')";
 
     if (mysqli_query($conn, $sql)) {
         $booking_id = mysqli_insert_id($conn);
-        if (isset($_POST['equipment'])) {
+
+        // --- UPDATED: EQUIPMENT LOGIC WITH STOCK DEDUCTION ---
+        if (isset($_POST['equipment']) && is_array($_POST['equipment'])) {
             foreach ($_POST['equipment'] as $equip_id) {
-                $qty = (int)$_POST['qty_' . $equip_id];
-                mysqli_query($conn, "INSERT INTO booking_equipment (booking_id, equip_id, quantity) VALUES ('$booking_id', '$equip_id', '$qty')");
+                $equip_id = mysqli_real_escape_string($conn, $equip_id);
+                $qty_field = 'qty_' . $equip_id;
+                $requested_qty = isset($_POST[$qty_field]) ? (int)$_POST[$qty_field] : 1;
+
+                // A. Check current stock availability
+                $check_stock = mysqli_query($conn, "SELECT avail_qty FROM equipment WHERE equip_id = '$equip_id'");
+                $stock_row = mysqli_fetch_assoc($check_stock);
+
+                if ($stock_row && $stock_row['avail_qty'] >= $requested_qty) {
+                    // B. Record the equipment used for this booking
+                    mysqli_query($conn, "INSERT INTO booking_equipment (booking_id, equip_id, quantity) VALUES ('$booking_id', '$equip_id', '$requested_qty')");
+
+                    // C. Deduct from the main equipment table
+                    mysqli_query($conn, "UPDATE equipment SET avail_qty = avail_qty - $requested_qty WHERE equip_id = '$equip_id'");
+                }
             }
         }
+
         $msg = ($status == 'Approved') ? "Auto-Approved!" : "Pending Admin Review.";
         echo "<script>alert('Booking Successful! $msg'); window.location.href='../prototypes/student-dashboard.php';</script>";
+    } else {
+        echo "Database Error: " . mysqli_error($conn);
     }
 }
 ?>

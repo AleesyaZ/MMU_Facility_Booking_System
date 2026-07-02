@@ -2,6 +2,9 @@
 session_start();
 include('../PHP/db_config.php');
 
+// Set Timezone to ensure time() matches Malaysia time
+date_default_timezone_set("Asia/Kuala_Lumpur");
+
 // 1. SECURITY CHECK
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
@@ -10,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// 2. NAVBAR DATA - FIXED TYPO HERE ($user_result)
+// 2. NAVBAR DATA
 $user_result = mysqli_query($conn, "SELECT name, role FROM user WHERE user_id = '$user_id' LIMIT 1");
 $user_data = mysqli_fetch_assoc($user_result);
 $full_name = $user_data['name'] ?? "User";
@@ -35,6 +38,7 @@ function time_ago($timestamp) {
     $minutes = round($seconds / 60);           
     $hours   = round($seconds / 3600);         
     $days    = round($seconds / 86400);        
+    
     if ($seconds <= 60) return "Just Now";
     else if ($minutes <= 60) return "$minutes mins ago";
     else if ($hours <= 24) return "$hours hours ago";
@@ -52,7 +56,6 @@ function time_ago($timestamp) {
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
-    
 </head>
 <body>
 
@@ -101,7 +104,17 @@ function time_ago($timestamp) {
         <?php if(mysqli_num_rows($result) > 0): ?>
             <?php while($report = mysqli_fetch_assoc($result)): 
                 $status = $report['status'];
-                $badge_class = ($status == 'Under Review') ? 'badge-pending' : 'badge-approved';
+                $badge_class = ''; 
+
+                if ($status == 'Under Review') {
+                    $badge_class = 'badge-pending'; 
+                } elseif ($status == 'In Progress') {
+                    $badge_class = 'badge-info';    
+                } elseif ($status == 'Resolved') {
+                    $badge_class = 'badge-approved'; 
+                } else {
+                    $badge_class = 'badge'; 
+                }
                 
                 $type_icon = "report";
                 if($report['issue_type'] == 'Damage') $type_icon = "build";
@@ -165,8 +178,15 @@ function time_ago($timestamp) {
     <script>
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
-        trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('show'); });
-        window.addEventListener('click', () => { if (menu.classList.contains('show')) menu.classList.remove('show'); });
+        if (trigger && menu) {
+            trigger.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                menu.classList.toggle('show'); 
+            });
+            window.addEventListener('click', () => { 
+                if (menu.classList.contains('show')) { menu.classList.remove('show'); } 
+            });
+        }
     </script>
 </body>
 </html>

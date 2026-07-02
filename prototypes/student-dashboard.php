@@ -25,12 +25,13 @@ $name_parts = explode(' ', trim($full_name));
 $first_name = $name_parts[0]; 
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// 2. FIXED QUOTA QUERY
+// --- UPDATED SECTION 2: Reset on Sunday 12am ---
+// Changing mode '1' (Monday) to '0' (Sunday)
 $quota_query = "SELECT COUNT(*) as total FROM booking 
                 WHERE user_id = '$user_id' 
                 AND status NOT IN ('Cancelled', 'Rejected') 
                 AND (is_priority = 0 OR is_priority IS NULL) 
-                AND YEARWEEK(booking_date, 1) >= YEARWEEK(CURDATE(), 1)";
+                AND YEARWEEK(booking_date, 0) = YEARWEEK(CURDATE(), 0)";
 $quota_result = mysqli_query($conn, $quota_query);
 $quota_data = mysqli_fetch_assoc($quota_result);
 $used_quota = $quota_data['total'];
@@ -53,7 +54,7 @@ $bookings_query = "SELECT b.*, f.facility_name, f.category, f.image_path
 $bookings_result = mysqli_query($conn, $bookings_query);
 
 // 5. FETCH CAMPUS ANNOUNCEMENTS
-$ann_query = "SELECT * FROM annoucement ORDER BY publish_date DESC LIMIT 3";
+$ann_query = "SELECT * FROM annoucement WHERE status = 'Live' ORDER BY publish_date DESC LIMIT 3";
 $ann_result = mysqli_query($conn, $ann_query);
 
 function time_ago($timestamp) {
@@ -69,6 +70,22 @@ function time_ago($timestamp) {
     else if ($hours <= 24) return "$hours hours ago";
     else if ($days <= 7) return "$days days ago";
     else return date("d M Y", $time_ago);
+}
+
+// Handle AJAX Request for Real-Time Update
+if(isset($_GET['ajax_announcements'])) {
+    if (mysqli_num_rows($ann_result) > 0) {
+        while ($ann = mysqli_fetch_assoc($ann_result)) { 
+            echo '<div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
+                    <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">'.htmlspecialchars($ann['title']).'</h4>
+                    <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">'.htmlspecialchars($ann['content']).'</p>
+                    <span style="font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block;">Posted '.time_ago($ann['publish_date']).'</span>
+                  </div>';
+        } 
+    } else {
+        echo "<p style='font-size: 12px; color: var(--text-muted); text-align: center;'>No announcements at this time.</p>";
+    }
+    exit();
 }
 ?>
 
@@ -144,7 +161,7 @@ function time_ago($timestamp) {
                 <?php if($user_role === 'Lecturer'): ?>
                     <p style="font-size: 11px; color: var(--secondary); margin-top: 12px; font-weight: 600;">Note: Priority academic bookings are excluded from this quota count.</p>
                 <?php else: ?>
-                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">Quotas resets on a weekly basis. 3 penalty strikes result in a 30-day suspension.</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">Quotas reset every Sunday at 12:00 AM. 3 strikes result in a suspension.</p>
                 <?php endif; ?>
             </div>
 
@@ -222,7 +239,7 @@ function time_ago($timestamp) {
                 <h3 class="card-title">
                     <span class="material-symbols-outlined">campaign</span> Campus Announcements
                 </h3>
-                <div class="list-group">
+                <div class="list-group" id="announcement-container">
                     <?php 
                     if (mysqli_num_rows($ann_result) > 0) {
                         while ($ann = mysqli_fetch_assoc($ann_result)) { 
@@ -255,6 +272,17 @@ function time_ago($timestamp) {
                 if (menu.classList.contains('show')) { menu.classList.remove('show'); } 
             });
         }
+
+        function refreshAnnouncements() {
+            fetch('student-dashboard.php?ajax_announcements=1')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('announcement-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error refreshing announcements:', error));
+        }
+
+        setInterval(refreshAnnouncements, 30000);
     </script>
 </body>
 </html>

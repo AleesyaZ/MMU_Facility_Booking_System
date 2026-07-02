@@ -2,14 +2,16 @@
 session_start();
 include('db_config.php');
 
+// 1. SET TIMEZONE so the timestamp matches Malaysia time
+date_default_timezone_set("Asia/Kuala_Lumpur");
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_id = $_SESSION['user_id'];
     $facility_name = mysqli_real_escape_string($conn, $_POST['facility_name']);
     $issue_type = mysqli_real_escape_string($conn, $_POST['issue_type']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $report_date = date("Y-m-d");
 
-    // 1. Find the Facility ID based on the name typed
+    // 2. Find the Facility ID based on the name typed
     $fac_query = mysqli_query($conn, "SELECT facility_id FROM facility WHERE facility_name = '$facility_name' LIMIT 1");
     if (mysqli_num_rows($fac_query) > 0) {
         $fac_data = mysqli_fetch_assoc($fac_query);
@@ -19,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // 2. Handle Photo Upload
+    // 3. Handle Photo Upload
     $photo_name = NULL;
     if (isset($_FILES['proofUpload']) && $_FILES['proofUpload']['error'] == 0) {
         $target_dir = "../public/uploads/issues/";
@@ -34,10 +36,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($_FILES["proofUpload"]["tmp_name"], $target_dir . $photo_name);
     }
 
-    // 3. INSERT INTO DATABASE
-    // We added 'issue_image' to the list of columns below
+    // 4. INSERT INTO DATABASE
+    // UPDATED: Changed '$report_date' to NOW() to capture the exact time (hours/mins/secs)
     $sql = "INSERT INTO issue_report (user_id, facility_id, issue_type, description, issue_image, report_date, status) 
-            VALUES ('$user_id', '$facility_id', '$issue_type', '$description', '$photo_name', '$report_date', 'Under Review')";
+            VALUES ('$user_id', '$facility_id', '$issue_type', '$description', '$photo_name', NOW(), 'Under Review')";
 
     if (mysqli_query($conn, $sql)) {
         echo "<script>alert('Issue reported successfully. The facilities team has been notified.'); window.location.href='../prototypes/student-dashboard.php';</script>";

@@ -63,18 +63,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
     if (mysqli_query($conn, $sql)) {
         $booking_id = mysqli_insert_id($conn);
 
-        // 5. ADD-ON EQUIPMENT LOGIC (FIXED)
+        // --- UPDATED: 5. ADD-ON EQUIPMENT LOGIC WITH QUANTITY UPDATE ---
         if (isset($_POST['equipment']) && is_array($_POST['equipment'])) {
             foreach ($_POST['equipment'] as $equip_id) {
-                $qty_field = 'qty_' . $equip_id;
-                $quantity = isset($_POST[$qty_field]) ? (int)$_POST[$qty_field] : 1;
                 $equip_id = mysqli_real_escape_string($conn, $equip_id);
+                $qty_field = 'qty_' . $equip_id;
+                $requested_qty = isset($_POST[$qty_field]) ? (int)$_POST[$qty_field] : 1;
 
-                $sql_equip = "INSERT INTO booking_equipment (booking_id, equip_id, quantity) 
-                              VALUES ('$booking_id', '$equip_id', '$quantity')";
+                // A. Verify availability again on backend before deducting
+                $check_stock = mysqli_query($conn, "SELECT avail_qty FROM equipment WHERE equip_id = '$equip_id'");
+                $stock_data = mysqli_fetch_assoc($check_stock);
                 
-                if (!mysqli_query($conn, $sql_equip)) {
-                    die("Database Error (Equipment): " . mysqli_error($conn));
+                if ($stock_data && $stock_data['avail_qty'] >= $requested_qty) {
+                    // B. Insert relationship record
+                    $sql_equip = "INSERT INTO booking_equipment (booking_id, equip_id, quantity) 
+                                  VALUES ('$booking_id', '$equip_id', '$requested_qty')";
+                    mysqli_query($conn, $sql_equip);
+
+                    // C. UPDATE THE EQUIPMENT TABLE (Subtract from available quantity)
+                    $update_stock = "UPDATE equipment SET avail_qty = avail_qty - $requested_qty WHERE equip_id = '$equip_id'";
+                    mysqli_query($conn, $update_stock);
+                } else {
+                    // Optional: You could alert if some items were out of stock, 
+                    // but usually, the form prevents this via the 'max' attribute.
                 }
             }
         }

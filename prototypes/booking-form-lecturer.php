@@ -34,15 +34,29 @@ $max_quota = $user_data['booking_quota'] ?? 2;
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// 4. FETCH DYNAMIC EQUIPMENTS
+// --- UPDATED: 4. FETCH DYNAMIC EQUIPMENTS BASED ON CAMPUS ---
+$facility_location = $facility['location'];
+$target_campus = "";
+
+// Detect campus from facility location string
+if (stripos($facility_location, 'Cyberjaya') !== false) {
+    $target_campus = 'Cyberjaya';
+} elseif (stripos($facility_location, 'Melaka') !== false) {
+    $target_campus = 'Melaka';
+}
+
 $safe_cat = mysqli_real_escape_string($conn, $facility['category']);
+$safe_campus = mysqli_real_escape_string($conn, $target_campus);
+
+// Filter equipment by status, category, AND the detected campus
 $equip_query = "SELECT * FROM equipment 
                 WHERE status = 'Available' 
                 AND (category = '$safe_cat' OR category = 'General') 
+                AND campus = '$safe_campus'
                 ORDER BY name ASC";
 $equip_result = mysqli_query($conn, $equip_query);
 
-// --- NEW: 5. FETCH EXISTING BOOKINGS (For Lecturers to see what to override) ---
+// --- 5. FETCH EXISTING BOOKINGS (For Lecturers to see what to override) ---
 $occupied_query = "SELECT booking_date, start_time, end_time, is_priority FROM booking 
                    WHERE facility_id = '$facility_id' 
                    AND status IN ('Approved', 'Pending') 
@@ -180,7 +194,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 32px 0;">
 
                 <div class="dashboard-header" style="margin-bottom: 16px;">
-                    <h2 style="font-size: 20px;">Add-On Equipment <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">(Optional)</span></h2>
+                    <h2 style="font-size: 20px;">Add-On Equipment (Available in <?php echo $target_campus; ?>)</h2>
                 </div>
 
                 <div class="equipment-list">
@@ -195,7 +209,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                             </div>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <p style="font-size: 14px; color: var(--text-muted);">No equipment available in database.</p>
+                        <p style="font-size: 14px; color: var(--text-muted);">No equipment available for this campus/category.</p>
                     <?php endif; ?>
                 </div>
 

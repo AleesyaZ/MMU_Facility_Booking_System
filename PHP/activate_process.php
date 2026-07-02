@@ -6,10 +6,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 1. Get and sanitize the inputs from activate.html
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $otp = mysqli_real_escape_string($conn, $_POST['otp']);
-    $new_password = mysqli_real_escape_string($conn, $_POST['password']);
+    
+    // Get raw password (do not escape before hashing)
+    $new_password = $_POST['password'];
 
     // 2. Search for the user with this email and OTP
-    // We use LOWER() and TRIM() again to avoid the "not found" issues we had earlier
     $query = "SELECT * FROM user WHERE LOWER(TRIM(email)) = LOWER(TRIM('$email')) AND otp_code = '$otp' LIMIT 1";
     $result = mysqli_query($conn, $query);
 
@@ -26,20 +27,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
 
-        // 4. THE UPDATE: Save the new password and set is_activated to 1
-        // We also clear the otp_code so it cannot be used again
+        // --- NEW: HASH THE PASSWORD ---
+        // We use PASSWORD_DEFAULT which is the current standard (BCRYPT)
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+        // 4. THE UPDATE: Save the HASHED password and set is_activated to 1
         $user_id = $user['user_id'];
         $update_query = "UPDATE user SET 
-                         password = '$new_password', 
+                         password = '$hashed_password', 
                          is_activated = 1, 
                          otp_code = NULL, 
                          otp_sent_at = NULL 
                          WHERE user_id = '$user_id'";
 
         if (mysqli_query($conn, $update_query)) {
-            // Success! The database is now updated.
+            // Success! 
             echo "<script>
-                    alert('Account activated! Your password has been set. You can now log in.'); 
+                    alert('Account activated! Your secure password has been set. You can now log in.'); 
                     window.location.href='../prototypes/login.html';
                   </script>";
         } else {
@@ -48,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } else {
         // If the email and OTP combination doesn't match
-        echo "<script>alert('Invalid OTP or Email. Please check your database for the correct code.'); window.history.back();</script>";
+        echo "<script>alert('Invalid OTP or Email. Please check your data or request a new code.'); window.history.back();</script>";
     }
 }
 ?>

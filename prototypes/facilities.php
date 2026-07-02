@@ -6,6 +6,7 @@ include('../PHP/db_config.php');
 $is_logged_in = isset($_SESSION['user_id']);
 $booking_page = "login.html"; 
 $has_quota = true; 
+$is_suspended = false; 
 $used_quota = 0;
 $max_quota = 0;
 
@@ -19,10 +20,16 @@ if ($is_logged_in) {
         $booking_page = "booking-form.php";
     }
 
-    $user_result = mysqli_query($conn, "SELECT name, booking_quota FROM user WHERE user_id = '$user_id' LIMIT 1");
+    // UPDATED: Using your existing 'status' column from the database
+    $user_result = mysqli_query($conn, "SELECT name, booking_quota, status FROM user WHERE user_id = '$user_id' LIMIT 1");
     $user_data = mysqli_fetch_assoc($user_result);
     $full_name = $user_data['name'] ?? "User";
     $max_quota = $user_data['booking_quota'] ?? 0;
+    
+    // Check if the user is suspended using the 'status' column
+    if (isset($user_data['status']) && $user_data['status'] === 'Suspended') {
+        $is_suspended = true;
+    }
     
     $name_parts = explode(' ', trim($full_name));
     $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
@@ -204,15 +211,20 @@ $facility_result = mysqli_query($conn, $base_query);
                             <p class="facility-desc"><?php echo htmlspecialchars($row['description']); ?></p>
                             
                             <?php if ($is_available): ?>
-                                <?php if ($has_quota): ?>
+                                <!-- Blocks booking if user is suspended -->
+                                <?php if ($is_suspended): ?>
+                                    <button class="btn btn-disabled" style="background-color: #ffebee; color: #bb0013; cursor: not-allowed; width: 100%; justify-content: center;" title="Your account has been suspended" disabled>
+                                        Account Suspended
+                                    </button>
+                                <?php elseif ($has_quota): ?>
                                     <a href="<?php echo $booking_page; ?>?id=<?php echo $row['facility_id']; ?>" class="btn btn-primary" style="justify-content: center; width: 100%;">Book Now</a>
                                 <?php else: ?>
-                                    <button class="btn btn-disabled" style="background-color: #ffebee; color: #bb0013; cursor: not-allowed;" title="You have reached your weekly booking limit" disabled>
+                                    <button class="btn btn-disabled" style="background-color: #ffebee; color: #bb0013; cursor: not-allowed; width: 100%; justify-content: center;" title="You have reached your weekly booking limit" disabled>
                                         Quota Full (<?php echo $used_quota; ?>/<?php echo $max_quota; ?>)
                                     </button>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <button class="btn btn-disabled" disabled><?php echo $status; ?> (Unavailable)</button>
+                                <button class="btn btn-disabled" style="width: 100%; justify-content: center;" disabled><?php echo $status; ?> (Unavailable)</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -262,7 +274,7 @@ $facility_result = mysqli_query($conn, $base_query);
                     <a href="https://www.tiktok.com/@mmumalaysia" target="_blank" class="social-icon">
                         <img src="../public/img/tiktok.jpg" alt="TikTok">
                     </a>
-                    <a href="https://www.youtube.com/mmumalaysiatv" target="_blank" class="social-icon">
+                    <a href="#" target="_blank" class="social-icon">
                         <img src="../public/img/youtube.png" alt="YouTube">
                     </a>
                 </div>

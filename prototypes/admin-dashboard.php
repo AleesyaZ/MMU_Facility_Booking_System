@@ -18,7 +18,7 @@ $priority_count_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking
 $priority_count = mysqli_fetch_assoc($priority_count_res)['total'];
 
 // Count Open Issue Reports (Using the corrected table name 'issue_report')
-$issue_count_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM issue_report WHERE status = 'Open'");
+$issue_count_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM issue_report WHERE status = 'Under Review' OR status = 'Open'");
 $issue_count = mysqli_fetch_assoc($issue_count_res)['total'];
 
 // Count Suspended Users (Users with 3 or more strikes)
@@ -77,13 +77,13 @@ $reports_result = mysqli_query($conn, $reports_query);
                 <a href="admin-bookings.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
                 </a>
-                <a href="facilities.php" class="admin-nav-item">
+                <a href="admin-facilities.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-equipment.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">cable</span> Manage Equipment
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-users.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">group</span> Manage Users & Quotas
                 </a>
                 <a href="admin-penalties.php" class="admin-nav-item">
@@ -92,7 +92,7 @@ $reports_result = mysqli_query($conn, $reports_query);
                 <a href="admin-reports.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">report</span> Issue Reports
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-announcements.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">campaign</span> Announcements
                 </a>
             </nav>
@@ -226,11 +226,24 @@ $reports_result = mysqli_query($conn, $reports_query);
                         <div class="card" style="padding: 0; overflow: hidden; height: auto;">
                             <div class="list-group" style="padding-bottom: 0; gap: 0;">
                                 <?php if(mysqli_num_rows($reports_result) > 0): ?>
-                                    <?php while($report = mysqli_fetch_assoc($reports_result)): ?>
+                                    <?php while($report = mysqli_fetch_assoc($reports_result)): 
+                                        // Dynamic Badge Styling logic
+                                        $status = $report['status'];
+                                        $badge_style = "background: #e5e7eb; color: #374151;"; // Default gray
+                                        
+                                        if ($status == 'Under Review' || $status == 'Open') {
+                                            $badge_style = "background: #fef3c7; color: #92400e;"; // Yellow
+                                        } elseif ($status == 'In Progress') {
+                                            $badge_style = "background: #e0f2fe; color: #0369a1;"; // Blue
+                                        } elseif ($status == 'Resolved') {
+                                            $badge_style = "background: #dcfce7; color: #166534;"; // Green
+                                        }
+                                    ?>
                                     <div class="report-summary-item" style="padding: 16px; border-bottom: 1px solid rgba(194, 198, 211, 0.2);">
                                         <div class="report-item-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                             <h4 style="font-size: 11px; font-weight: 700; color: var(--text-main); text-transform: uppercase;"><?php echo htmlspecialchars($report['issue_type']); ?></h4>
-                                            <span class="badge" style="background: #fef3c7; color: #92400e; padding: 2px 8px; font-size: 10px; border-radius: 50px;"><?php echo $report['status']; ?></span>
+                                            <!-- UPDATED BADGE WITH DYNAMIC COLOR -->
+                                            <span class="badge" style="<?php echo $badge_style; ?> padding: 2px 8px; font-size: 10px; border-radius: 50px;"><?php echo $status; ?></span>
                                         </div>
                                         <div class="report-item-body">
                                             <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($report['facility_name']); ?></p>

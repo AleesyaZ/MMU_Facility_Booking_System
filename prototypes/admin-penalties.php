@@ -121,13 +121,13 @@ function renderStrikes($count) {
                 <a href="admin-bookings.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
                 </a>
-                <a href="facilities.php" class="admin-nav-item">
+                <a href="admin-facilities.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
                 </a>
-                <a href="equipment.php" class="admin-nav-item">
+                <a href="admin-equipment.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">cable</span> Manage Equipment
                 </a>
-                <a href="users.php" class="admin-nav-item">
+                <a href="admin-users.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">group</span> Manage Users & Quotas
                 </a>
                 <a href="admin-penalties.php" class="admin-nav-item active">
@@ -136,7 +136,7 @@ function renderStrikes($count) {
                 <a href="admin-reports.php" class="admin-nav-item ">
                     <span class="material-symbols-outlined">report</span> Issue Reports
                 </a>
-                <a href="announcements.php" class="admin-nav-item">
+                <a href="admin-announcements.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">campaign</span> Announcements
                 </a>
             </nav>
