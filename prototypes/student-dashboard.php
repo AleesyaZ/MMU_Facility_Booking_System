@@ -238,6 +238,7 @@ if(isset($_GET['ajax_announcements'])) {
             <div class="card col-span-1" style="align-self: start; height: auto;">
                 <h3 class="card-title">
                     <span class="material-symbols-outlined">campaign</span> Campus Announcements
+                    <a href="announcements.html" style="font-size: 13px; font-weight: 500; color: var(--text-muted); padding-left: 25px;">View All</a>
                 </h3>
                 <div class="list-group" id="announcement-container">
                     <?php 

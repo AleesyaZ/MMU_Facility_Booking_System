@@ -157,8 +157,6 @@ function renderStrikes($count) {
                     
                     <div class="profile-menu" id="profileMenu">
                         <a href="#"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
-                        <a href="#"><span class="material-symbols-outlined">settings</span> System Settings</a>
-                        <div style="border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 4px 0;"></div>
                         <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
                 </div>

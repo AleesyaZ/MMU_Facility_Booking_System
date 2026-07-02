@@ -67,7 +67,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Book <?php echo $facility['facility_name']; ?> - MMU Campus Space</title>
+    <title>Book <?php echo htmlspecialchars($facility['facility_name']); ?> - MMU Campus Space</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
@@ -111,6 +111,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
 
     <main class="container booking-layout">
         
+        <!-- LEFT COLUMN: The Form -->
         <div class="card" style="margin-bottom: 0;">
             <div class="dashboard-header" style="margin-bottom: 24px;">
                 <h2>Reservation Details</h2>
@@ -124,13 +125,18 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     <label>Select Date</label>
                     <input type="date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
                     
+                    <!-- Backend Dev's Occupied Slots List -->
                     <div style="margin-top: 12px; padding: 12px; background: #f0f2f5; border-radius: 8px; border-left: 4px solid var(--secondary);">
                         <span style="font-size: 12px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 5px;">
                             <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">event_busy</span> OCCUPIED SLOTS:
                         </span>
                         <ul style="font-size: 11px; color: var(--text-muted); list-style: none; padding-left: 0;">
                             <?php if(mysqli_num_rows($occupied_result) > 0): ?>
-                                <?php while($occ = mysqli_fetch_assoc($occupied_result)): ?>
+                                <?php 
+                                // Rewind pointer just in case it's used elsewhere
+                                mysqli_data_seek($occupied_result, 0); 
+                                while($occ = mysqli_fetch_assoc($occupied_result)): 
+                                ?>
                                     <li>• <?php echo date("d M", strtotime($occ['booking_date'])); ?>: <?php echo date("g:i A", strtotime($occ['start_time'])); ?> - <?php echo date("g:i A", strtotime($occ['end_time'])); ?></li>
                                 <?php endwhile; ?>
                             <?php else: ?>
@@ -168,7 +174,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                         <div class="equipment-option">
                             <div class="equipment-left">
                                 <input type="checkbox" name="equipment[]" value="<?php echo $equip['equip_id']; ?>" id="eq<?php echo $equip['equip_id']; ?>">
-                                <label for="eq<?php echo $equip['equip_id']; ?>"><?php echo $equip['name']; ?></label>
+                                <label for="eq<?php echo $equip['equip_id']; ?>"><?php echo htmlspecialchars($equip['name']); ?></label>
                             </div>
                             <input type="number" name="qty_<?php echo $equip['equip_id']; ?>" class="equipment-qty" min="1" max="<?php echo $equip['avail_qty']; ?>" value="1">
                         </div>
@@ -185,6 +191,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             </form>
         </div>
 
+        <!-- RIGHT COLUMN: Summary Side -->
         <div>
             <div class="card" style="position: sticky; top: 100px;">
                 <h3 class="card-title">Booking Summary</h3>
@@ -203,7 +210,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                         <span>Maximum Capacity: <?php echo $facility['capacity']; ?> people</span>
                     </div>
                 </div>
-
+                
                 <div class="quota-alert">
                     <span class="material-symbols-outlined" style="font-size: 20px;">info</span>
                     <div>
@@ -211,6 +218,82 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                         This reservation will consume 1 of your <?php echo $max_quota; ?> facility quotas.
                     </div>
                 </div>
+
+                <!-- Facility Weekly Timetable -->
+                <div class="timetable-container">
+                    <div class="timetable-header">
+                        <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
+                        <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Current Week</span>
+                    </div>
+
+                    <!-- The Grid (Mon-Fri) -->
+                    <div class="timetable-grid">
+                        <!-- Header Row -->
+                        <div class="tt-cell tt-head">Time</div>
+                        <div class="tt-cell tt-head">Mon</div>
+                        <div class="tt-cell tt-head">Tue</div>
+                        <div class="tt-cell tt-head">Wed</div>
+                        <div class="tt-cell tt-head">Thu</div>
+                        <div class="tt-cell tt-head">Fri</div>
+
+                        <!-- 8:00 AM Row -->
+                        <div class="tt-cell tt-time">8 AM</div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+
+                        <!-- 10:00 AM Row -->
+                        <div class="tt-cell tt-time">10 AM</div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+
+                        <!-- 12:00 PM Row -->
+                        <div class="tt-cell tt-time">12 PM</div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot blocked" title="Friday Prayer Break"></div>
+
+                        <!-- 2:00 PM Row -->
+                        <div class="tt-cell tt-time">2 PM</div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+
+                        <!-- 4:00 PM Row -->
+                        <div class="tt-cell tt-time">4 PM</div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+
+                        <!-- 6:00 PM Row -->
+                        <div class="tt-cell tt-time">6 PM</div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="tt-legend">
+                        <div class="legend-item"><div class="legend-box" style="background: transparent;"></div> Free</div>
+                        <div class="legend-item"><div class="legend-box" style="background: var(--surface-container-high);"></div> Taken</div>
+                        <div class="legend-item"><div class="legend-box" style="background: #fee2e2; border-color: #991b1b;"></div> Fixed Class</div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
