@@ -347,11 +347,25 @@ $result = mysqli_query($conn, $query);
             <div style="padding: 24px;">
                 
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;">
-                    Click on any empty slot to mark it as a <strong>Fixed Academic Class</strong>. This will block students from booking it. Gray slots indicate active student bookings and cannot be overwritten here.
+                    Click on any empty slot to mark it as a <strong>Fixed Academic Class</strong>. This will block students from booking it. <br> Gray slots indicate active student bookings and cannot be overwritten here.
                 </p>
 
                 <!-- Interactive Timetable Grid -->
                 <div class="timetable-container" style="margin-top: 0;">
+        
+                    <div class="timetable-header" style="background-color: var(--surface-container-low); padding: 12px 20px; border-bottom: 1px solid rgba(194, 198, 211, 0.4); display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="font-size: 14px; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 600;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Schedule Editor
+                        </h4>
+                        
+                        <!-- Week Navigation -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <button class="btn-icon" style="background: white; border: 1px solid var(--border-color); width: 28px; height: 28px;"><span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span></button>
+                            <span style="font-size: 13px; font-weight: 600; color: var(--text-main); min-width: 130px; text-align: center;">Oct 23 - Oct 29, 2024</span>
+                            <button class="btn-icon" style="background: white; border: 1px solid var(--border-color); width: 28px; height: 28px;"><span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span></button>
+                        </div>
+                    </div>
+
                     <div class="timetable-grid admin-edit" id="adminTimetable">
                         <!-- Header Row -->
                         <div class="tt-cell tt-head">Time</div>
@@ -421,8 +435,54 @@ $result = mysqli_query($conn, $query);
                 <!-- Admin Action Area -->
                 <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(194, 198, 211, 0.4);">
                     <button class="btn btn-outline close-modal" style="padding: 8px 16px; font-size: 13px;">Cancel</button>
-                    <button class="btn btn-primary close-modal" style="padding: 8px 16px; font-size: 13px;">Save Schedule</button>
+                    <button class="btn btn-primary" id="triggerRecurrenceBtn" style="padding: 8px 16px; font-size: 13px;">Save Schedule</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         RECURRING SCHEDULE MODAL
+         ========================================== -->
+    <div class="modal-overlay" id="recurrenceModal">
+        <div class="modal-box modal-info" style="max-width: 400px; padding: 24px;">
+            <div class="modal-header" style="margin-bottom: 24px;">
+                <div class="modal-icon" style="background: #e0e7ff; color: var(--primary);">
+                    <span class="material-symbols-outlined">event_repeat</span>
+                </div>
+                <h3 class="modal-title" style="font-size: 18px;">Apply Schedule</h3>
+            </div>
+            
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                How long would you like to apply these Fixed Academic Classes for?
+            </p>
+
+            <form action="#" method="POST" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px;">
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                    <input type="radio" name="recurrence" value="1" checked style="width: 16px; height: 16px; accent-color: var(--primary);">
+                    <span style="font-size: 14px; font-weight: 500;">This week only</span>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                    <input type="radio" name="recurrence" value="7" style="width: 16px; height: 16px; accent-color: var(--primary);">
+                    <span style="font-size: 14px; font-weight: 500;">Short Semester (Next 7 Weeks)</span>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                    <input type="radio" name="recurrence" value="14" style="width: 16px; height: 16px; accent-color: var(--primary);">
+                    <span style="font-size: 14px; font-weight: 500;">Long Semester (Next 14 Weeks)</span>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                    <input type="radio" name="recurrence" value="custom" style="width: 16px; height: 16px; accent-color: var(--primary);">
+                    <span style="font-size: 14px; font-weight: 500;">Custom:</span>
+                    <input type="number" class="form-control" style="width: 70px; padding: 4px 8px; font-size: 13px;" min="1" max="52" placeholder="wks">
+                </label>
+            </form>
+
+            <div class="modal-actions" style="border-top: 1px solid rgba(194,198,211,0.3); padding-top: 16px;">
+                <button class="btn btn-outline" id="cancelRecurrenceBtn" style="padding: 8px 16px; font-size: 13px;">Back</button>
+                <button class="btn btn-primary close-modal" style="padding: 8px 16px; font-size: 13px;">Confirm & Save</button>
             </div>
         </div>
     </div>
@@ -532,6 +592,24 @@ $result = mysqli_query($conn, $query);
             if (params.get('msg') === 'error_fk') alert("Cannot delete: This facility has active bookings or reports.");
             window.history.replaceState({}, document.title, window.location.pathname);
         }
+
+        // Recurrence Modal Logic
+        const recurrenceModal = document.getElementById('recurrenceModal');
+        const triggerRecurrenceBtn = document.getElementById('triggerRecurrenceBtn');
+        const cancelRecurrenceBtn = document.getElementById('cancelRecurrenceBtn');
+
+        triggerRecurrenceBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            recurrenceModal.classList.add('show');
+            timetableModal.classList.remove('show'); 
+        });
+
+        cancelRecurrenceBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            recurrenceModal.classList.remove('show');
+            timetableModal.classList.add('show'); // Bring timetable back if cancel button clicked
+        });
+
     </script>
 </body>
 </html>

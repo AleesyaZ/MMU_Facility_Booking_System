@@ -341,7 +341,6 @@ $reports_result = mysqli_query($conn, "
                     </div>
                     <div style="margin-bottom: 24px;">
                         <h4 class="modal-section-title">Detailed Description</h4>
-                        <!-- UPDATED CSS FOR VERTICAL SCROLLING AND WRAPPING -->
                         <div class="scrollable-desc" id="modal_desc" style="padding: 16px; font-size: 13px; max-height: 120px; overflow-y: auto; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; background: #f9fafb; border-radius: 6px;"></div>
                     </div>
                     <div style="background-color: #f8f9ff; border: 1px solid rgba(194, 198, 211, 0.4); border-radius: 8px; padding: 20px;">
