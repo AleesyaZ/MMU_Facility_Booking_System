@@ -165,12 +165,12 @@ $result = mysqli_query($conn, $query);
             <header class="admin-topbar">
                 <div><h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">User Management</h2></div>
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer;">
-                    <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
                     <div class="avatar" style="background-color: var(--secondary);"><?php echo strtoupper($initials); ?></div>
                     <span class="profile-name" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo htmlspecialchars($admin_name); ?></span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
+
                     <div class="profile-menu" id="profileMenu">
-                        <a href="#"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="admin-profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
                         <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
                 </div>

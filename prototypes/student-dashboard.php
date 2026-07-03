@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// Set Timezone to ensure CURDATE() matches Malaysia time
+// Set Timezone
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
 if (!isset($_SESSION['user_id'])) {
@@ -11,6 +11,20 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+
+// --- 0. FETCH NOTIFICATIONS ---
+$unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
+$unread_res = mysqli_query($conn, $unread_query);
+$unread_count = mysqli_fetch_assoc($unread_res)['total'];
+
+$notif_list_query = "SELECT * FROM notification WHERE user_id = '$user_id' ORDER BY date_sent DESC LIMIT 5";
+$notif_list_res = mysqli_query($conn, $notif_list_query);
+
+// Handle AJAX to mark all as read
+if (isset($_GET['mark_read'])) {
+    mysqli_query($conn, "UPDATE notification SET is_read = 1 WHERE user_id = '$user_id'");
+    exit();
+}
 
 // 1. FETCH USER DETAILS
 $user_query = "SELECT name, booking_quota, role FROM user WHERE user_id = '$user_id' LIMIT 1";
@@ -25,22 +39,19 @@ $name_parts = explode(' ', trim($full_name));
 $first_name = $name_parts[0]; 
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// --- UPDATED SECTION 2: Reset on Sunday 12am ---
-// Changing mode '1' (Monday) to '0' (Sunday)
+// 2. QUOTA QUERY
 $quota_query = "SELECT COUNT(*) as total FROM booking 
                 WHERE user_id = '$user_id' 
                 AND status NOT IN ('Cancelled', 'Rejected') 
                 AND (is_priority = 0 OR is_priority IS NULL) 
                 AND YEARWEEK(booking_date, 0) = YEARWEEK(CURDATE(), 0)";
 $quota_result = mysqli_query($conn, $quota_query);
-$quota_data = mysqli_fetch_assoc($quota_result);
-$used_quota = $quota_data['total'];
+$used_quota = mysqli_fetch_assoc($quota_result)['total'];
 
 // 3. FETCH PENALTY STRIKES
 $penalty_query = "SELECT SUM(strike_count) as total_strikes FROM penalty WHERE user_id = '$user_id' AND LOWER(status) = 'active'";
 $penalty_result = mysqli_query($conn, $penalty_query);
-$penalty_row = mysqli_fetch_assoc($penalty_result);
-$strikes = $penalty_row['total_strikes'] ?? 0;
+$strikes = mysqli_fetch_assoc($penalty_result)['total_strikes'] ?? 0;
 
 // 4. FETCH UPCOMING BOOKINGS
 $bookings_query = "SELECT b.*, f.facility_name, f.category, f.image_path 
@@ -66,7 +77,7 @@ function time_ago($timestamp) {
     $hours   = round($seconds / 3600);         
     $days    = round($seconds / 86400);        
     if ($seconds <= 60) return "Just Now";
-    else if ($minutes <= 60) return "$minutes minutes ago";
+    else if ($minutes <= 60) return "$minutes mins ago";
     else if ($hours <= 24) return "$hours hours ago";
     else if ($days <= 7) return "$days days ago";
     else return date("d M Y", $time_ago);
@@ -77,8 +88,8 @@ if(isset($_GET['ajax_announcements'])) {
     if (mysqli_num_rows($ann_result) > 0) {
         while ($ann = mysqli_fetch_assoc($ann_result)) { 
             echo '<div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
-                    <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">'.htmlspecialchars($ann['title']).'</h4>
-                    <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">'.htmlspecialchars($ann['content']).'</p>
+                    <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">'.htmlspecialchars($ann['title']).'</h4>
+                    <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; word-break: break-all;">'.htmlspecialchars($ann['content']).'</p>
                     <span style="font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block;">Posted '.time_ago($ann['publish_date']).'</span>
                   </div>';
         } 
@@ -117,9 +128,38 @@ if(isset($_GET['ajax_announcements'])) {
             </nav>
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
-                <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
+
+                <!-- NOTIFICATION BELL (now functional, same visual position/style as before) -->
+                <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
+                    <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
+                    <?php if ($unread_count > 0): ?>
+                        <span id="notifBadge" style="position: absolute; top: -4px; right: -4px; background: var(--secondary); color: white; font-size: 9px; font-weight: 700; min-width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+                            <?php echo $unread_count; ?>
+                        </span>
+                    <?php endif; ?>
+
+                    <div class="profile-menu" id="notifMenu" style="width: 320px; right: -60px; padding: 0; top: 36px;">
+                        <div style="padding: 16px; border-bottom: 1px solid var(--border-color);">
+                            <span style="font-weight: 700; font-size: 14px;">Recent Notifications</span>
+                        </div>
+                        <div style="max-height: 350px; overflow-y: auto;">
+                            <?php if (mysqli_num_rows($notif_list_res) > 0): ?>
+                                <?php while ($n = mysqli_fetch_assoc($notif_list_res)): ?>
+                                    <div style="padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); <?php echo ($n['is_read'] == 0) ? 'background: #f0f7ff;' : ''; ?>">
+                                        <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($n['title']); ?></p>
+                                        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($n['message']); ?></p>
+                                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;"><?php echo time_ago($n['date_sent']); ?></span>
+                                    </div>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px;">No notifications.</div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
-                
+
                 <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                     <?php echo htmlspecialchars($full_name); ?>
                 </span>
@@ -222,7 +262,7 @@ if(isset($_GET['ajax_announcements'])) {
                                        class="btn btn-outline" 
                                        style="height: 28px; padding: 0 14px; border-radius: 50px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; text-decoration: none;"
                                        onclick="return confirm('Are you sure you want to cancel this reservation?')">
-                                         Cancel
+                                        Cancel
                                     </a>
                                 </div>
                             </div>
@@ -236,18 +276,22 @@ if(isset($_GET['ajax_announcements'])) {
             </div>
 
             <div class="card col-span-1" style="align-self: start; height: auto;">
-                <h3 class="card-title">
-                    <span class="material-symbols-outlined">campaign</span> Campus Announcements
-                    <a href="announcements.html" style="font-size: 13px; font-weight: 500; color: var(--text-muted); padding-left: 25px;">View All</a>
+                <h3 class="card-title" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="material-symbols-outlined">campaign</span> Campus Announcements
+                    </div>
+                    <a href="announcements.html" style="font-size: 13px; font-weight: 500; color: var(--text-muted);">View All</a>
                 </h3>
-                <div class="list-group" id="announcement-container">
+                <div class="list-group" id="announcement-container" style="max-height: 450px; overflow: hidden;">
                     <?php 
                     if (mysqli_num_rows($ann_result) > 0) {
                         while ($ann = mysqli_fetch_assoc($ann_result)) { 
                     ?>
                             <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
-                                <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;"><?php echo htmlspecialchars($ann['title']); ?></h4>
-                                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($ann['content']); ?></p>
+                                <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo htmlspecialchars($ann['title']); ?></h4>
+                                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; word-break: break-all;">
+                                    <?php echo htmlspecialchars($ann['content']); ?>
+                                </p>
                                 <span style="font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 4px; display: block;">Posted <?php echo time_ago($ann['publish_date']); ?></span>
                             </div>
                     <?php 
@@ -262,17 +306,36 @@ if(isset($_GET['ajax_announcements'])) {
     </main>
 
     <script>
-        const trigger = document.getElementById('profileTrigger');
-        const menu = document.getElementById('profileMenu');
-        if (trigger && menu) {
-            trigger.addEventListener('click', function(e) { 
-                e.stopPropagation(); 
-                menu.classList.toggle('show'); 
-            });
-            window.addEventListener('click', function() { 
-                if (menu.classList.contains('show')) { menu.classList.remove('show'); } 
-            });
-        }
+        const profileTrigger = document.getElementById('profileTrigger');
+        const profileMenu = document.getElementById('profileMenu');
+        const notifTrigger = document.getElementById('notifTrigger');
+        const notifMenu = document.getElementById('notifMenu');
+
+        profileTrigger.addEventListener('click', function(e) { 
+            e.stopPropagation(); 
+            notifMenu.classList.remove('show');
+            profileMenu.classList.toggle('show'); 
+        });
+
+        // Notification click logic (stops propagation so it doesn't also trigger profileMenu)
+        notifTrigger.addEventListener('click', function(e) { 
+            e.stopPropagation(); 
+            profileMenu.classList.remove('show');
+            notifMenu.classList.toggle('show'); 
+            
+            if (notifMenu.classList.contains('show')) {
+                // Mark as read in database
+                fetch('student-dashboard.php?mark_read=1');
+                // Hide badge instantly
+                const badge = document.getElementById('notifBadge');
+                if (badge) badge.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('click', function() { 
+            profileMenu.classList.remove('show');
+            notifMenu.classList.remove('show');
+        });
 
         function refreshAnnouncements() {
             fetch('student-dashboard.php?ajax_announcements=1')

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Manage Equipment - MMU Campus Space</title>
+    <title>Admin Profile - MMU Campus Space</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
@@ -30,20 +30,19 @@
                 <a href="admin-facilities.html" class="admin-nav-item">
                     <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
                 </a>
-                <!-- ACTIVE TAB -->
-                <a href="admin-equipment.html" class="admin-nav-item active">
+                <a href="admin-equipment.html" class="admin-nav-item">
                     <span class="material-symbols-outlined">cable</span> Manage Equipment
                 </a>
                 <a href="admin-users.html" class="admin-nav-item">
                     <span class="material-symbols-outlined">group</span> Manage Users & Quotas
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-penalties.html" class="admin-nav-item">
                     <span class="material-symbols-outlined">gavel</span> Penalty System
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-reports.html" class="admin-nav-item">
                     <span class="material-symbols-outlined">report</span> Issue Reports
                 </a>
-                <a href="#" class="admin-nav-item">
+                <a href="admin-announcements.html" class="admin-nav-item">
                     <span class="material-symbols-outlined">campaign</span> Announcements
                 </a>
             </nav>
@@ -55,128 +54,120 @@
             <!-- Topbar -->
             <header class="admin-topbar">
                 <div>
-                    <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Equipment Inventory</h2>
+                    <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">My Profile</h2>
                 </div>
-                <div class="nav-profile">
-                    <div class="avatar" style="background-color: var(--secondary);">AD</div>
-                    <span style="font-weight: 500; font-size: 14px;">System Admin</span>
+                <div class="nav-profile" id="profileTrigger">
+                    <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
+                    <div class="avatar" style="background-color: var(--secondary);">M</div>
+                    <span style="font-weight: 500; font-size: 14px; text-transform: uppercase;">Mr Admin</span>
+                    <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
+                    
+                    <!-- The Dropdown Box -->
+                    <div class="profile-menu" id="profileMenu">
+                        <a href="admin-dashboard.php"><span class="material-symbols-outlined">undo</span> Admin Panel</a>
+                        <div style="border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 4px 0;"></div>
+                        <a href="login.html" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
+                    </div>
                 </div>
             </header>
 
             <!-- Scrollable Content -->
             <div class="admin-content">
                 
-                <!-- Toolbar: Search and Add Button -->
-                <div class="admin-toolbar">
-                    <div class="search-wrapper">
-                        <span class="material-symbols-outlined">search</span>
-                        <input type="text" placeholder="Search equipment name...">
-                    </div>
+                <div class="dashboard-grid" style="grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); gap: 32px;">
                     
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <select class="form-control" style="width: 160px; padding: 8px 12px;">
-                            <option>All Campuses</option>
-                            <option>Cyberjaya</option>
-                            <option>Melaka</option>
-                        </select>
-                        <button class="btn btn-primary" style="padding: 8px 16px;">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Add Equipment
-                        </button>
-                    </div>
-                </div>
+                    <!-- Left: Edit Form -->
+                    <div class="card" style="margin-bottom: 0;">
+                        <div style="margin-bottom: 24px;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: var(--text-main);">Personal Information</h3>
+                            <p style="font-size: 13px; color: var(--text-muted);">Update your contact details and security credentials.</p>
+                        </div>
 
-                <!-- Equipment Table -->
-                <div class="admin-table-container">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Item Code & Name</th>
-                                <th>Assigned Campus</th>
-                                <th>Stock</th>
-                                <th>Availability</th>
-                                <th>Status</th>
-                                <th style="text-align: right;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                        <form action="#" method="POST">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" class="form-control" value="Mr Admin" disabled style="background-color: #f1f3f5; color: #6b7280; cursor: not-allowed;">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Official Email</label>
+                                <input type="email" class="form-control" value="admin@mmu.edu.my" disabled style="background-color: #f1f3f5; color: #6b7280; cursor: not-allowed;">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Contact Number (For System Alerts)</label>
+                                <input type="text" class="form-control" value="03-8312 5999" required>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 32px 0;">
+
+                            <div style="margin-bottom: 16px;">
+                                <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main);">Security Settings</h3>
+                            </div>
+
+                            <div class="form-group">
+                                <label>New Password (Optional)</label>
+                                <input type="password" class="form-control" placeholder="Enter new password to change">
+                            </div>
                             
-                            <!-- Row 1: Good Stock -->
-                            <tr>
-                                <td>
-                                    <strong style="color: var(--text-main);">Portable Projector (Epson)</strong><br>
-                                    <span class="table-meta-text">EQ-PROJ-001</span>
-                                </td>
-                                <td>Cyberjaya</td>
-                                <td style="text-align: center; font-weight: 600;">10</td>
-                                <td>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100px;">
-                                        <span class="stock-text" style="color: var(--success-text);">8 Available</span>
-                                    </div>
-                                    <div class="stock-bar-container">
-                                        <div class="stock-bar-fill stock-good" style="width: 80%;"></div>
-                                    </div>
-                                </td>
-                                <td><span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Active</span></td>
-                                <td style="text-align: right;">
-                                    <button class="btn-icon edit" title="Edit Item"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                    <button class="btn-icon delete" title="Delete Item"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
-                                </td>
-                            </tr>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" class="form-control" placeholder="Confirm new password">
+                            </div>
 
-                            <!-- Row 2: Warning Stock -->
-                            <tr>
-                                <td>
-                                    <strong style="color: var(--text-main);">HDMI Cable (2m)</strong><br>
-                                    <span class="table-meta-text">EQ-CBL-045</span>
-                                </td>
-                                <td>Melaka</td>
-                                <td style="text-align: center; font-weight: 600;">20</td>
-                                <td>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100px;">
-                                        <span class="stock-text" style="color: #d97706;">5 Available</span>
-                                    </div>
-                                    <div class="stock-bar-container">
-                                        <div class="stock-bar-fill stock-warning" style="width: 25%;"></div>
-                                    </div>
-                                </td>
-                                <td><span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Active</span></td>
-                                <td style="text-align: right;">
-                                    <button class="btn-icon edit" title="Edit Item"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                    <button class="btn-icon delete" title="Delete Item"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
-                                </td>
-                            </tr>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Save Changes</button>
+                        </form>
+                    </div>
 
-                            <!-- Row 3: Critical/Out of Stock -->
-                            <tr style="background-color: #fafafa;">
-                                <td>
-                                    <strong style="color: var(--text-muted);">Badminton Net</strong><br>
-                                    <span class="table-meta-text">EQ-SPT-012</span>
-                                </td>
-                                <td>Cyberjaya</td>
-                                <td style="text-align: center; font-weight: 600; color: var(--text-muted);">4</td>
-                                <td>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100px;">
-                                        <span class="stock-text" style="color: var(--secondary);">0 Available</span>
-                                    </div>
-                                    <div class="stock-bar-container">
-                                        <div class="stock-bar-fill stock-critical" style="width: 0%;"></div>
-                                    </div>
-                                </td>
-                                <td><span class="badge" style="background: #fee2e2; color: #991b1b;"><span class="material-symbols-outlined" style="font-size: 14px;">block</span> Out of Stock</span></td>
-                                <td style="text-align: right;">
-                                    <button class="btn-icon edit" title="Edit Item"><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                    <button class="btn-icon edit" title="Restock Item" style="color: var(--success-text); border-color: rgba(22,101,52,0.2);"><span class="material-symbols-outlined" style="font-size: 18px;">inventory</span></button>
-                                    <button class="btn-icon delete" title="Delete Item"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
-                                </td>
-                            </tr>
+                    <!-- Right: Permissions Card -->
+                    <div>
+                        <div class="card" style="position: sticky; top: 0;">
+                            <h3 class="card-title" style="color: var(--text-main); font-size: 16px; margin-bottom: 16px;">
+                                <span class="material-symbols-outlined">admin_panel_settings</span> System Permissions
+                            </h3>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="material-symbols-outlined" style="color: var(--success-text); font-size: 18px;">check_circle</span>
+                                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Facility Management</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="material-symbols-outlined" style="color: var(--success-text); font-size: 18px;">check_circle</span>
+                                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">User & Quota Management</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="material-symbols-outlined" style="color: var(--success-text); font-size: 18px;">check_circle</span>
+                                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Booking Overrides</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="material-symbols-outlined" style="color: var(--success-text); font-size: 18px;">check_circle</span>
+                                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Penalty Issuance</span>
+                                </div>
+                            </div>
 
-                        </tbody>
-                    </table>
+                            <div class="quota-alert" style="background-color: #e0f2fe; color: #0369a1; flex-direction: column; align-items: flex-start; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="material-symbols-outlined" style="font-size: 20px;">info</span>
+                                    <strong>Super Admin Level</strong>
+                                </div>
+                                <div style="font-size: 12px; line-height: 1.4;">
+                                    Your account has full write access to the MMU Booking System database. Actions taken are logged permanently.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-
             </div>
         </main>
     </div>
 
+    <!-- Script for Dropdown -->
+    <script>
+        const trigger = document.getElementById('profileTrigger');
+        const menu = document.getElementById('profileMenu');
+        trigger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.toggle('show'); });
+        window.addEventListener('click', function() { if (menu.classList.contains('show')) { menu.classList.remove('show'); } });
+    </script>
 </body>
 </html>

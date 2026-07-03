@@ -113,13 +113,12 @@ $bookings_result = mysqli_query($conn, $bookings_query);
                 </div>
                 
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer;">
-                    <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
                     <div class="avatar" style="background-color: var(--secondary);"><?php echo strtoupper($initials); ?></div>
                     <span class="profile-name" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo htmlspecialchars($admin_name); ?></span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
                     
                     <div class="profile-menu" id="profileMenu">
-                        <a href="#"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="admin-profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
                         <div style="border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 4px 0;"></div>
                         <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>

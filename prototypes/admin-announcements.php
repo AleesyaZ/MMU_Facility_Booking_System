@@ -40,16 +40,17 @@ if (isset($_GET['action']) && $_GET['action'] == 'republish' && isset($_GET['id'
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['publish_announcement'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $content = mysqli_real_escape_string($conn, $_POST['content']);
+    $category = mysqli_real_escape_string($conn, $_POST['category']); // New Category Logic
     $id = mysqli_real_escape_string($conn, $_POST['announcement_id']);
     
     if (!empty($id)) {
-        // UPDATE EXISTING
-        $sql = "UPDATE annoucement SET title = '$title', content = '$content' WHERE annoucement_id = '$id'";
+        // UPDATE EXISTING (Including Category)
+        $sql = "UPDATE annoucement SET title = '$title', content = '$content', category = '$category' WHERE annoucement_id = '$id'";
         $msg = "updated";
     } else {
-        // INSERT NEW
-        $sql = "INSERT INTO annoucement (admin_id, title, content, publish_date, status) 
-                VALUES ('$admin_id', '$title', '$content', NOW(), 'Live')";
+        // INSERT NEW (Including Category)
+        $sql = "INSERT INTO annoucement (admin_id, title, content, publish_date, status, category) 
+                VALUES ('$admin_id', '$title', '$content', NOW(), 'Live', '$category')";
         $msg = "posted";
     }
             
@@ -82,7 +83,6 @@ $result = mysqli_query($conn, $query);
 <body onload="checkAlerts()">
 
     <div class="admin-layout">
-        <!-- Left Sidebar -->
         <aside class="admin-sidebar">
             <div class="admin-logo">
                 <img src="../public/img/mmulogo.jpg" alt="MMU Logo" style="height: 32px; object-fit: contain;">
@@ -118,29 +118,25 @@ $result = mysqli_query($conn, $query);
             </nav>
         </aside>
 
-        <!-- Main Area -->
         <main class="admin-main">
-            <!-- Topbar -->
             <header class="admin-topbar">
                 <div>
                     <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Broadcast Announcements</h2>
                 </div>
                 
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer;">
-                    <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
                     <div class="avatar" style="background-color: var(--secondary);"><?php echo strtoupper($initials); ?></div>
                     <span class="profile-name" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo htmlspecialchars($admin_name); ?></span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
                     
                     <div class="profile-menu" id="profileMenu">
-                        <a href="#"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="admin-profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
                         <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
                 </div>
             </header>
 
             <div class="admin-content">
-                <!-- Toolbar -->
                 <div class="admin-toolbar">
                     <div class="search-wrapper">
                         <span class="material-symbols-outlined">search</span>
@@ -152,7 +148,6 @@ $result = mysqli_query($conn, $query);
                     </button>
                 </div>
 
-                <!-- Form Panel -->
                 <div class="admin-form-panel" id="announcementForm">
                     <h3 id="formTitle" style="font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 16px;">Draft New Announcement</h3>
                     <form action="admin-announcements.php" method="POST">
@@ -160,6 +155,15 @@ $result = mysqli_query($conn, $query);
                         <div class="form-group">
                             <label>Title / Headline</label>
                             <input type="text" name="title" id="form_title_input" class="form-control" placeholder="e.g. FCI Lab Maintenance" required>
+                        </div>
+                        <!-- New Category Dropdown -->
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="category" id="form_category_input" class="form-control" required>
+                                <option value="Update">Facility Update</option>
+                                <option value="Reminder">Reminder</option>
+                                <option value="Event">Event</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Message Content</label>
@@ -172,12 +176,12 @@ $result = mysqli_query($conn, $query);
                     </form>
                 </div>
 
-                <!-- Announcements Table -->
                 <div class="admin-table-container">
                     <table class="admin-table" id="announcementsTable">
                         <thead>
                             <tr>
                                 <th>Headline & Details</th>
+                                <th>Category</th> <!-- New Column Header -->
                                 <th>Published By</th>
                                 <th>Date Posted</th>
                                 <th>Status</th>
@@ -194,6 +198,10 @@ $result = mysqli_query($conn, $query);
                                             <?php echo htmlspecialchars($row['content']); ?>
                                         </span>
                                     </td>
+                                    <!-- Dynamic Category Cell -->
+                                    <td>
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--text-main);"><?php echo htmlspecialchars($row['category'] ?? 'Update'); ?></span>
+                                    </td>
                                     <td><span style="font-size: 13px; font-weight: 500; color: <?php echo ($row['status'] == 'Archived') ? 'var(--text-muted)' : 'inherit'; ?>;"><?php echo htmlspecialchars($row['publisher_name']); ?></span></td>
                                     <td>
                                         <?php echo date('M d, Y', strtotime($row['publish_date'])); ?><br>
@@ -209,12 +217,9 @@ $result = mysqli_query($conn, $query);
                                     <td style="text-align: right;">
                                         <div style="display: flex; gap: 6px; justify-content: flex-end;">
                                             <?php if($row['status'] == 'Live'): ?>
-                                                <!-- 1. Edit Button -->
                                                 <button class="btn-icon edit" title="Edit Post" onclick='prepareEdit(<?php echo json_encode($row); ?>)'><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                                <!-- 2. Unpublish Button -->
                                                 <button class="btn-icon delete" title="Unpublish" onclick="window.location.href='admin-announcements.php?action=unpublish&id=<?php echo $row['annoucement_id']; ?>'"><span class="material-symbols-outlined" style="font-size: 18px;">visibility_off</span></button>
                                             <?php else: ?>
-                                                <!-- 3. Republish Button -->
                                                 <button class="btn-icon edit" title="Republish" onclick="window.location.href='admin-announcements.php?action=republish&id=<?php echo $row['annoucement_id']; ?>'"><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
                                             <?php endif; ?>
                                             
@@ -227,7 +232,7 @@ $result = mysqli_query($conn, $query);
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 32px; color: var(--text-muted);">No announcements posted yet.</td>
+                                    <td colspan="6" style="text-align: center; padding: 32px; color: var(--text-muted);">No announcements posted yet.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -242,20 +247,17 @@ $result = mysqli_query($conn, $query);
         const cancelBtn = document.getElementById('cancelFormBtn');
         const formPanel = document.getElementById('announcementForm');
 
-        // Logic for "Post New" button
         toggleBtn.addEventListener('click', () => {
             resetForm();
             formPanel.classList.add('show');
             toggleBtn.style.display = 'none';
         });
 
-        // Logic for Cancel button
         cancelBtn.addEventListener('click', () => {
             formPanel.classList.remove('show');
             toggleBtn.style.display = 'inline-flex';
         });
 
-        // Populate form for Editing
         function prepareEdit(data) {
             formPanel.classList.add('show');
             toggleBtn.style.display = 'none';
@@ -264,6 +266,7 @@ $result = mysqli_query($conn, $query);
             document.getElementById('form_announcement_id').value = data.annoucement_id;
             document.getElementById('form_title_input').value = data.title;
             document.getElementById('form_content_input').value = data.content;
+            document.getElementById('form_category_input').value = data.category || 'Update';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -273,6 +276,7 @@ $result = mysqli_query($conn, $query);
             document.getElementById('form_announcement_id').value = "";
             document.getElementById('form_title_input').value = "";
             document.getElementById('form_content_input').value = "";
+            document.getElementById('form_category_input').value = "Update";
         }
 
         const trigger = document.getElementById('profileTrigger');

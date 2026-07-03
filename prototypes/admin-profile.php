@@ -1,3 +1,61 @@
+<?php
+session_start();
+include('../PHP/db_config.php');
+
+// 1. SECURITY CHECK: Only allow Admins
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
+    header("Location: login.html");
+    exit();
+}
+
+$admin_id = $_SESSION['user_id'];
+$success_msg = "";
+$error_msg = "";
+
+// 2. HANDLE PROFILE UPDATE
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $contact_no = mysqli_real_escape_string($conn, trim($_POST['contact_no']));
+    $new_password = $_POST['new_password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    $update_sql = "UPDATE user SET contact_no = '$contact_no'";
+    $valid = true;
+
+    // Password change logic
+    if (!empty($new_password)) {
+        if ($new_password !== $confirm_password) {
+            $error_msg = "Passwords do not match.";
+            $valid = false;
+        } elseif (strlen($new_password) < 6) {
+            $error_msg = "Password must be at least 6 characters.";
+            $valid = false;
+        } else {
+            $hashed = password_hash($new_password, PASSWORD_DEFAULT);
+            $update_sql .= ", password = '$hashed'";
+        }
+    }
+
+    if ($valid) {
+        $update_sql .= " WHERE user_id = '$admin_id'";
+        if (mysqli_query($conn, $update_sql)) {
+            $success_msg = "Profile updated successfully!";
+            $_SESSION['name'] = $_SESSION['name']; // Keep session fresh
+        } else {
+            $error_msg = "Error updating database: " . mysqli_error($conn);
+        }
+    }
+}
+
+// 3. FETCH CURRENT ADMIN DATA
+$query = mysqli_query($conn, "SELECT name, email, contact_no FROM user WHERE user_id = '$admin_id' LIMIT 1");
+$admin_data = mysqli_fetch_assoc($query);
+
+$admin_name = $admin_data['name'];
+$admin_email = $admin_data['email'];
+$admin_contact = $admin_data['contact_no'];
+$initials = strtoupper(substr($admin_name, 0, 1));
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,28 +79,28 @@
             </div>
             
             <nav class="admin-nav">
-                <a href="admin-dashboard.html" class="admin-nav-item">
+                <a href="admin-dashboard.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">dashboard</span> Dashboard Overview
                 </a>
-                <a href="admin-bookings.html" class="admin-nav-item">
+                <a href="admin-bookings.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">calendar_month</span> Manage Bookings
                 </a>
-                <a href="admin-facilities.html" class="admin-nav-item">
+                <a href="admin-facilities.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">meeting_room</span> Manage Facilities
                 </a>
-                <a href="admin-equipment.html" class="admin-nav-item">
+                <a href="admin-equipment.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">cable</span> Manage Equipment
                 </a>
-                <a href="admin-users.html" class="admin-nav-item">
+                <a href="admin-users.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">group</span> Manage Users & Quotas
                 </a>
-                <a href="admin-penalties.html" class="admin-nav-item">
+                <a href="admin-penalties.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">gavel</span> Penalty System
                 </a>
-                <a href="admin-reports.html" class="admin-nav-item">
+                <a href="admin-reports.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">report</span> Issue Reports
                 </a>
-                <a href="admin-announcements.html" class="admin-nav-item">
+                <a href="admin-announcements.php" class="admin-nav-item">
                     <span class="material-symbols-outlined">campaign</span> Announcements
                 </a>
             </nav>
@@ -56,17 +114,17 @@
                 <div>
                     <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">My Profile</h2>
                 </div>
-                <div class="nav-profile" id="profileTrigger">
+                <div class="nav-profile" id="profileTrigger" style="cursor: pointer;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
-                    <div class="avatar" style="background-color: var(--secondary);">M</div>
-                    <span style="font-weight: 500; font-size: 14px; text-transform: uppercase;">Mr Admin</span>
+                    <div class="avatar" style="background-color: var(--secondary);"><?php echo $initials; ?></div>
+                    <span style="font-weight: 500; font-size: 14px; text-transform: uppercase;"><?php echo htmlspecialchars($admin_name); ?></span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
                     
                     <!-- The Dropdown Box -->
                     <div class="profile-menu" id="profileMenu">
                         <a href="admin-dashboard.php"><span class="material-symbols-outlined">undo</span> Admin Panel</a>
                         <div style="border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 4px 0;"></div>
-                        <a href="login.html" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
+                        <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
                 </div>
             </header>
@@ -74,6 +132,18 @@
             <!-- Scrollable Content -->
             <div class="admin-content">
                 
+                <?php if($success_msg): ?>
+                    <div style="background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                        <span class="material-symbols-outlined">check_circle</span> <?php echo $success_msg; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if($error_msg): ?>
+                    <div style="background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                        <span class="material-symbols-outlined">error</span> <?php echo $error_msg; ?>
+                    </div>
+                <?php endif; ?>
+
                 <div class="dashboard-grid" style="grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); gap: 32px;">
                     
                     <!-- Left: Edit Form -->
@@ -83,20 +153,20 @@
                             <p style="font-size: 13px; color: var(--text-muted);">Update your contact details and security credentials.</p>
                         </div>
 
-                        <form action="#" method="POST">
+                        <form action="admin-profile.php" method="POST">
                             <div class="form-group">
                                 <label>Full Name</label>
-                                <input type="text" class="form-control" value="Mr Admin" disabled style="background-color: #f1f3f5; color: #6b7280; cursor: not-allowed;">
+                                <input type="text" class="form-control" value="<?php echo htmlspecialchars($admin_name); ?>" disabled style="background-color: #f1f3f5; color: #6b7280; cursor: not-allowed;">
                             </div>
 
                             <div class="form-group">
                                 <label>Official Email</label>
-                                <input type="email" class="form-control" value="admin@mmu.edu.my" disabled style="background-color: #f1f3f5; color: #6b7280; cursor: not-allowed;">
+                                <input type="email" class="form-control" value="<?php echo htmlspecialchars($admin_email); ?>" disabled style="background-color: #f1f3f5; color: #6b7280; cursor: not-allowed;">
                             </div>
 
                             <div class="form-group">
                                 <label>Contact Number (For System Alerts)</label>
-                                <input type="text" class="form-control" value="03-8312 5999" required>
+                                <input type="text" name="contact_no" class="form-control" value="<?php echo htmlspecialchars($admin_contact); ?>" required>
                             </div>
 
                             <hr style="border: 0; border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 32px 0;">
@@ -107,12 +177,12 @@
 
                             <div class="form-group">
                                 <label>New Password (Optional)</label>
-                                <input type="password" class="form-control" placeholder="Enter new password to change">
+                                <input type="password" name="new_password" class="form-control" placeholder="Enter new password to change">
                             </div>
                             
                             <div class="form-group">
                                 <label>Confirm New Password</label>
-                                <input type="password" class="form-control" placeholder="Confirm new password">
+                                <input type="password" name="confirm_password" class="form-control" placeholder="Confirm new password">
                             </div>
 
                             <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Save Changes</button>
@@ -162,12 +232,16 @@
         </main>
     </div>
 
-    <!-- Script for Dropdown -->
     <script>
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
-        trigger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.toggle('show'); });
-        window.addEventListener('click', function() { if (menu.classList.contains('show')) { menu.classList.remove('show'); } });
+        trigger.addEventListener('click', function(e) { 
+            e.stopPropagation(); 
+            menu.classList.toggle('show'); 
+        });
+        window.addEventListener('click', function() { 
+            if (menu.classList.contains('show')) { menu.classList.remove('show'); } 
+        });
     </script>
 </body>
 </html>

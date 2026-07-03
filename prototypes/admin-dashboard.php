@@ -17,15 +17,15 @@ $initials = substr($admin_name, 0, 1);
 $priority_count_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking WHERE is_priority = 1 AND status = 'Pending'");
 $priority_count = mysqli_fetch_assoc($priority_count_res)['total'];
 
-// Count Open Issue Reports (Using the corrected table name 'issue_report')
+// Count Open Issue Reports
 $issue_count_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM issue_report WHERE status = 'Under Review' OR status = 'Open'");
 $issue_count = mysqli_fetch_assoc($issue_count_res)['total'];
 
-// Count Suspended Users (Users with 3 or more strikes)
-$suspended_res = mysqli_query($conn, "SELECT COUNT(DISTINCT user_id) as total FROM penalty WHERE strike_count >= 3 AND status = 'Active'");
+// Count Suspended Users
+$suspended_res = mysqli_query($conn, "SELECT COUNT(DISTINCT user_id) as total FROM user WHERE status = 'Suspended'");
 $suspended_count = mysqli_fetch_assoc($suspended_res)['total'];
 
-// Count Today's Usage (Approved bookings for today)
+// Count Today's Usage
 $usage_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking WHERE booking_date = CURDATE() AND status = 'Approved'");
 $usage_count = mysqli_fetch_assoc($usage_res)['total'];
 
@@ -108,13 +108,12 @@ $reports_result = mysqli_query($conn, $reports_query);
                 </div>
                 
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer;">
-                    <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
                     <div class="avatar" style="background-color: var(--secondary);"><?php echo strtoupper($initials); ?></div>
                     <span class="profile-name" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo htmlspecialchars($admin_name); ?></span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>
                     
                     <div class="profile-menu" id="profileMenu">
-                        <a href="#"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
+                        <a href="admin-profile.php"><span class="material-symbols-outlined">account_circle</span> My Profile</a>
                         <div style="border-top: 1px solid rgba(194, 198, 211, 0.3); margin: 4px 0;"></div>
                         <a href="../PHP/logout.php" class="logout-link"><span class="material-symbols-outlined">logout</span> Logout</a>
                     </div>
@@ -123,7 +122,7 @@ $reports_result = mysqli_query($conn, $reports_query);
 
             <div class="admin-content">
                 
-                <!-- Metrics Grid (DYNAMIC) -->
+                <!-- Metrics Grid -->
                 <div class="dashboard-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-bottom: 32px;">
                     
                     <div class="card" style="margin-bottom: 0; padding: 20px;">
@@ -162,7 +161,7 @@ $reports_result = mysqli_query($conn, $reports_query);
                 <!-- Split Content: Tables -->
                 <div class="dashboard-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
                     
-                    <!-- Left: Pending Overrides Table (DYNAMIC) -->
+                    <!-- Left: Pending Overrides Table -->
                     <div style="grid-column: span 3;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <h3 style="font-size: 18px; font-weight: 600; color: var(--text-main);">Pending Priority Overrides</h3>
@@ -202,8 +201,20 @@ $reports_result = mysqli_query($conn, $reports_query);
                                             </td>
                                             <td style="text-align: center;">
                                                 <div style="display: flex; gap: 8px; justify-content: center;">
-                                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;">Approve</button>
-                                                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; color: var(--secondary); border-color: rgba(187,0,19,0.3); background: rgba(187,0,19,0.02);">Reject</button>
+                                                    <!-- REACTIVE APPROVE BUTTON -->
+                                                    <a href="../PHP/admin_booking_action.php?action=approve&booking_id=<?php echo $row['booking_id']; ?>" 
+                                                       class="btn btn-primary" 
+                                                       style="padding: 6px 12px; font-size: 12px; border-radius: 6px; text-decoration: none;"
+                                                       onclick="return confirm('Are you sure you want to APPROVE this priority override?')">
+                                                       Approve
+                                                    </a>
+                                                    <!-- REACTIVE REJECT BUTTON -->
+                                                    <a href="../PHP/admin_booking_action.php?action=reject&booking_id=<?php echo $row['booking_id']; ?>" 
+                                                       class="btn btn-outline" 
+                                                       style="padding: 6px 12px; font-size: 12px; border-radius: 6px; color: var(--secondary); border-color: rgba(187,0,19,0.3); background: rgba(187,0,19,0.02); text-decoration: none;"
+                                                       onclick="return confirm('Are you sure you want to REJECT this priority override?')">
+                                                       Reject
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -216,7 +227,7 @@ $reports_result = mysqli_query($conn, $reports_query);
                         </div>
                     </div>
 
-                    <!-- Right: Latest Issue Reports (DYNAMIC) -->
+                    <!-- Right: Latest Issue Reports -->
                     <div style="grid-column: span 1;">
                         <div style="margin-bottom: 16px;">
                             <h3 style="font-size: 18px; font-weight: 600; color: var(--text-main);">Recent Issue Reports</h3>
@@ -226,22 +237,19 @@ $reports_result = mysqli_query($conn, $reports_query);
                             <div class="list-group" style="padding-bottom: 0; gap: 0;">
                                 <?php if(mysqli_num_rows($reports_result) > 0): ?>
                                     <?php while($report = mysqli_fetch_assoc($reports_result)): 
-                                        // Dynamic Badge Styling logic
                                         $status = $report['status'];
-                                        $badge_style = "background: #e5e7eb; color: #374151;"; // Default gray
-                                        
+                                        $badge_style = "background: #e5e7eb; color: #374151;"; 
                                         if ($status == 'Under Review' || $status == 'Open') {
-                                            $badge_style = "background: #fef3c7; color: #92400e;"; // Yellow
+                                            $badge_style = "background: #fef3c7; color: #92400e;"; 
                                         } elseif ($status == 'In Progress') {
-                                            $badge_style = "background: #e0f2fe; color: #0369a1;"; // Blue
+                                            $badge_style = "background: #e0f2fe; color: #0369a1;"; 
                                         } elseif ($status == 'Resolved') {
-                                            $badge_style = "background: #dcfce7; color: #166534;"; // Green
+                                            $badge_style = "background: #dcfce7; color: #166534;"; 
                                         }
                                     ?>
                                     <div class="report-summary-item" style="padding: 16px; border-bottom: 1px solid rgba(194, 198, 211, 0.2);">
                                         <div class="report-item-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                             <h4 style="font-size: 11px; font-weight: 700; color: var(--text-main); text-transform: uppercase;"><?php echo htmlspecialchars($report['issue_type']); ?></h4>
-                                            <!-- UPDATED BADGE WITH DYNAMIC COLOR -->
                                             <span class="badge" style="<?php echo $badge_style; ?> padding: 2px 8px; font-size: 10px; border-radius: 50px;"><?php echo $status; ?></span>
                                         </div>
                                         <div class="report-item-body">
