@@ -215,16 +215,16 @@ $result = mysqli_query($conn, $query);
                                 <td>
                                     <div style="display: flex; align-items: center; gap: 12px;">
                                         <?php if(!empty($row['image_path'])): ?>
-                                            <img src="../public/img/facilities/<?php echo $row['image_path']; ?>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #eee;">
+                                            <img src="../public/img/facilities/<?php echo htmlspecialchars($row['image_path']); ?>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #eee;">
                                         <?php else: ?>
                                             <div style="width: 40px; height: 40px; background: #f1f3f5; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #adb5bd;"><span class="material-symbols-outlined" style="font-size: 18px;">image</span></div>
                                         <?php endif; ?>
                                         <strong style="color: var(--text-main);"><?php echo htmlspecialchars($row['facility_name']); ?></strong>
                                     </div>
                                 </td>
-                                <td style="color: var(--text-muted);"><?php echo htmlspecialchars($row['location']); ?> (<?php echo $row['faculty']; ?>)</td>
+                                <td style="color: var(--text-muted);"><?php echo htmlspecialchars($row['location']); ?> (<?php echo htmlspecialchars($row['faculty']); ?>)</td>
                                 <td><?php echo htmlspecialchars($row['category']); ?></td>
-                                <td style="text-align: center; font-weight: 600;"><?php echo $row['capacity']; ?></td>
+                                <td style="text-align: center; font-weight: 600;"><?php echo htmlspecialchars($row['capacity']); ?></td>
                                 <td>
                                     <?php if($row['status'] == 'Available'): ?>
                                         <span class="badge badge-approved"><span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span> Available</span>
@@ -232,16 +232,25 @@ $result = mysqli_query($conn, $query);
                                         <span class="badge badge-maintenance"><span class="material-symbols-outlined" style="font-size: 14px;">handyman</span> Maintenance</span>
                                     <?php endif; ?>
                                 </td>
-                                <td style="text-align: right;">
-                                    <button class="btn-icon edit" title="Edit Facility" onclick='openEditModal(<?php echo json_encode($row); ?>)'><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
-                                    
-                                    <?php if($row['status'] == 'Available'): ?>
-                                        <button class="btn-icon penalty" title="Mark as Maintenance" onclick="window.location.href='admin-facilities.php?action=set_status&status=Maintenance&id=<?php echo $row['facility_id']; ?>'"><span class="material-symbols-outlined" style="font-size: 18px;">build</span></button>
-                                    <?php else: ?>
-                                        <button class="btn-icon edit" title="Mark as Available" onclick="window.location.href='admin-facilities.php?action=set_status&status=Available&id=<?php echo $row['facility_id']; ?>'"><span class="material-symbols-outlined" style="font-size: 18px; color: var(--success-text);">check_circle</span></button>
-                                    <?php endif; ?>
+                                
+                                <!-- UPDATED: Actions Column with Edit Schedule Button -->
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <div style="display: inline-flex; gap: 8px;">
+                                        
+                                        <!-- NEW: Edit Schedule Button -->
+                                        <!-- Note for backend: Pass the facility_id or name to openTimetableModal() if needed to load specific schedule later -->
+                                        <button class="btn-icon schedule open-timetable-modal" title="Edit Schedule"><span class="material-symbols-outlined" style="font-size: 18px;">calendar_month</span></button>
+                                        
+                                        <button class="btn-icon edit" title="Edit Facility" onclick='openEditModal(<?php echo json_encode($row); ?>)'><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
+                                        
+                                        <?php if($row['status'] == 'Available'): ?>
+                                            <button class="btn-icon penalty" title="Mark as Maintenance" onclick="window.location.href='admin-facilities.php?action=set_status&status=Maintenance&id=<?php echo urlencode($row['facility_id']); ?>'"><span class="material-symbols-outlined" style="font-size: 18px;">build</span></button>
+                                        <?php else: ?>
+                                            <button class="btn-icon edit" title="Mark as Available" onclick="window.location.href='admin-facilities.php?action=set_status&status=Available&id=<?php echo urlencode($row['facility_id']); ?>'"><span class="material-symbols-outlined" style="font-size: 18px; color: var(--success-text);">check_circle</span></button>
+                                        <?php endif; ?>
 
-                                    <button class="btn-icon delete" title="Delete Facility" onclick="if(confirm('Delete this facility? This may fail if active bookings exist.')) window.location.href='admin-facilities.php?action=delete&id=<?php echo $row['facility_id']; ?>'"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                        <button class="btn-icon delete" title="Delete Facility" onclick="if(confirm('Delete this facility? This may fail if active bookings exist.')) window.location.href='admin-facilities.php?action=delete&id=<?php echo urlencode($row['facility_id']); ?>'"><span class="material-symbols-outlined" style="font-size: 18px;">delete</span></button>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
@@ -319,7 +328,149 @@ $result = mysqli_query($conn, $query);
         </div>
     </div>
 
+    <!-- ==========================================
+         TIMETABLE EDITOR MODAL
+         ========================================== -->
+    <div class="modal-overlay" id="timetableModal">
+        <div class="modal-box modal-box-large" style="max-width: 800px;"> <!-- Wider for the big timetable -->
+            
+            <!-- Modal Header -->
+            <div style="background-color: var(--surface); padding: 16px 24px; border-bottom: 1px solid rgba(194, 198, 211, 0.4); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 0;">Edit Fixed Schedule</h3>
+                    <span class="badge" style="background: var(--surface-container-low); color: var(--primary);">Discussion Room 4 (FCI)</span>
+                </div>
+                <button class="btn-icon close-modal" style="color: var(--text-muted); background: white;"><span class="material-symbols-outlined">close</span></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div style="padding: 24px;">
+                
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;">
+                    Click on any empty slot to mark it as a <strong>Fixed Academic Class</strong>. This will block students from booking it. Gray slots indicate active student bookings and cannot be overwritten here.
+                </p>
+
+                <!-- The Interactive Timetable Grid -->
+                <div class="timetable-container" style="margin-top: 0;">
+                    <div class="timetable-grid admin-edit" id="adminTimetable">
+                        <!-- Header Row -->
+                        <div class="tt-cell tt-head">Time</div>
+                        <div class="tt-cell tt-head">Mon</div>
+                        <div class="tt-cell tt-head">Tue</div>
+                        <div class="tt-cell tt-head">Wed</div>
+                        <div class="tt-cell tt-head">Thu</div>
+                        <div class="tt-cell tt-head">Fri</div>
+
+                        <!-- 8:00 AM Row -->
+                        <div class="tt-cell tt-time">8 AM</div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+
+                        <!-- 10:00 AM Row -->
+                        <div class="tt-cell tt-time">10 AM</div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+
+                        <!-- 12:00 PM Row -->
+                        <div class="tt-cell tt-time">12 PM</div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot blocked" title="Friday Prayer Break"></div>
+
+                        <!-- 2:00 PM Row -->
+                        <div class="tt-cell tt-time">2 PM</div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+
+                        <!-- 4:00 PM Row -->
+                        <div class="tt-cell tt-time">4 PM</div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+
+                        <!-- 6:00 PM Row -->
+                        <div class="tt-cell tt-time">6 PM</div>
+                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                        <div class="tt-cell tt-slot free"></div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="tt-legend">
+                        <div class="legend-item"><div class="legend-box" style="background: transparent;"></div> Click to Block</div>
+                        <div class="legend-item"><div class="legend-box" style="background: var(--surface-container-high);"></div> Taken (Student)</div>
+                        <div class="legend-item"><div class="legend-box" style="background: #fee2e2; border-color: #991b1b;"></div> Fixed Class</div>
+                    </div>
+                </div>
+
+                <!-- Admin Action Area -->
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(194, 198, 211, 0.4);">
+                    <button class="btn btn-outline close-modal" style="padding: 8px 16px; font-size: 13px;">Cancel</button>
+                    <button class="btn btn-primary close-modal" style="padding: 8px 16px; font-size: 13px;">Save Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script to Trigger the Modal and Toggle Blocks -->
     <script>
+        const timetableModal = document.getElementById('timetableModal');
+        const closeBtns = document.querySelectorAll('.close-modal');
+
+        // Open Modal
+        document.querySelectorAll('.open-timetable-modal').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                timetableModal.classList.add('show');
+            });
+        });
+
+        // Close Modal
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                timetableModal.classList.remove('show');
+            });
+        });
+
+        // Make the timetable interactive! 
+        const timeCells = document.querySelectorAll('#adminTimetable .tt-slot');
+        timeCells.forEach(cell => {
+            cell.addEventListener('click', function() {
+                // Do not allow them to click 'booked' slots (those belong to students)
+                if (this.classList.contains('booked')) {
+                    alert("This slot is actively booked by a student. You must cancel their booking from the 'Manage Bookings' page first.");
+                    return;
+                }
+
+                // Toggle between 'free' and 'blocked'
+                if (this.classList.contains('free')) {
+                    this.classList.remove('free');
+                    this.classList.add('blocked');
+                    this.title = "Fixed Academic Class";
+                } else {
+                    this.classList.remove('blocked');
+                    this.classList.add('free');
+                    this.title = "";
+                }
+            });
+        });
+
         function openAddModal() {
             document.getElementById('modalTitle').innerText = "Add New Facility";
             document.getElementById('submitBtn').name = "add_facility";

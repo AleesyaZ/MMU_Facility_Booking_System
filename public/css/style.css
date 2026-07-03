@@ -2579,9 +2579,10 @@ textarea.form-control {
     cursor: not-allowed;
     background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(153, 27, 27, 0.05) 5px, rgba(153, 27, 27, 0.05) 10px);
 }
+
 .tt-slot.booked { 
-    background-color: var(--surface-container-high); 
-    color: var(--text-muted);
+    background-color: #a4a2a2; 
+    color: #ffffff;           
     cursor: not-allowed;
 }
 
@@ -2608,3 +2609,25 @@ textarea.form-control {
     border-radius: 2px;
     border: 1px solid rgba(194, 198, 211, 0.4);
 }
+
+/* Admin Interactive Timetable Styles */
+.timetable-grid.admin-edit {
+    grid-template-columns: 80px repeat(5, 1fr); /* Slightly wider time column */
+}
+
+.timetable-grid.admin-edit .tt-cell {
+    min-height: 48px; /* Taller cells for easier clicking */
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.timetable-grid.admin-edit .tt-cell:not(.tt-head):not(.tt-time):hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 10;
+    border-radius: 4px;
+}
+
+/* Specific button color for the timetable icon */
+.btn-icon.schedule { color: #059669; border-color: rgba(5, 150, 105, 0.2); }
+.btn-icon.schedule:hover { background-color: rgba(5, 150, 105, 0.1); }

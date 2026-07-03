@@ -289,7 +289,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     <!-- Legend -->
                     <div class="tt-legend">
                         <div class="legend-item"><div class="legend-box" style="background: transparent;"></div> Free</div>
-                        <div class="legend-item"><div class="legend-box" style="background: var(--surface-container-high);"></div> Taken</div>
+                        <div class="legend-item"><div class="legend-box" style="background: #a4a2a2;"></div> Taken</div>
                         <div class="legend-item"><div class="legend-box" style="background: #fee2e2; border-color: #991b1b;"></div> Fixed Class</div>
                     </div>
                 </div>
