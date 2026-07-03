@@ -55,6 +55,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         $status = 'Pending'; // Conflict exists + current user used priority
     }
 
+    // --- NEW: 3.5 TIMETABLE OVERLAP CHECK (Fixed Classes) ---
+    $day_name = date('l', strtotime($date));
+    $check_timetable = "SELECT * FROM timetable 
+                        WHERE facility_id = '$facility_id' 
+                        AND day_of_week = '$day_name' 
+                        AND expiry_date >= '$date'
+                        AND (
+                            ('$start_time' >= start_time AND '$start_time' < end_time) OR 
+                            ('$end_time' > start_time AND '$end_time' <= end_time) OR 
+                            (start_time >= '$start_time' AND start_time < '$end_time')
+                        )";
+    $tt_result = mysqli_query($conn, $check_timetable);
+
+    if (mysqli_num_rows($tt_result) > 0) {
+        echo "<script>alert('Error: This slot is reserved for a fixed academic class.'); window.history.back();</script>";
+        exit();
+    }
+
     // 4. FILE UPLOAD (proof_file)
     $proof_filename = NULL;
     if (isset($_FILES['proofUpload']) && $_FILES['proofUpload']['error'] == 0) {

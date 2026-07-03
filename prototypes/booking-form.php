@@ -31,7 +31,63 @@ $max_quota = $user_data['booking_quota'];
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// --- FETCH NOTIFICATIONS ---
+// --- WEEK CALCULATION FOR TIMETABLE ---
+$week_offset = isset($_GET['week']) ? (int)$_GET['week'] : 0;
+$today = new DateTime();
+$day_of_week = $today->format('N'); 
+$monday = clone $today;
+$monday->modify("-" . ($day_of_week - 1) . " days");
+if ($week_offset != 0) {
+    $monday->modify("$week_offset weeks");
+}
+$friday = clone $monday;
+$friday->modify("+4 days");
+
+$start_date = $monday->format('Y-m-d');
+$end_date = $friday->format('Y-m-d');
+
+// --- FETCH GRID DATA ---
+// 1. Fixed Classes
+$tt_query = "SELECT day_of_week, start_time, end_time FROM timetable 
+             WHERE facility_id = '$facility_id' AND expiry_date >= '$start_date'";
+$tt_res = mysqli_query($conn, $tt_query);
+
+// 2. User Bookings (Normal + Priority)
+$bk_query = "SELECT booking_date, start_time, end_time, is_priority, DAYNAME(booking_date) as day_name 
+             FROM booking 
+             WHERE facility_id = '$facility_id' 
+             AND status IN ('Approved', 'Pending') 
+             AND booking_date BETWEEN '$start_date' AND '$end_date'";
+$bk_res = mysqli_query($conn, $bk_query);
+
+$schedule_map = [];
+
+// Logic Edit: Fill all hour slots covered by the time range
+while ($row = mysqli_fetch_assoc($tt_res)) {
+    $start_h = (int)substr($row['start_time'], 0, 2);
+    $end_h = (int)substr($row['end_time'], 0, 2);
+    $end_m = (int)substr($row['end_time'], 3, 2);
+    
+    // If minutes > 0 (e.g., 9:14), include the following hour box (10 PM)
+    $limit = ($end_m > 0) ? $end_h : $end_h - 1;
+    for ($i = $start_h; $i <= $limit; $i++) {
+        $schedule_map[$row['day_of_week']][$i] = 'fixed';
+    }
+}
+
+while ($row = mysqli_fetch_assoc($bk_res)) {
+    $start_h = (int)substr($row['start_time'], 0, 2);
+    $end_h = (int)substr($row['end_time'], 0, 2);
+    $end_m = (int)substr($row['end_time'], 3, 2);
+    $type = ($row['is_priority'] == 1) ? 'priority' : 'booked';
+
+    $limit = ($end_m > 0) ? $end_h : $end_h - 1;
+    for ($i = $start_h; $i <= $limit; $i++) {
+        $schedule_map[$row['day_name']][$i] = $type;
+    }
+}
+
+// --- NOTIFICATIONS (REVERTED) ---
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -39,13 +95,11 @@ $unread_count = mysqli_fetch_assoc($unread_res)['total'];
 $notif_list_query = "SELECT * FROM notification WHERE user_id = '$user_id' ORDER BY date_sent DESC LIMIT 5";
 $notif_list_res = mysqli_query($conn, $notif_list_query);
 
-// Handle AJAX to mark all as read
 if (isset($_GET['mark_read'])) {
     mysqli_query($conn, "UPDATE notification SET is_read = 1 WHERE user_id = '$user_id'");
     exit();
 }
 
-// Helper for notification timestamps
 function time_ago($timestamp) {
     $time_ago = strtotime($timestamp);
     $current_time = time();
@@ -61,21 +115,12 @@ function time_ago($timestamp) {
     else return date("d M Y", $time_ago);
 }
 
-// --- UPDATED: 4. FETCH DYNAMIC EQUIPMENTS BASED ON CAMPUS ---
+// --- EQUIPMENT ---
 $facility_location = $facility['location'];
-$target_campus = "";
-
-// Detect campus from facility location string
-if (stripos($facility_location, 'Cyberjaya') !== false) {
-    $target_campus = 'Cyberjaya';
-} elseif (stripos($facility_location, 'Melaka') !== false) {
-    $target_campus = 'Melaka';
-}
-
+$target_campus = (stripos($facility_location, 'Cyberjaya') !== false) ? 'Cyberjaya' : 'Melaka';
 $safe_cat = mysqli_real_escape_string($conn, $facility['category']);
 $safe_campus = mysqli_real_escape_string($conn, $target_campus);
 
-// Filter equipment by status, category, AND the detected campus
 $equip_query = "SELECT * FROM equipment 
                 WHERE status = 'Available' 
                 AND (category = '$safe_cat' OR category = 'General') 
@@ -83,13 +128,11 @@ $equip_query = "SELECT * FROM equipment
                 ORDER BY name ASC";
 $equip_result = mysqli_query($conn, $equip_query);
 
-// --- 5. FETCH EXISTING BOOKINGS TO SHOW OCCUPIED SLOTS ---
-$occupied_query = "SELECT booking_date, start_time, end_time FROM booking 
+$occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_time FROM booking 
                    WHERE facility_id = '$facility_id' 
                    AND status IN ('Approved', 'Pending') 
                    AND booking_date >= CURDATE()
-                   ORDER BY booking_date ASC, start_time ASC";
-$occupied_result = mysqli_query($conn, $occupied_query);
+                   ORDER BY booking_date ASC, start_time ASC");
 ?>
 
 <!DOCTYPE html>
@@ -101,6 +144,9 @@ $occupied_result = mysqli_query($conn, $occupied_query);
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .tt-slot.priority { background-color: #ffeb3b !important; color: #856404; font-weight: 600; border: 1px solid #fbc02d; }
+    </style>
 </head>
 <body>
 
@@ -120,8 +166,6 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             </nav>
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
-
-                <!-- NOTIFICATION BELL (functional) -->
                 <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <?php if ($unread_count > 0): ?>
@@ -131,19 +175,15 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     <?php endif; ?>
 
                     <div class="profile-menu" id="notifMenu" style="width: 320px; right: -60px; padding: 0; top: 36px;">
-                        <div style="padding: 16px; border-bottom: 1px solid var(--border-color);">
-                            <span style="font-weight: 700; font-size: 14px;">Recent Notifications</span>
-                        </div>
+                        <div style="padding: 16px; border-bottom: 1px solid var(--border-color);"><span style="font-weight: 700; font-size: 14px;">Recent Notifications</span></div>
                         <div style="max-height: 350px; overflow-y: auto;">
-                            <?php if (mysqli_num_rows($notif_list_res) > 0): ?>
-                                <?php while ($n = mysqli_fetch_assoc($notif_list_res)): ?>
-                                    <div style="padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); <?php echo ($n['is_read'] == 0) ? 'background: #f0f7ff;' : ''; ?>">
-                                        <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($n['title']); ?></p>
-                                        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($n['message']); ?></p>
-                                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;"><?php echo time_ago($n['date_sent']); ?></span>
-                                    </div>
-                                <?php endwhile; ?>
-                            <?php else: ?>
+                            <?php if (mysqli_num_rows($notif_list_res) > 0): while ($n = mysqli_fetch_assoc($notif_list_res)): ?>
+                                <div style="padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); <?php echo ($n['is_read'] == 0) ? 'background: #f0f7ff;' : ''; ?>">
+                                    <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($n['title']); ?></p>
+                                    <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($n['message']); ?></p>
+                                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;"><?php echo time_ago($n['date_sent']); ?></span>
+                                </div>
+                            <?php endwhile; else: ?>
                                 <div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px;">No notifications.</div>
                             <?php endif; ?>
                         </div>
@@ -151,11 +191,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                 </div>
 
                 <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
-                
-                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
-                    <?php echo htmlspecialchars($full_name); ?>
-                </span>
-                
+                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>"><?php echo htmlspecialchars($full_name); ?></span>
                 <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
 
                 <div class="profile-menu" id="profileMenu">
@@ -169,8 +205,6 @@ $occupied_result = mysqli_query($conn, $occupied_query);
     </header>
 
     <main class="container booking-layout">
-        
-        <!-- LEFT COLUMN: The Form -->
         <div class="card" style="margin-bottom: 0;">
             <div class="dashboard-header" style="margin-bottom: 24px;">
                 <h2>Reservation Details</h2>
@@ -179,26 +213,19 @@ $occupied_result = mysqli_query($conn, $occupied_query);
 
             <form action="../PHP/booking_process.php" method="POST">
                 <input type="hidden" name="facility_id" value="<?php echo $facility_id; ?>">
-
                 <div class="form-group">
                     <label>Select Date</label>
-                    <input type="date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
-                    
-                    <!-- Backend Dev's Occupied Slots List -->
+                    <input type="date" name="booking_date" class="form-control" required 
+                           min="<?php echo date('Y-m-d'); ?>" 
+                           max="<?php echo date('Y-m-d', strtotime('+7 days')); ?>">
                     <div style="margin-top: 12px; padding: 12px; background: #f0f2f5; border-radius: 8px; border-left: 4px solid var(--secondary);">
                         <span style="font-size: 12px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 5px;">
                             <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">event_busy</span> OCCUPIED SLOTS:
                         </span>
                         <ul style="font-size: 11px; color: var(--text-muted); list-style: none; padding-left: 0;">
-                            <?php if(mysqli_num_rows($occupied_result) > 0): ?>
-                                <?php 
-                                // Rewind pointer just in case it's used elsewhere
-                                mysqli_data_seek($occupied_result, 0); 
-                                while($occ = mysqli_fetch_assoc($occupied_result)): 
-                                ?>
+                            <?php if(mysqli_num_rows($occupied_result) > 0): while($occ = mysqli_fetch_assoc($occupied_result)): ?>
                                     <li>• <?php echo date("d M", strtotime($occ['booking_date'])); ?>: <?php echo date("g:i A", strtotime($occ['start_time'])); ?> - <?php echo date("g:i A", strtotime($occ['end_time'])); ?></li>
-                                <?php endwhile; ?>
-                            <?php else: ?>
+                            <?php endwhile; else: ?>
                                 <li>No existing bookings. All slots available!</li>
                             <?php endif; ?>
                         </ul>
@@ -208,28 +235,21 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                 <div class="form-row">
                     <div class="form-group">
                         <label>Start Time</label>
-                        <input type="time" name="start_time" class="form-control" required>
+                        <input type="time" name="start_time" class="form-control" required min="08:00" max="21:00">
                     </div>
                     <div class="form-group">
                         <label>End Time</label>
-                        <input type="time" name="end_time" class="form-control" required>
+                        <input type="time" name="end_time" class="form-control" required min="09:00" max="22:00">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Purpose of Booking</label>
-                    <textarea name="purpose" class="form-control" placeholder="e.g., Group Assignment Meeting, Club Activity..." required></textarea>
-                </div>
+                <div class="form-group"><label>Purpose of Booking</label><textarea name="purpose" class="form-control" placeholder="e.g., Group Assignment Meeting, Club Activity..." required></textarea></div>
 
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 32px 0;">
-
-                <div class="dashboard-header" style="margin-bottom: 16px;">
-                    <h2 style="font-size: 20px;">Add-On Equipment (Available in <?php echo $target_campus; ?>)</h2>
-                </div>
+                <div class="dashboard-header" style="margin-bottom: 16px;"><h2 style="font-size: 20px;">Add-On Equipment (Available in <?php echo $target_campus; ?>)</h2></div>
 
                 <div class="equipment-list">
-                    <?php if(mysqli_num_rows($equip_result) > 0): ?>
-                        <?php while($equip = mysqli_fetch_assoc($equip_result)): ?>
+                    <?php if(mysqli_num_rows($equip_result) > 0): while($equip = mysqli_fetch_assoc($equip_result)): ?>
                         <div class="equipment-option">
                             <div class="equipment-left">
                                 <input type="checkbox" name="equipment[]" value="<?php echo $equip['equip_id']; ?>" id="eq<?php echo $equip['equip_id']; ?>">
@@ -237,8 +257,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                             </div>
                             <input type="number" name="qty_<?php echo $equip['equip_id']; ?>" class="equipment-qty" min="1" max="<?php echo $equip['avail_qty']; ?>" value="1">
                         </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
+                    <?php endwhile; else: ?>
                         <p style="font-size: 14px; color: var(--text-muted);">No equipment available for this campus/category.</p>
                     <?php endif; ?>
                 </div>
@@ -250,115 +269,72 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             </form>
         </div>
 
-        <!-- RIGHT COLUMN: Summary Side -->
         <div>
             <div class="card" style="position: sticky; top: 100px;">
                 <h3 class="card-title">Booking Summary</h3>
-                
-                <img src="../public/img/facilities/<?php echo !empty($facility['image_path']) ? $facility['image_path'] : 'default.jpg'; ?>" 
-                     alt="Facility" class="summary-img" onerror="this.src='../public/img/mmulogo.jpg'">
-                
+                <img src="../public/img/facilities/<?php echo !empty($facility['image_path']) ? $facility['image_path'] : 'default.jpg'; ?>" alt="Facility" class="summary-img" onerror="this.src='../public/img/mmulogo.jpg'">
                 <div class="summary-details">
                     <h3><?php echo htmlspecialchars($facility['facility_name']); ?></h3>
-                    <div class="summary-item">
-                        <span class="material-symbols-outlined">location_on</span>
-                        <span><?php echo htmlspecialchars($facility['location']); ?></span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="material-symbols-outlined">group</span>
-                        <span>Maximum Capacity: <?php echo $facility['capacity']; ?> people</span>
-                    </div>
+                    <div class="summary-item"><span class="material-symbols-outlined">location_on</span><span><?php echo htmlspecialchars($facility['location']); ?></span></div>
+                    <div class="summary-item"><span class="material-symbols-outlined">group</span><span>Maximum Capacity: <?php echo $facility['capacity']; ?> people</span></div>
                 </div>
                 
                 <div class="quota-alert">
                     <span class="material-symbols-outlined" style="font-size: 20px;">info</span>
-                    <div>
-                        <strong>Quota Notice</strong><br>
-                        This reservation will consume 1 of your <?php echo $max_quota; ?> facility quotas.
-                    </div>
+                    <div><strong>Quota Notice</strong><br>This reservation will consume 1 of your <?php echo $max_quota; ?> facility quotas.</div>
                 </div>
 
-                <!-- Facility Weekly Timetable -->
                 <div class="timetable-container">
                     <div class="timetable-header">
                         <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
-                        <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Current Week</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-icon" onclick="changeWeek(-1)" style="width: 24px; height: 24px;"><span class="material-symbols-outlined" style="font-size: 16px;">chevron_left</span></button>
+                            <span style="font-size: 11px; font-weight: 700; color: var(--primary);"><?php echo $monday->format('d M') . ' - ' . $friday->format('d M'); ?></span>
+                            <button type="button" class="btn-icon" onclick="changeWeek(1)" style="width: 24px; height: 24px;"><span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span></button>
+                        </div>
                     </div>
 
-                    <!-- The Grid (Mon-Fri) -->
                     <div class="timetable-grid">
-                        <!-- Header Row -->
-                        <div class="tt-cell tt-head">Time</div>
-                        <div class="tt-cell tt-head">Mon</div>
-                        <div class="tt-cell tt-head">Tue</div>
-                        <div class="tt-cell tt-head">Wed</div>
-                        <div class="tt-cell tt-head">Thu</div>
-                        <div class="tt-cell tt-head">Fri</div>
+                        <div class="tt-cell tt-head">Time</div><div class="tt-cell tt-head">Mon</div><div class="tt-cell tt-head">Tue</div><div class="tt-cell tt-head">Wed</div><div class="tt-cell tt-head">Thu</div><div class="tt-cell tt-head">Fri</div>
 
-                        <!-- 8:00 AM Row -->
-                        <div class="tt-cell tt-time">8 AM</div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
-                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot free"></div>
-
-                        <!-- 10:00 AM Row -->
-                        <div class="tt-cell tt-time">10 AM</div>
-                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
-                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
-                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
-
-                        <!-- 12:00 PM Row -->
-                        <div class="tt-cell tt-time">12 PM</div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot blocked" title="Friday Prayer Break"></div>
-
-                        <!-- 2:00 PM Row -->
-                        <div class="tt-cell tt-time">2 PM</div>
-                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot free"></div>
-
-                        <!-- 4:00 PM Row -->
-                        <div class="tt-cell tt-time">4 PM</div>
-                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot free"></div>
-
-                        <!-- 6:00 PM Row -->
-                        <div class="tt-cell tt-time">6 PM</div>
-                        <div class="tt-cell tt-slot blocked" title="Fixed Academic Class"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot booked" title="Booked by Student"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        <div class="tt-cell tt-slot free"></div>
-                        
+                        <?php 
+                        $hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+                        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                        foreach($hours as $h): 
+                            $label = ($h >= 12) ? ($h==12 ? "12 PM" : ($h-12)." PM") : $h." AM";
+                        ?>
+                        <div class="tt-cell tt-time"><?php echo $label; ?></div>
+                        <?php foreach($days as $d): 
+                            $class = "free";
+                            if(isset($schedule_map[$d][$h])) {
+                                if($schedule_map[$d][$h] == 'fixed') $class = "blocked";
+                                elseif($schedule_map[$d][$h] == 'priority') $class = "priority";
+                                else $class = "booked";
+                            }
+                        ?>
+                        <div class="tt-cell tt-slot <?php echo $class; ?>"></div>
+                        <?php endforeach; endforeach; ?>
                     </div>
 
-                    <!-- Legend -->
                     <div class="tt-legend">
-                        <div class="legend-item"><div class="legend-box" style="background: transparent;"></div> Free</div>
+                        <div class="legend-item"><div class="legend-box"></div> Free</div>
                         <div class="legend-item"><div class="legend-box" style="background: #a4a2a2;"></div> Taken</div>
+                        <div class="legend-item"><div class="legend-box" style="background: #ffeb3b;"></div> Priority</div>
                         <div class="legend-item"><div class="legend-box" style="background: #fee2e2; border-color: #991b1b;"></div> Fixed Class</div>
                     </div>
                 </div>
-
             </div>
         </div>
-
     </main>
 
     <script>
+        function changeWeek(offset) {
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentWeek = parseInt(urlParams.get('week') || 0);
+            urlParams.set('week', currentWeek + offset);
+            window.location.search = urlParams.toString();
+        }
+
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
         const notifTrigger = document.getElementById('notifTrigger');
@@ -387,6 +363,5 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             notifMenu.classList.remove('show');
         });
     </script>
-
 </body>
 </html>

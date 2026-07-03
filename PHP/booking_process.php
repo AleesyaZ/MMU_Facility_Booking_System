@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         exit();
     }
 
-    // 3. OVERLAP CHECK
+    // 3. OVERLAP CHECK (Existing Bookings)
     $check_overlap = "SELECT * FROM booking 
                       WHERE facility_id = '$facility_id' 
                       AND booking_date = '$date' 
@@ -56,6 +56,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         exit();
     }
 
+    // --- NEW: 3.5 TIMETABLE OVERLAP CHECK (Fixed Classes) ---
+    $day_name = date('l', strtotime($date)); // Get 'Monday', 'Tuesday', etc.
+    $check_timetable = "SELECT * FROM timetable 
+                        WHERE facility_id = '$facility_id' 
+                        AND day_of_week = '$day_name' 
+                        AND expiry_date >= '$date'
+                        AND (
+                            ('$start_time' >= start_time AND '$start_time' < end_time) OR 
+                            ('$end_time' > start_time AND '$end_time' <= end_time) OR 
+                            (start_time >= '$start_time' AND start_time < '$end_time')
+                        )";
+    $tt_result = mysqli_query($conn, $check_timetable);
+
+    if (mysqli_num_rows($tt_result) > 0) {
+        echo "<script>alert('Error: This slot is reserved for a fixed academic class.'); window.history.back();</script>";
+        exit();
+    }
+
     // 4. MAIN INSERT (Auto-Approved for free slots)
     $sql = "INSERT INTO booking (user_id, facility_id, booking_date, start_time, end_time, purpose, status, is_priority) 
             VALUES ('$user_id', '$facility_id', '$date', '$start_time', '$end_time', '$purpose', 'Approved', 0)";
@@ -63,29 +81,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
     if (mysqli_query($conn, $sql)) {
         $booking_id = mysqli_insert_id($conn);
 
-        // --- UPDATED: 5. ADD-ON EQUIPMENT LOGIC WITH QUANTITY UPDATE ---
+        // --- 5. ADD-ON EQUIPMENT LOGIC ---
         if (isset($_POST['equipment']) && is_array($_POST['equipment'])) {
             foreach ($_POST['equipment'] as $equip_id) {
                 $equip_id = mysqli_real_escape_string($conn, $equip_id);
                 $qty_field = 'qty_' . $equip_id;
                 $requested_qty = isset($_POST[$qty_field]) ? (int)$_POST[$qty_field] : 1;
 
-                // A. Verify availability again on backend before deducting
                 $check_stock = mysqli_query($conn, "SELECT avail_qty FROM equipment WHERE equip_id = '$equip_id'");
                 $stock_data = mysqli_fetch_assoc($check_stock);
                 
                 if ($stock_data && $stock_data['avail_qty'] >= $requested_qty) {
-                    // B. Insert relationship record
                     $sql_equip = "INSERT INTO booking_equipment (booking_id, equip_id, quantity) 
                                   VALUES ('$booking_id', '$equip_id', '$requested_qty')";
                     mysqli_query($conn, $sql_equip);
 
-                    // C. UPDATE THE EQUIPMENT TABLE (Subtract from available quantity)
                     $update_stock = "UPDATE equipment SET avail_qty = avail_qty - $requested_qty WHERE equip_id = '$equip_id'";
                     mysqli_query($conn, $update_stock);
-                } else {
-                    // Optional: You could alert if some items were out of stock, 
-                    // but usually, the form prevents this via the 'max' attribute.
                 }
             }
         }

@@ -2,6 +2,9 @@
 session_start();
 include('../PHP/db_config.php');
 
+// Set Timezone
+date_default_timezone_set("Asia/Kuala_Lumpur");
+
 // 1. SECURITY CHECK: Only allow logged-in Lecturers
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Lecturer') {
     header("Location: login.html");
@@ -9,6 +12,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Lecturer') {
 }
 
 $user_id = $_SESSION['user_id'];
+
+// --- DATE CALCULATION FOR 1 WEEK PRIOR LIMIT ---
+$max_booking_date = date('Y-m-d', strtotime('+7 days'));
 
 // --- FETCH NOTIFICATIONS ---
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
@@ -18,13 +24,11 @@ $unread_count = mysqli_fetch_assoc($unread_res)['total'];
 $notif_list_query = "SELECT * FROM notification WHERE user_id = '$user_id' ORDER BY date_sent DESC LIMIT 5";
 $notif_list_res = mysqli_query($conn, $notif_list_query);
 
-// Handle AJAX to mark all as read
 if (isset($_GET['mark_read'])) {
     mysqli_query($conn, "UPDATE notification SET is_read = 1 WHERE user_id = '$user_id'");
     exit();
 }
 
-// Helper for notification timestamps
 function time_ago($timestamp) {
     $time_ago = strtotime($timestamp);
     $current_time = time();
@@ -55,21 +59,74 @@ if (!$facility) {
     die("Facility not found in database.");
 }
 
-// 3. GET USER DETAILS (For Navbar and Quota Notice)
+// 3. GET USER DETAILS
 $user_query = "SELECT name, booking_quota FROM user WHERE user_id = '$user_id' LIMIT 1";
 $user_data = mysqli_fetch_assoc(mysqli_query($conn, $user_query));
 $full_name = $user_data['name'] ?? "Lecturer";
 $max_quota = $user_data['booking_quota'] ?? 2;
 
-// Get initials for the avatar
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// --- UPDATED: 4. FETCH DYNAMIC EQUIPMENTS BASED ON CAMPUS ---
+// --- WEEK CALCULATION FOR TIMETABLE ---
+$week_offset = isset($_GET['week']) ? (int)$_GET['week'] : 0;
+$today = new DateTime();
+$day_of_week = $today->format('N'); 
+$monday = clone $today;
+$monday->modify("-" . ($day_of_week - 1) . " days");
+if ($week_offset != 0) {
+    $monday->modify("$week_offset weeks");
+}
+$friday = clone $monday;
+$friday->modify("+4 days");
+
+$start_date = $monday->format('Y-m-d');
+$end_date = $friday->format('Y-m-d');
+
+// --- FETCH GRID DATA ---
+// 1. Fixed Classes
+$tt_query = "SELECT day_of_week, start_time, end_time FROM timetable 
+             WHERE facility_id = '$facility_id' AND expiry_date >= '$start_date'";
+$tt_res = mysqli_query($conn, $tt_query);
+
+// 2. User Bookings (Normal + Priority)
+$bk_query = "SELECT booking_date, start_time, end_time, is_priority, DAYNAME(booking_date) as day_name 
+             FROM booking 
+             WHERE facility_id = '$facility_id' 
+             AND status IN ('Approved', 'Pending') 
+             AND booking_date BETWEEN '$start_date' AND '$end_date'";
+$bk_res = mysqli_query($conn, $bk_query);
+
+$schedule_map = [];
+
+// Logic Edit: Fill all hour slots covered by the time range
+while ($row = mysqli_fetch_assoc($tt_res)) {
+    $start_h = (int)substr($row['start_time'], 0, 2);
+    $end_h = (int)substr($row['end_time'], 0, 2);
+    $end_m = (int)substr($row['end_time'], 3, 2);
+    
+    // If minutes > 0 (e.g., 9:14), include the following hour box (10 PM)
+    $limit = ($end_m > 0) ? $end_h : $end_h - 1;
+    for ($i = $start_h; $i <= $limit; $i++) {
+        $schedule_map[$row['day_of_week']][$i] = 'fixed';
+    }
+}
+
+while ($row = mysqli_fetch_assoc($bk_res)) {
+    $start_h = (int)substr($row['start_time'], 0, 2);
+    $end_h = (int)substr($row['end_time'], 0, 2);
+    $end_m = (int)substr($row['end_time'], 3, 2);
+    $type = ($row['is_priority'] == 1) ? 'priority' : 'booked';
+
+    $limit = ($end_m > 0) ? $end_h : $end_h - 1;
+    for ($i = $start_h; $i <= $limit; $i++) {
+        $schedule_map[$row['day_name']][$i] = $type;
+    }
+}
+
+// --- FETCH DYNAMIC EQUIPMENTS BASED ON CAMPUS ---
 $facility_location = $facility['location'];
 $target_campus = "";
-
-// Detect campus from facility location string
 if (stripos($facility_location, 'Cyberjaya') !== false) {
     $target_campus = 'Cyberjaya';
 } elseif (stripos($facility_location, 'Melaka') !== false) {
@@ -79,7 +136,6 @@ if (stripos($facility_location, 'Cyberjaya') !== false) {
 $safe_cat = mysqli_real_escape_string($conn, $facility['category']);
 $safe_campus = mysqli_real_escape_string($conn, $target_campus);
 
-// Filter equipment by status, category, AND the detected campus
 $equip_query = "SELECT * FROM equipment 
                 WHERE status = 'Available' 
                 AND (category = '$safe_cat' OR category = 'General') 
@@ -87,7 +143,7 @@ $equip_query = "SELECT * FROM equipment
                 ORDER BY name ASC";
 $equip_result = mysqli_query($conn, $equip_query);
 
-// --- 5. FETCH EXISTING BOOKINGS (For Lecturers to see what to override) ---
+// --- FETCH EXISTING BOOKINGS ---
 $occupied_query = "SELECT booking_date, start_time, end_time, is_priority FROM booking 
                    WHERE facility_id = '$facility_id' 
                    AND status IN ('Approved', 'Pending') 
@@ -105,6 +161,9 @@ $occupied_result = mysqli_query($conn, $occupied_query);
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .tt-slot.priority { background-color: #ffeb3b !important; color: #856404; font-weight: 600; border: 1px solid #fbc02d; }
+    </style>
 </head>
 <body>
 
@@ -125,7 +184,6 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
 
-                <!-- NOTIFICATION BELL (functional) -->
                 <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <?php if ($unread_count > 0): ?>
@@ -155,11 +213,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                 </div>
 
                 <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
-                
-                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
-                    <?php echo htmlspecialchars($full_name); ?>
-                </span>
-                
+                <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>"><?php echo htmlspecialchars($full_name); ?></span>
                 <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
 
                 <div class="profile-menu" id="profileMenu">
@@ -181,12 +235,12 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             </div>
 
             <form action="../PHP/lecturer_booking_process.php" method="POST" enctype="multipart/form-data">
-                
                 <input type="hidden" name="facility_id" value="<?php echo $facility_id; ?>">
 
                 <div class="form-group">
                     <label>Select Date</label>
-                    <input type="date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
+                    <!-- UPDATED: 1 Week limit by default -->
+                    <input type="date" id="booking_date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>" max="<?php echo $max_booking_date; ?>">
                     
                     <div style="margin-top: 12px; padding: 12px; background: #fdf2f2; border-radius: 8px; border-left: 4px solid var(--secondary);">
                         <span style="font-size: 12px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 5px;">
@@ -196,19 +250,11 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                         <?php if(mysqli_num_rows($occupied_result) > 0): ?>
                             <?php while($occ = mysqli_fetch_assoc($occupied_result)): ?>
                                 <li style="margin-bottom: 5px; padding: 4px; border-radius: 4px; <?php echo $occ['is_priority'] ? 'background: #ffebee;' : ''; ?>">
-                                    • <?php echo date("d M", strtotime($occ['booking_date'])); ?>: 
-                                    <?php echo date("g:i A", strtotime($occ['start_time'])); ?> - <?php echo date("g:i A", strtotime($occ['end_time'])); ?>
-                                    
-                                    <?php if($occ['is_priority']): ?>
-                                        <strong style="color:var(--secondary);">[LOCKED: Priority]</strong>
-                                    <?php else: ?>
-                                        <span style="color: #666;">(Standard - Overridable)</span>
-                                    <?php endif; ?>
+                                    • <?php echo date("d M", strtotime($occ['booking_date'])); ?>: <?php echo date("g:i A", strtotime($occ['start_time'])); ?> - <?php echo date("g:i A", strtotime($occ['end_time'])); ?>
+                                    <?php if($occ['is_priority']): ?><strong style="color:var(--secondary);"> [LOCKED: Priority]</strong><?php else: ?><span style="color: #666;"> (Standard - Overridable)</span><?php endif; ?>
                                 </li>
                             <?php endwhile; ?>
-                            <li style="margin-top: 8px; color: #856404; font-style: italic;">
-                                Note: You can only book over "Standard" slots using Priority Override. "Locked" slots cannot be overridden.
-                            </li>
+                            <li style="margin-top: 8px; color: #856404; font-style: italic;">Note: Standard slots are overridable via Priority requests.</li>
                         <?php else: ?>
                             <li>No existing bookings. All slots available!</li>
                         <?php endif; ?>
@@ -216,14 +262,14 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     </div>
                 </div>
 
-                <div class="form-row">
+               <div class="form-row">
                     <div class="form-group">
                         <label>Start Time</label>
-                        <input type="time" name="start_time" class="form-control" required>
+                        <input type="time" name="start_time" class="form-control" required min="08:00" max="21:00">
                     </div>
                     <div class="form-group">
                         <label>End Time</label>
-                        <input type="time" name="end_time" class="form-control" required>
+                        <input type="time" name="end_time" class="form-control" required min="09:00" max="22:00">
                     </div>
                 </div>
 
@@ -231,22 +277,21 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     <input type="checkbox" id="priority" name="priority">
                     <div class="priority-text">
                         <label for="priority" style="font-size: 15px; font-weight: 600; color: #856404; margin-bottom: 4px;">Request Priority Override</label>
-                        <p>Check this for academic purposes (Replacement classes/exams). Standard quota will be bypassed upon Admin approval.</p>
+                        <p>Check this for academic purposes. Allows booking anytime and bypasses limits upon Admin approval.</p>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Purpose of Booking & Subject Code</label>
-                    <textarea name="purpose" class="form-control" placeholder="Please state Subject Code and reason (e.g. CPT4214 Lab Session)..." required></textarea>
+                    <textarea name="purpose" class="form-control" placeholder="Please state Subject Code and reason..." required></textarea>
                     
-                    <label class="upload-zone" id="dropZone" for="proofUpload">
+                    <label class="upload-zone" id="dropZone" for="proofUpload" style="margin-top: 8px;">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 8px;">
                             <span class="material-symbols-outlined upload-icon">cloud_upload</span>
                             <span class="upload-text">Click to upload proof</span>
                         </div>
                         <span class="upload-hint">Upload Faculty Memo or Timetable (PDF/JPG, Max 5MB)</span>
                         <input type="file" id="proofUpload" name="proofUpload" accept=".pdf,.jpg,.jpeg,.png">
-                        
                         <div id="fileNameDisplay" style="margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--primary); display: none;"></div>
                     </label>
                 </div>
@@ -254,7 +299,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 32px 0;">
 
                 <div class="dashboard-header" style="margin-bottom: 16px;">
-                    <h2 style="font-size: 20px;">Add-On Equipment (Available in <?php echo $target_campus; ?>)</h2>
+                    <h2 style="font-size: 20px;">Add-On Equipment <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">(Optional)</span></h2>
                 </div>
 
                 <div class="equipment-list">
@@ -269,7 +314,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                             </div>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <p style="font-size: 14px; color: var(--text-muted);">No equipment available for this campus/category.</p>
+                        <p style="font-size: 14px; color: var(--text-muted);">No equipment available for this campus.</p>
                     <?php endif; ?>
                 </div>
 
@@ -280,38 +325,73 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             </form>
         </div>
 
+        <!-- RIGHT COLUMN -->
         <div>
             <div class="card" style="position: sticky; top: 100px;">
                 <h3 class="card-title">Booking Summary</h3>
-                
-                <img src="../public/img/facilities/<?php echo !empty($facility['image_path']) ? $facility['image_path'] : 'default.jpg'; ?>" 
-                     alt="Facility" class="summary-img" onerror="this.src='../public/img/mmulogo.jpg'">
-                
+                <img src="../public/img/facilities/<?php echo !empty($facility['image_path']) ? $facility['image_path'] : 'default.jpg'; ?>" alt="Facility" class="summary-img" onerror="this.src='../public/img/mmulogo.jpg'">
                 <div class="summary-details">
                     <h3><?php echo htmlspecialchars($facility['facility_name']); ?></h3>
-                    <div class="summary-item">
-                        <span class="material-symbols-outlined">location_on</span>
-                        <span><?php echo htmlspecialchars($facility['location']); ?></span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="material-symbols-outlined">group</span>
-                        <span>Maximum Capacity: <?php echo $facility['capacity']; ?> people</span>
-                    </div>
+                    <div class="summary-item"><span class="material-symbols-outlined">location_on</span><span><?php echo htmlspecialchars($facility['location']); ?></span></div>
+                    <div class="summary-item"><span class="material-symbols-outlined">group</span><span>Maximum Capacity: <?php echo $facility['capacity']; ?> people</span></div>
                 </div>
-
                 <div class="quota-alert">
                     <span class="material-symbols-outlined" style="font-size: 20px;">info</span>
-                    <div>
-                        <strong>Staff Quota</strong><br>
-                        Standard bookings consume 1 of your <?php echo $max_quota; ?> weekly quotas. Priority requests require Admin approval.
+                    <div><strong>Staff Quota</strong><br>Standard bookings consume 1 of your <?php echo $max_quota; ?> weekly quotas. Priority requests require Admin approval.</div>
+                </div>
+
+                <!-- WEEKLY SCHEDULE RE-ADDED -->
+                <div class="timetable-container">
+                    <div class="timetable-header">
+                        <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-icon" onclick="changeWeek(-1)" style="width: 24px; height: 24px;"><span class="material-symbols-outlined" style="font-size: 16px;">chevron_left</span></button>
+                            <span style="font-size: 11px; font-weight: 700; color: var(--primary);"><?php echo $monday->format('d M') . ' - ' . $friday->format('d M'); ?></span>
+                            <button type="button" class="btn-icon" onclick="changeWeek(1)" style="width: 24px; height: 24px;"><span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span></button>
+                        </div>
+                    </div>
+
+                    <div class="timetable-grid">
+                        <div class="tt-cell tt-head">Time</div><div class="tt-cell tt-head">Mon</div><div class="tt-cell tt-head">Tue</div><div class="tt-cell tt-head">Wed</div><div class="tt-cell tt-head">Thu</div><div class="tt-cell tt-head">Fri</div>
+
+                        <?php 
+                        $hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+                        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                        foreach($hours as $h): 
+                            $label = ($h >= 12) ? ($h==12 ? "12 PM" : ($h-12)." PM") : $h." AM";
+                        ?>
+                        <div class="tt-cell tt-time"><?php echo $label; ?></div>
+                        <?php foreach($days as $d): 
+                            $class = "free";
+                            if(isset($schedule_map[$d][$h])) {
+                                if($schedule_map[$d][$h] == 'fixed') $class = "blocked";
+                                elseif($schedule_map[$d][$h] == 'priority') $class = "priority";
+                                else $class = "booked";
+                            }
+                        ?>
+                        <div class="tt-cell tt-slot <?php echo $class; ?>"></div>
+                        <?php endforeach; endforeach; ?>
+                    </div>
+
+                    <div class="tt-legend">
+                        <div class="legend-item"><div class="legend-box"></div> Free</div>
+                        <div class="legend-item"><div class="legend-box" style="background: #a4a2a2;"></div> Taken</div>
+                        <div class="legend-item"><div class="legend-box" style="background: #ffeb3b;"></div> Priority</div>
+                        <div class="legend-item"><div class="legend-box" style="background: #fee2e2; border-color: #991b1b;"></div> Fixed Class</div>
                     </div>
                 </div>
             </div>
         </div>
-
     </main>
 
     <script>
+        function changeWeek(offset) {
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentWeek = parseInt(urlParams.get('week') || 0);
+            urlParams.set('week', currentWeek + offset);
+            window.location.search = urlParams.toString();
+        }
+
         const trigger = document.getElementById('profileTrigger');
         const menu = document.getElementById('profileMenu');
         const notifTrigger = document.getElementById('notifTrigger');
@@ -327,7 +407,6 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             e.stopPropagation();
             menu.classList.remove('show');
             notifMenu.classList.toggle('show');
-
             if (notifMenu.classList.contains('show')) {
                 fetch('booking-form-lecturer.php?mark_read=1');
                 const badge = document.getElementById('notifBadge');
@@ -338,6 +417,19 @@ $occupied_result = mysqli_query($conn, $occupied_query);
         window.addEventListener('click', function() { 
             menu.classList.remove('show');
             notifMenu.classList.remove('show');
+        });
+
+        // --- DYNAMIC DATE LIMIT TOGGLE ---
+        const priorityCheckbox = document.getElementById('priority');
+        const dateInput = document.getElementById('booking_date');
+        const defaultMaxDate = "<?php echo $max_booking_date; ?>";
+
+        priorityCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                dateInput.removeAttribute('max'); // Can book anytime
+            } else {
+                dateInput.setAttribute('max', defaultMaxDate); // Back to 7 day limit
+            }
         });
 
         const fileInput = document.getElementById('proofUpload');
@@ -351,6 +443,5 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             }
         });
     </script>
-
 </body>
 </html>
