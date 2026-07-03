@@ -122,7 +122,7 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Manage Facilities - MMU Campus Space</title>
+    <title>Manage Facilities - MMU Facility Booking System</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
@@ -170,7 +170,7 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
                         <input type="text" id="facilitySearch" onkeyup="searchTable()" placeholder="Search facility name...">
                     </div>
                     
-                    <form action="admin-facilities.php" method="GET" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <form action="admin-facilities.php" method="GET" class="d-inline-flex flex-wrap align-items-center gap-2 m-0">
                         <select name="campus" class="form-control" style="width: 140px;" onchange="this.form.submit()">
                             <option value="All Campuses" <?php if($campus_f == 'All Campuses') echo 'selected'; ?>>All Campuses</option>
                             <option value="MMU Cyberjaya" <?php if($campus_f == 'MMU Cyberjaya') echo 'selected'; ?>>Cyberjaya</option>

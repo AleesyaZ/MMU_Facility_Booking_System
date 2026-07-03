@@ -2,7 +2,7 @@
    1. GLOBAL VARIABLES & RESET
    ========================================= */
 :root {
-    /* MMU Brand Colors */
+    /* MMU Colors */
     --primary: #003d7c;
     --primary-hover: #0054a6;
     --secondary: #bb0013;
@@ -27,12 +27,12 @@
 }
 
 html {
-    scroll-behavior: smooth; /* makes anchor links glide smoothly */
+    scroll-behavior: smooth; 
 }
 
 html, body {
     height: 100%;
-    overflow-x: hidden; /* Prevent extra horizontal scrolling space */
+    overflow-x: hidden; 
 }
 
 body {
@@ -99,7 +99,7 @@ a {
     width: 100%;
     background-color: var(--surface);
     border-bottom: 1px solid rgba(194, 198, 211, 0.3);
-    z-index: 100; /* Bumped up to sit securely above all page contents */
+    z-index: 100; 
     box-shadow: var(--shadow-soft);
     height: 80px;
     display: flex;
@@ -202,7 +202,7 @@ a {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    margin-top: 80px; /* Offset for the fixed header */
+    margin-top: 80px;
     z-index: 1;
 }
 
@@ -340,7 +340,6 @@ a {
     font-size: 16px;
 }
 
-/* Creative Card Showcase */
 .feature-showcase {
     display: flex;
     flex-direction: column;
@@ -371,7 +370,6 @@ a {
     border: 1px solid rgba(194, 198, 211, 0.1);
 }
 
-/* The Popping Up Center Card */
 @media (min-width: 1024px) {
     .creative-card.center-card {
         transform: translateY(-40px);
@@ -382,7 +380,7 @@ a {
     }
     
     .creative-card:not(.center-card) {
-        margin-top: 30px; /* side cards are pushed down to lift the middle card */
+        margin-top: 30px; 
     }
 }
 
@@ -413,7 +411,7 @@ a {
 }
 
 .creative-card:hover .feature-img-wrapper img {
-    transform: scale(1.05); /* slight zoom on hover */
+    transform: scale(1.05); 
 }
 
 .creative-card h3 {
@@ -515,7 +513,7 @@ a {
 .social-icon img {
     width: 20px;
     height: 20px;
-    object-fit: contain; /* prevent image from stretching */
+    object-fit: contain; 
     transition: transform 0.3s ease;
 }
 
@@ -571,7 +569,6 @@ a {
     max-width: 420px;
 }
 
-/* right side image hidden on small screens */
 .auth-image-side {
     display: none; 
 }
@@ -610,7 +607,6 @@ a {
     }
 }
 
-/* Form Elements */
 .auth-header { margin-bottom: 32px; }
 .auth-header h2 { font-size: 32px; margin-bottom: 8px; text-align: center; }
 .auth-header p { color: var(--text-muted); text-align: center; }
@@ -640,7 +636,6 @@ a {
     box-shadow: 0 0 0 3px rgba(0, 61, 124, 0.1);
 }
 
-/* Custom Back Link */
 .back-link-custom {
     display: inline-flex;
     align-items: center;
@@ -659,7 +654,6 @@ a {
     color: var(--primary);
 }
 
-/* OTP Button */
 .input-with-button {
     position: relative;
     display: flex;
@@ -752,7 +746,6 @@ a {
     flex-direction: column;
 }
 
-/* Card Titles */
 .card-title {
     display: flex;
     align-items: center;
@@ -800,7 +793,6 @@ a {
 .stat-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8;}
 .stat-value { font-size: 24px; font-weight: 700; }
 
-/* list items (bookings & announcements) */
 .list-group {
     display: flex;
     flex-direction: column;
@@ -836,7 +828,6 @@ a {
 .item-details h4 { font-size: 15px; margin-bottom: 4px; color: var(--text-main); }
 .item-details p { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
 
-/* Badges */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -859,7 +850,6 @@ a {
 .badge-pending { background-color: #fff3cd; color: #856404; }
 .badge-approved { background-color: var(--success-bg); color: var(--success-text); }
 
-/* User Profile Navbar Base Configuration */
 .avatar {
     width: 36px;
     height: 36px;
@@ -910,7 +900,6 @@ a {
     align-items: flex-end;
 }
 
-/* ensure all buttons inside facility cards are the exact same size */
 .facility-info .btn {
     width: 100%;
     justify-content: center;
@@ -926,7 +915,7 @@ a {
     cursor: not-allowed;
     border: none;
     box-shadow: none;
-    pointer-events: none; /* physically stops clicks */
+    pointer-events: none; 
 }
 
 .filter-group {
@@ -1056,11 +1045,10 @@ a {
 
 @media (min-width: 1024px) {
     .booking-layout {
-        grid-template-columns: 2fr 1fr; /* form takes 2/3, summary takes 1/3 */
+        grid-template-columns: 2fr 1fr;
     }
 }
 
-/* FIX: Changed from absolute dual-columns to responsive setup to prevent squishing on phones */
 .form-row {
     display: grid;
     grid-template-columns: 1fr;
@@ -1078,7 +1066,6 @@ textarea.form-control {
     min-height: 100px;
 }
 
-/* Add-on Equipment Styling */
 .equipment-list {
     display: flex;
     flex-direction: column;
@@ -1137,7 +1124,6 @@ textarea.form-control {
     border-color: var(--primary);
 }
 
-/* Summary Card */
 .summary-img {
     width: 100%;
     height: 160px;
@@ -1183,7 +1169,6 @@ textarea.form-control {
     gap: 8px;
 }
 
-/* Priority Booking Checkbox Styling */
 .priority-box {
     background-color: #fff3cd; 
     border: 1px solid #ffeeba;
@@ -1335,11 +1320,11 @@ textarea.form-control {
 }
 
 .profile-name {
-    display: block !important;    /* block layout required for text ellipsis behavior */
+    display: block !important;    
     max-width: 150px !important;
     white-space: nowrap !important; 
     overflow: hidden !important; 
-    text-overflow: ellipsis !important; /* generates standard dynamic trailing dots "..." */
+    text-overflow: ellipsis !important; 
     font-weight: 500;
     font-size: 14px;
     color: var(--text-main);
@@ -1353,7 +1338,6 @@ textarea.form-control {
 /* =========================================
    13. MY BOOKINGS PAGE
    ========================================= */
-/* tab navigation */
 .nav-tabs {
     display: flex;
     gap: 32px;
@@ -1380,7 +1364,6 @@ textarea.form-control {
     color: var(--primary);
 }
 
-/* The active underline */
 .tab-btn.active::after {
     content: '';
     position: absolute;
@@ -1391,7 +1374,6 @@ textarea.form-control {
     background-color: var(--primary);
 }
 
-/* Detailed Booking Card */
 .booking-list {
     display: flex;
     flex-direction: column;
@@ -1462,7 +1444,6 @@ textarea.form-control {
     color: var(--text-main);
 }
 
-/* Right side actions */
 .booking-actions {
     display: flex;
     flex-direction: column;
@@ -1501,7 +1482,6 @@ textarea.form-control {
     object-fit: cover;
 }
 
-/* adjust the details container to align nicely with the image */
 .booking-details {
     display: flex;
     flex-direction: column;
@@ -1515,9 +1495,9 @@ textarea.form-control {
     display: flex;
     flex-direction: column;
     gap: 48px;
-    padding-top: 140px; /* Account for navbar */
+    padding-top: 140px; 
     padding-bottom: 80px;
-    max-width: 1100px; /* Slightly narrower for readability */
+    max-width: 1100px; 
     margin: 0 auto;
     padding-left: 24px;
     padding-right: 24px;
@@ -1530,7 +1510,6 @@ textarea.form-control {
     }
 }
 
-/* Sticky Sidebar */
 .guidelines-sidebar {
     width: 100%;
     background: var(--surface);
@@ -1544,7 +1523,7 @@ textarea.form-control {
     .guidelines-sidebar {
         width: 280px;
         position: sticky;
-        top: 100px; /* Sticks just below the navbar */
+        top: 100px; 
         flex-shrink: 0;
     }
 }
@@ -1581,7 +1560,6 @@ textarea.form-control {
     font-size: 18px;
 }
 
-/* Main Content Area */
 .guidelines-content {
     flex: 1;
     background: var(--surface);
@@ -1591,10 +1569,9 @@ textarea.form-control {
     box-shadow: var(--shadow-soft);
 }
 
-/* Individual Sections */
 .guide-section {
     margin-bottom: 48px;
-    scroll-margin-top: 100px; /* Prevents navbar from hiding the title when jumped to */
+    scroll-margin-top: 100px; 
 }
 
 .guide-section:last-child {
@@ -1626,7 +1603,6 @@ textarea.form-control {
     line-height: 1.6;
 }
 
-/* Highlight boxes inside text */
 .guide-alert {
     background-color: var(--success-bg);
     border-left: 4px solid var(--success-text);
@@ -1663,7 +1639,7 @@ textarea.form-control {
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     width: 220px;
-    display: none; /* hidden by default, toggled via JS */
+    display: none; 
     flex-direction: column;
     z-index: 100;
     overflow: hidden;
@@ -1699,7 +1675,6 @@ textarea.form-control {
     color: var(--secondary);
 }
 
-/* badge specific for reports */
 .badge-info { background-color: #d1ecf1; color: #0c5460; }
 
 
@@ -1713,7 +1688,6 @@ textarea.form-control {
     background-color: var(--background);
 }
 
-/* admin sidebar */
 .admin-sidebar {
     width: 260px;
     background-color: var(--surface);
@@ -1779,7 +1753,6 @@ textarea.form-control {
     font-size: 20px;
 }
 
-/* admin main content area */
 .admin-main {
     flex: 1;
     display: flex;
@@ -1803,7 +1776,6 @@ textarea.form-control {
     overflow-y: auto;
 }
 
-/* admin tables */
 .admin-table-container {
     background: var(--surface);
     border: 1px solid rgba(194, 198, 211, 0.4);
@@ -1967,7 +1939,6 @@ textarea.form-control {
     border: 1px solid rgba(194, 198, 211, 0.2);
 }
 
-/* footer: admin response */
 .feed-footer {
     background-color: #f8f9ff;
     border-top: 1px solid rgba(194, 198, 211, 0.3);
@@ -2000,11 +1971,9 @@ textarea.form-control {
    19. ADMIN SPECIFIC STYLES (Users & Modals)
    ========================================= */
 
-/* Admin Action Badges */
 .badge-danger { background-color: #fee2e2; color: #991b1b; }
 .badge-warning { background-color: #fef3c7; color: #92400e; } 
 
-/* Admin Table Search & Filter Bar */
 .admin-toolbar {
     display: flex;
     justify-content: space-between;
@@ -2045,7 +2014,6 @@ textarea.form-control {
     border-color: var(--primary);
 }
 
-/* User Action Buttons */
 .btn-icon {
     width: 32px;
     height: 32px;
@@ -2068,7 +2036,6 @@ textarea.form-control {
 .btn-icon.delete { color: var(--secondary); border-color: rgba(187, 0, 19, 0.2); }
 .btn-icon.delete:hover { background-color: rgba(187, 0, 19, 0.1); }
 
-/* Quick Stat Pills inside table */
 .stat-pill {
     display: inline-flex;
     align-items: center;
@@ -2082,13 +2049,11 @@ textarea.form-control {
 .stat-pill.good { background-color: var(--success-bg); color: var(--success-text); }
 .stat-pill.bad { background-color: #fee2e2; color: #991b1b; }
 
-/* Admin Facility Status Badges */
 .badge-maintenance {
     background-color: #fef3c7; 
     color: #92400e;
 }
 
-/* Admin Booking Status Badges */
 .badge-cancelled {
     background-color: #f1f3f5;
     color: #6b7280;
@@ -2101,7 +2066,6 @@ textarea.form-control {
     display: block;
 }
 
-/* Inventory Progress Bar */
 .stock-bar-container {
     width: 100px;
     height: 8px;
@@ -2126,7 +2090,6 @@ textarea.form-control {
     font-weight: 600;
 }
 
-/* Penalty Specific Styles */
 .strike-tracker {
     display: flex;
     gap: 4px;
@@ -2153,7 +2116,6 @@ textarea.form-control {
     line-height: 1.5;
 }
 
-/* Admin Report Specific Styles */
 .report-thumbnail {
     width: 60px;
     height: 40px;
@@ -2174,7 +2136,6 @@ textarea.form-control {
     color: #0369a1; 
 }
 
-/* Admin Announcement Form */
 .admin-form-panel {
     background: var(--surface);
     border: 1px solid rgba(194, 198, 211, 0.4);
@@ -2195,7 +2156,6 @@ textarea.form-control {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Fixed Image Thumbnail for Reports Table */
 .report-thumb-fixed {
     width: 48px;
     height: 48px;
@@ -2247,7 +2207,6 @@ textarea.form-control {
     visibility: visible;
 }
 
-/* Modal Box */
 .modal-box {
     background-color: var(--surface);
     width: 90%;
@@ -2302,12 +2261,10 @@ textarea.form-control {
     justify-content: flex-end;
 }
 
-/* Specific Modal Colors */
 .modal-warning .modal-icon { background: #fff3cd; color: #856404; }
 .modal-danger .modal-icon { background: #fee2e2; color: #991b1b; }
 .modal-info .modal-icon { background: #e0f2fe; color: #0369a1; }
 
-/* Booking Details Modal Specifics */
 .details-grid {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -2322,7 +2279,6 @@ textarea.form-control {
 .details-label { font-weight: 600; color: var(--text-muted); }
 .details-value { font-weight: 500; color: var(--text-main); }
 
-/* Modal Sizing Fix for 100% Zoom */
 .modal-box-large {
     width: 95%;
     max-width: 650px;
@@ -2344,7 +2300,6 @@ textarea.form-control {
     border-bottom: 2px solid rgba(194, 198, 211, 0.3); 
 }
 
-/* Scrollable Description Box */
 .scrollable-desc {
     background: var(--background);
     padding: 16px;
@@ -2353,11 +2308,10 @@ textarea.form-control {
     line-height: 1.6;
     color: var(--text-main);
     border: 1px solid rgba(194, 198, 211, 0.3);
-    max-height: 100px; /* Limits the height */
-    overflow-y: auto;  /* Adds scrollbar if text is too long */
+    max-height: 100px; 
+    overflow-y: auto;  
 }
 
-/* Image Wrapper */
 .modal-img-wrapper {
     width: 100%;
     height: 140px; 
@@ -2379,7 +2333,6 @@ textarea.form-control {
     transform: scale(1.05);
 }
 
-/* Fullscreen Image Lightbox */
 .lightbox-overlay {
     position: fixed;
     top: 0;
@@ -2388,7 +2341,7 @@ textarea.form-control {
     height: 100vh;
     background: rgba(0, 0, 0, 0.9);
     z-index: 9999;
-    display: none; /* Hidden by default */
+    display: none;
     align-items: center;
     justify-content: center;
     cursor: zoom-out;
@@ -2425,7 +2378,6 @@ textarea.form-control {
     }
 }
 
-/* Sidebar Filters */
 .announcements-sidebar {
     width: 100%;
     background: var(--surface);
@@ -2498,7 +2450,6 @@ textarea.form-control {
     color: white;
 }
 
-/* Feed List adjustments */
 .announcements-feed {
     flex: 1;
     display: flex;
@@ -2513,7 +2464,6 @@ textarea.form-control {
     margin-bottom: 8px;
 }
 
-/* Specific Category Badge Colors */
 .tag-facility { background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
 .tag-reminder { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
 .tag-event { background-color: #fce7f3; color: #9d174d; border-color: #fbcfe8; }
@@ -2550,7 +2500,7 @@ textarea.form-control {
 
 .timetable-grid {
     display: grid;
-    grid-template-columns: 60px repeat(5, 1fr); /* Time col + 5 Weekdays */
+    grid-template-columns: 60px repeat(5, 1fr); 
     border-top: 1px solid rgba(194, 198, 211, 0.2);
 }
 
@@ -2570,7 +2520,7 @@ textarea.form-control {
 .tt-head { background-color: #f8f9ff; font-weight: 600; color: var(--text-muted); }
 .tt-time { background-color: #f8f9ff; font-weight: 600; color: var(--text-muted); font-size: 10px; }
 
-/* Slot Statuses */
+
 .tt-slot.free { background-color: transparent; }
 .tt-slot.blocked { 
     background-color: #fee2e2; 
@@ -2586,7 +2536,6 @@ textarea.form-control {
     cursor: not-allowed;
 }
 
-/* Legend */
 .tt-legend {
     display: flex;
     gap: 16px;
@@ -2610,7 +2559,6 @@ textarea.form-control {
     border: 1px solid rgba(194, 198, 211, 0.4);
 }
 
-/* Admin Interactive Timetable Styles */
 .timetable-grid.admin-edit {
     grid-template-columns: 80px repeat(5, 1fr); 
 }
@@ -2628,6 +2576,5 @@ textarea.form-control {
     border-radius: 4px;
 }
 
-/* Specific button color for the timetable icon */
 .btn-icon.schedule { color: #059669; border-color: rgba(5, 150, 105, 0.2); }
 .btn-icon.schedule:hover { background-color: rgba(5, 150, 105, 0.1); }
