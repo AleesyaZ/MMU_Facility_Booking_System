@@ -233,11 +233,10 @@ $result = mysqli_query($conn, $query);
                                     <?php endif; ?>
                                 </td>
                                 
-                                <!-- UPDATED: Actions Column with Edit Schedule Button -->
+                                <!-- Actions Column -->
                                 <td style="text-align: right; white-space: nowrap;">
                                     <div style="display: inline-flex; gap: 8px;">
                                         
-                                        <!-- NEW: Edit Schedule Button -->
                                         <!-- Note for backend: Pass the facility_id or name to openTimetableModal() if needed to load specific schedule later -->
                                         <button class="btn-icon schedule open-timetable-modal" title="Edit Schedule"><span class="material-symbols-outlined" style="font-size: 18px;">calendar_month</span></button>
                                         
@@ -332,7 +331,7 @@ $result = mysqli_query($conn, $query);
          TIMETABLE EDITOR MODAL
          ========================================== -->
     <div class="modal-overlay" id="timetableModal">
-        <div class="modal-box modal-box-large" style="max-width: 800px;"> <!-- Wider for the big timetable -->
+        <div class="modal-box modal-box-large" style="max-width: 800px;"> 
             
             <!-- Modal Header -->
             <div style="background-color: var(--surface); padding: 16px 24px; border-bottom: 1px solid rgba(194, 198, 211, 0.4); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
@@ -350,7 +349,7 @@ $result = mysqli_query($conn, $query);
                     Click on any empty slot to mark it as a <strong>Fixed Academic Class</strong>. This will block students from booking it. Gray slots indicate active student bookings and cannot be overwritten here.
                 </p>
 
-                <!-- The Interactive Timetable Grid -->
+                <!-- Interactive Timetable Grid -->
                 <div class="timetable-container" style="margin-top: 0;">
                     <div class="timetable-grid admin-edit" id="adminTimetable">
                         <!-- Header Row -->
@@ -448,7 +447,7 @@ $result = mysqli_query($conn, $query);
             });
         });
 
-        // Make the timetable interactive! 
+        // Make timetable interactive
         const timeCells = document.querySelectorAll('#adminTimetable .tt-slot');
         timeCells.forEach(cell => {
             cell.addEventListener('click', function() {
