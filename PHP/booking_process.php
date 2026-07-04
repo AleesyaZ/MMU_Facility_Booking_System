@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
                     WHERE user_id = '$user_id' 
                     AND status NOT IN ('Cancelled', 'Rejected') 
                     AND (is_priority = 0 OR is_priority IS NULL)
-                    AND YEARWEEK(booking_date, 1) >= YEARWEEK(CURDATE(), 1)");
+                    AND YEARWEEK(booking_date, 0) >= YEARWEEK(CURDATE(), 0)");
     $current_usage = mysqli_fetch_assoc($usage_res)['total'];
 
     if ($current_usage >= $max_quota) {

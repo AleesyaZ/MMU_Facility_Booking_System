@@ -49,7 +49,9 @@ $end_date = $friday->format('Y-m-d');
 // --- FETCH GRID DATA ---
 // 1. Fixed Classes
 $tt_query = "SELECT day_of_week, start_time, end_time FROM timetable 
-             WHERE facility_id = '$facility_id' AND expiry_date >= '$start_date'";
+             WHERE facility_id = '$facility_id' 
+             AND expiry_date >= '$start_date' 
+             AND (start_date IS NULL OR start_date <= '$end_date')";
 $tt_res = mysqli_query($conn, $tt_query);
 
 // 2. User Bookings (Normal + Priority)
@@ -115,6 +117,25 @@ function time_ago($timestamp) {
     else return date("d M Y", $time_ago);
 }
 
+// Determine where a notification should link to, based on its title
+function get_notification_link($title) {
+    $title_lower = strtolower($title);
+
+    if (strpos($title_lower, 'cancel') !== false) {
+        return 'my-bookings.php';
+    } elseif (strpos($title_lower, 'Update on Report') !== false || strpos($title_lower, 'Update on Report') !== false || strpos($title_lower, 'report') !== false) {
+        return 'my-reports.php';
+    } elseif (strpos($title_lower, 'Booking Confirmed') !== false || strpos($title_lower, 'Confirmed') !== false || strpos($title_lower, 'booking') !== false) {
+        return 'my-bookings.php';
+    } elseif (strpos($title_lower, 'Booking Overridden By Admin') !== false || strpos($title_lower, 'Overridden') !== false || strpos($title_lower, 'booking') !== false) {
+        return 'my-bookings.php';
+    } elseif (strpos($title_lower, 'Admin Cancellation') !== false || strpos($title_lower, 'Admin') !== false || strpos($title_lower, 'Cancellation') !== false) {
+        return 'my-bookings.php';
+    } else {
+        return 'student-dashboard.php'; // fallback default
+    }
+}
+
 // --- EQUIPMENT ---
 $facility_location = $facility['location'];
 $target_campus = (stripos($facility_location, 'Cyberjaya') !== false) ? 'Cyberjaya' : 'Melaka';
@@ -177,13 +198,17 @@ $occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_tim
                     <div class="profile-menu" id="notifMenu" style="width: 320px; right: -60px; padding: 0; top: 36px;">
                         <div style="padding: 16px; border-bottom: 1px solid var(--border-color);"><span style="font-weight: 700; font-size: 14px;">Recent Notifications</span></div>
                         <div style="max-height: 350px; overflow-y: auto;">
-                            <?php if (mysqli_num_rows($notif_list_res) > 0): while ($n = mysqli_fetch_assoc($notif_list_res)): ?>
-                                <div style="padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); <?php echo ($n['is_read'] == 0) ? 'background: #f0f7ff;' : ''; ?>">
-                                    <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($n['title']); ?></p>
-                                    <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($n['message']); ?></p>
-                                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;"><?php echo time_ago($n['date_sent']); ?></span>
-                                </div>
-                            <?php endwhile; else: ?>
+                            <?php if (mysqli_num_rows($notif_list_res) > 0): ?>
+                                <?php while ($n = mysqli_fetch_assoc($notif_list_res)): ?>
+                                    <a href="<?php echo get_notification_link($n['title']); ?>" style="text-decoration: none; color: inherit; display: block;">
+                                         <div style="padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; transition: background 0.15s; <?php echo ($n['is_read'] == 0) ? 'background: #f0f7ff;' : ''; ?>" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='<?php echo ($n['is_read'] == 0) ? '#f0f7ff' : 'transparent'; ?>'">
+                                             <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($n['title']); ?></p>
+                                             <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($n['message']); ?></p>
+                                             <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;"><?php echo time_ago($n['date_sent']); ?></span>
+                                        </div>
+                                     </a>
+                                <?php endwhile; ?>
+                            <?php else: ?>
                                 <div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px;">No notifications.</div>
                             <?php endif; ?>
                         </div>

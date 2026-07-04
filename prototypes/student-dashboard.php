@@ -39,12 +39,14 @@ $name_parts = explode(' ', trim($full_name));
 $first_name = $name_parts[0]; 
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// 2. QUOTA QUERY
+// 2. QUOTA QUERY - FIXED: 
+// We use >= CURDATE() so that any booking visible in the "Upcoming" section 
+// is counted in the quota. This prevents the "0/2" error on weekends.
 $quota_query = "SELECT COUNT(*) as total FROM booking 
                 WHERE user_id = '$user_id' 
                 AND status NOT IN ('Cancelled', 'Rejected') 
                 AND (is_priority = 0 OR is_priority IS NULL) 
-                AND YEARWEEK(booking_date, 0) = YEARWEEK(CURDATE(), 0)";
+                AND booking_date >= CURDATE()"; 
 $quota_result = mysqli_query($conn, $quota_query);
 $used_quota = mysqli_fetch_assoc($quota_result)['total'];
 
@@ -81,6 +83,23 @@ function time_ago($timestamp) {
     else if ($hours <= 24) return "$hours hours ago";
     else if ($days <= 7) return "$days days ago";
     else return date("d M Y", $time_ago);
+}
+
+// Determine where a notification should link to, based on its title
+function get_notification_link($title) {
+    $title_lower = strtolower($title);
+
+    if (strpos($title_lower, 'cancel') !== false) {
+        return 'my-bookings.php';
+    } elseif (strpos($title_lower, 'update on report') !== false || strpos($title_lower, 'report') !== false) {
+        return 'my-reports.php';
+    } elseif (strpos($title_lower, 'confirmed') !== false || strpos($title_lower, 'booking') !== false) {
+        return 'my-bookings.php';
+    } elseif (strpos($title_lower, 'overridden') !== false) {
+        return 'my-bookings.php';
+    } else {
+        return 'student-dashboard.php'; 
+    }
 }
 
 // Handle AJAX Request for Real-Time Update
@@ -129,7 +148,6 @@ if(isset($_GET['ajax_announcements'])) {
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
 
-                <!-- NOTIFICATION BELL (now functional, same visual position/style as before) -->
                 <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <?php if ($unread_count > 0): ?>
@@ -145,11 +163,13 @@ if(isset($_GET['ajax_announcements'])) {
                         <div style="max-height: 350px; overflow-y: auto;">
                             <?php if (mysqli_num_rows($notif_list_res) > 0): ?>
                                 <?php while ($n = mysqli_fetch_assoc($notif_list_res)): ?>
-                                    <div style="padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); <?php echo ($n['is_read'] == 0) ? 'background: #f0f7ff;' : ''; ?>">
-                                        <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($n['title']); ?></p>
-                                        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($n['message']); ?></p>
-                                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;"><?php echo time_ago($n['date_sent']); ?></span>
-                                    </div>
+                                    <a href="<?php echo get_notification_link($n['title']); ?>" style="text-decoration: none; color: inherit; display: block;">
+                                        <div style="padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; transition: background 0.15s; <?php echo ($n['is_read'] == 0) ? 'background: #f0f7ff;' : ''; ?>" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='<?php echo ($n['is_read'] == 0) ? '#f0f7ff' : 'transparent'; ?>'">
+                                            <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($n['title']); ?></p>
+                                            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;"><?php echo htmlspecialchars($n['message']); ?></p>
+                                            <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block;"><?php echo time_ago($n['date_sent']); ?></span>
+                                        </div>
+                                    </a>
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px;">No notifications.</div>
@@ -280,7 +300,7 @@ if(isset($_GET['ajax_announcements'])) {
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="material-symbols-outlined">campaign</span> Campus Announcements
                     </div>
-                    <a href="announcements.html" style="font-size: 13px; font-weight: 500; color: var(--text-muted);">View All</a>
+                    <a href="announcements.php" style="font-size: 13px; font-weight: 500; color: var(--text-muted);">View All</a>
                 </h3>
                 <div class="list-group" id="announcement-container" style="max-height: 450px; overflow: hidden;">
                     <?php 
@@ -317,16 +337,13 @@ if(isset($_GET['ajax_announcements'])) {
             profileMenu.classList.toggle('show'); 
         });
 
-        // Notification click logic (stops propagation so it doesn't also trigger profileMenu)
         notifTrigger.addEventListener('click', function(e) { 
             e.stopPropagation(); 
             profileMenu.classList.remove('show');
             notifMenu.classList.toggle('show'); 
             
             if (notifMenu.classList.contains('show')) {
-                // Mark as read in database
                 fetch('student-dashboard.php?mark_read=1');
-                // Hide badge instantly
                 const badge = document.getElementById('notifBadge');
                 if (badge) badge.style.display = 'none';
             }

@@ -21,7 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
     if ($is_priority == 0) {
         $user_info = mysqli_fetch_assoc(mysqli_query($conn, "SELECT booking_quota FROM user WHERE user_id = '$user_id' LIMIT 1"));
         $max_quota = $user_info['booking_quota'];
-        $usage_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking WHERE user_id = '$user_id' AND status != 'Cancelled' AND is_priority = 0 AND YEARWEEK(booking_date, 1) >= YEARWEEK(CURDATE(), 1)");
+        // LOGIC UPDATED: Changed YEARWEEK mode from 1 to 0 to reset on Sunday
+        $usage_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking WHERE user_id = '$user_id' AND status != 'Cancelled' AND is_priority = 0 AND YEARWEEK(booking_date, 0) >= YEARWEEK(CURDATE(), 0)");
         if (mysqli_fetch_assoc($usage_res)['total'] >= $max_quota) {
             echo "<script>alert('Quota reached. Use Priority Override for academic reasons.'); window.history.back();</script>";
             exit();
@@ -117,4 +118,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         echo "Database Error: " . mysqli_error($conn);
     }
 }
-?>
+?>```

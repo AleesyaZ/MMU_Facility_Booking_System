@@ -31,7 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_timetable'])) {
 
     if (!empty($slots)) {
         // Calculate the Final Expiry Date for the timetable table
-        $expiry_date = date('Y-m-d', strtotime("$current_week_monday +$weeks weeks"));
+        // Subtract 1 week so the expiry lands on the LAST valid week's Monday, not the week after it
+        $expiry_date = date('Y-m-d', strtotime("$current_week_monday +" . ($weeks - 1) . " weeks"));
 
         foreach ($slots as $slot) {
             $day = mysqli_real_escape_string($conn, $slot['day']);
@@ -39,8 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_timetable'])) {
             $end = mysqli_real_escape_string($conn, $slot['end']);
 
             // 1. Insert the recurring schedule into the timetable
-            $sql = "INSERT INTO timetable (facility_id, day_of_week, start_time, end_time, expiry_date) 
-                    VALUES ('$fid', '$day', '$start', '$end', '$expiry_date')";
+            $safe_start_date = mysqli_real_escape_string($conn, $current_week_monday);
+            $sql = "INSERT INTO timetable (facility_id, day_of_week, start_time, end_time, expiry_date, start_date) 
+                    VALUES ('$fid', '$day', '$start', '$end', '$expiry_date', '$safe_start_date')";
             mysqli_query($conn, $sql);
 
             // 2. LOGIC: Cancel existing bookings that conflict with this new fixed class
@@ -93,6 +95,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_timetable'])) {
 
 // --- REST OF THE CODE REMAINS EXACTLY THE SAME ---
 if (isset($_GET['action'])) {
+
+    // --- NEW: AJAX endpoint to fetch a facility's real schedule for the Preview modal ---
+    if ($_GET['action'] == 'get_schedule') {
+        header('Content-Type: application/json');
+        $fid = mysqli_real_escape_string($conn, $_GET['fid']);
+        $week_offset = isset($_GET['week']) ? (int)$_GET['week'] : 0;
+
+        $today = new DateTime();
+        $day_of_week = $today->format('N');
+        $monday = clone $today;
+        $monday->modify("-" . ($day_of_week - 1) . " days");
+        if ($week_offset != 0) {
+            $monday->modify("$week_offset weeks");
+        }
+        $friday = clone $monday;
+        $friday->modify("+4 days");
+
+        $start_date = $monday->format('Y-m-d');
+        $end_date = $friday->format('Y-m-d');
+
+        // 1. Fixed Classes (only show weeks on/after the schedule's actual start date)
+        $tt_query = "SELECT day_of_week, start_time, end_time FROM timetable 
+                     WHERE facility_id = '$fid' 
+                     AND expiry_date >= '$start_date' 
+                     AND (start_date IS NULL OR start_date <= '$end_date')";
+        $tt_res = mysqli_query($conn, $tt_query);
+        // 2. Bookings (Normal + Priority)
+        $bk_query = "SELECT booking_date, start_time, end_time, is_priority, DAYNAME(booking_date) as day_name 
+                     FROM booking 
+                     WHERE facility_id = '$fid' 
+                     AND status IN ('Approved', 'Pending') 
+                     AND booking_date BETWEEN '$start_date' AND '$end_date'";
+        $bk_res = mysqli_query($conn, $bk_query);
+
+        $schedule_map = [];
+
+        while ($row = mysqli_fetch_assoc($tt_res)) {
+            $start_h = (int)substr($row['start_time'], 0, 2);
+            $end_h = (int)substr($row['end_time'], 0, 2);
+            $end_m = (int)substr($row['end_time'], 3, 2);
+            $limit = ($end_m > 0) ? $end_h : $end_h - 1;
+            for ($i = $start_h; $i <= $limit; $i++) {
+                $schedule_map[$row['day_of_week']][$i] = 'fixed';
+            }
+        }
+
+        while ($row = mysqli_fetch_assoc($bk_res)) {
+            $start_h = (int)substr($row['start_time'], 0, 2);
+            $end_h = (int)substr($row['end_time'], 0, 2);
+            $end_m = (int)substr($row['end_time'], 3, 2);
+            $type = ($row['is_priority'] == 1) ? 'priority' : 'booked';
+            $limit = ($end_m > 0) ? $end_h : $end_h - 1;
+            for ($i = $start_h; $i <= $limit; $i++) {
+                $schedule_map[$row['day_name']][$i] = $type;
+            }
+        }
+
+        echo json_encode([
+            'schedule' => $schedule_map,
+            'range' => $monday->format('d M') . ' - ' . $friday->format('d M')
+        ]);
+        exit();
+    }
+
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     if ($_GET['action'] == 'delete') {
         if(mysqli_query($conn, "DELETE FROM facility WHERE facility_id = '$id'")) header("Location: admin-facilities.php?msg=deleted");
@@ -126,6 +192,9 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
     <link rel="stylesheet" href="../public/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .tt-slot.priority { background-color: #ffeb3b !important; color: #856404; font-weight: 600; border: 1px solid #fbc02d; }
+    </style>
 </head>
 <body onload="checkAlerts()">
 
@@ -233,6 +302,7 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
                                 </td>
                                 <td style="text-align: right; white-space: nowrap;">
                                     <div style="display: inline-flex; gap: 8px;">
+                                        <button class="btn-icon" title="Preview Timetable" onclick='openPreviewModal(<?php echo $row['facility_id']; ?>, "<?php echo addslashes($row['facility_name']); ?>")'><span class="material-symbols-outlined" style="font-size: 18px;">visibility</span></button>
                                         <button class="btn-icon schedule" title="Edit Schedule" onclick='openTimetableModal(<?php echo $row['facility_id']; ?>, "<?php echo addslashes($row['facility_name']); ?>")'><span class="material-symbols-outlined" style="font-size: 18px;">calendar_month</span></button>
                                         <button class="btn-icon edit" onclick='openEditModal(<?php echo json_encode($row); ?>)'><span class="material-symbols-outlined" style="font-size: 18px;">edit</span></button>
                                         <?php if($row['status'] == 'Available'): ?>
@@ -322,6 +392,55 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
         </div>
     </div>
 
+    <!-- NEW: Read-only Timetable Preview Modal -->
+    <div class="modal-overlay" id="previewTimetableModal">
+        <div class="modal-box modal-box-large" style="max-width: 800px;"> 
+            <div style="background-color: var(--surface); padding: 16px 24px; border-bottom: 1px solid rgba(194, 198, 211, 0.4); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h3 style="font-size: 18px; font-weight: 700;">Preview Timetable</h3>
+                    <span class="badge" id="preview_facility_label" style="background: var(--surface-container-low); color: var(--primary);"></span>
+                </div>
+                <button type="button" class="btn-icon" onclick="closeModal('previewTimetableModal')"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div style="padding: 24px;">
+                <div class="timetable-header" style="background-color: var(--surface-container-low); padding: 12px 20px; border-bottom: 1px solid rgba(194, 198, 211, 0.4); display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="font-size: 14px; font-weight: 600;"><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Live Schedule</h4>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button type="button" class="btn-icon" style="background: white; border: 1px solid var(--border-color); width: 28px; height: 28px;" onclick="changePreviewWeek(-1)"><span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span></button>
+                        <span id="preview_week_label" style="font-size: 13px; font-weight: 600; min-width: 160px; text-align: center;"></span>
+                        <button type="button" class="btn-icon" style="background: white; border: 1px solid var(--border-color); width: 28px; height: 28px;" onclick="changePreviewWeek(1)"><span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span></button>
+                    </div>
+                </div>
+
+                <div class="timetable-grid" id="previewTimetable">
+                    <div class="tt-cell tt-head">Time</div><div class="tt-cell tt-head">Mon</div><div class="tt-cell tt-head">Tue</div><div class="tt-cell tt-head">Wed</div><div class="tt-cell tt-head">Thu</div><div class="tt-cell tt-head">Fri</div>
+                    <?php 
+                    $preview_hours = range(8, 22);
+                    $preview_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                    foreach($preview_hours as $h): 
+                        $preview_label = ($h >= 12) ? ($h==12 ? "12 PM" : ($h-12)." PM") : $h." AM";
+                    ?>
+                        <div class="tt-cell tt-time"><?php echo $preview_label; ?></div>
+                        <?php foreach($preview_days as $d): ?>
+                            <div class="tt-cell tt-slot free" data-pday="<?php echo $d; ?>" data-phour="<?php echo $h; ?>"></div>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="tt-legend">
+                    <div class="legend-item"><div class="legend-box"></div> Free</div>
+                    <div class="legend-item"><div class="legend-box" style="background: #a4a2a2;"></div> Taken</div>
+                    <div class="legend-item"><div class="legend-box" style="background: #ffeb3b;"></div> Priority</div>
+                    <div class="legend-item"><div class="legend-box" style="background: #fee2e2; border-color: #991b1b;"></div> Fixed Class</div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('previewTimetableModal')">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="recurrenceModal">
         <div class="modal-box modal-info" style="max-width: 400px; padding: 24px;">
             <div class="modal-header" style="margin-bottom: 24px;"><div class="modal-icon" style="background: #e0e7ff; color: var(--primary);"><span class="material-symbols-outlined">event_repeat</span></div><h3 class="modal-title" style="font-size: 18px;">Apply Schedule</h3></div>
@@ -343,8 +462,8 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
         function updateWeekDisplay() { const now = new Date(); const day = now.getDay() || 7; const monday = new Date(now); monday.setDate(now.getDate() - (day - 1) + (weekOffset * 7)); const friday = new Date(monday); friday.setDate(monday.getDate() + 4); const options = { month: 'short', day: 'numeric' }; const label = monday.toLocaleDateString('en-US', options) + " - " + friday.toLocaleDateString('en-US', options) + ", " + friday.getFullYear(); document.getElementById('week_label').innerText = label; document.getElementById('recur_monday').value = monday.toISOString().split('T')[0]; }
         function changeWeek(dir) { weekOffset += dir; updateWeekDisplay(); }
         function openTimetableModal(fid, fname) { selectedFacilityId = fid; weekOffset = 0; updateWeekDisplay(); document.getElementById('tt_facility_label').innerText = fname; document.querySelectorAll('.tt-slot').forEach(s => { s.classList.remove('blocked'); s.classList.add('free'); }); document.getElementById('timetableModal').classList.add('show'); }
-        document.querySelectorAll('.tt-slot').forEach(cell => { cell.addEventListener('click', function() { this.classList.toggle('free'); this.classList.toggle('blocked'); }); });
-        function openRecurrenceModal() { const slots = []; document.querySelectorAll('.tt-slot.blocked').forEach(s => { slots.push({ day: s.dataset.day, start: s.dataset.start, end: s.dataset.end }); }); if (slots.length === 0) { alert("Select a slot."); return; } document.getElementById('recur_fid').value = selectedFacilityId; document.getElementById('recur_slots').value = JSON.stringify(slots); document.getElementById('timetableModal').classList.remove('show'); document.getElementById('recurrenceModal').classList.add('show'); }
+        document.querySelectorAll('#adminTimetable .tt-slot').forEach(cell => { cell.addEventListener('click', function() { this.classList.toggle('free'); this.classList.toggle('blocked'); }); });
+        function openRecurrenceModal() { const slots = []; document.querySelectorAll('#adminTimetable .tt-slot.blocked').forEach(s => { slots.push({ day: s.dataset.day, start: s.dataset.start, end: s.dataset.end }); }); if (slots.length === 0) { alert("Select a slot."); return; } document.getElementById('recur_fid').value = selectedFacilityId; document.getElementById('recur_slots').value = JSON.stringify(slots); document.getElementById('timetableModal').classList.remove('show'); document.getElementById('recurrenceModal').classList.add('show'); }
         document.getElementById('current_img_thumb').addEventListener('click', function() { document.getElementById('lightboxImage').src = this.src; document.getElementById('imageLightbox').style.display = 'flex'; });
         document.getElementById('imageLightbox').addEventListener('click', function() { this.style.display = 'none'; });
         function openAddModal() { document.getElementById('modalTitle').innerText = "Add New Facility"; document.getElementById('submitBtn').name = "add_facility"; document.getElementById('form_fid').value = ""; document.getElementById('image_preview_area').style.display = 'none'; document.getElementById('facilityModal').classList.add('show'); }
@@ -353,6 +472,59 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
         const trigger = document.getElementById('profileTrigger'); const menu = document.getElementById('profileMenu'); trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('show'); }); window.addEventListener('click', () => { if (menu.classList.contains('show')) menu.classList.remove('show'); });
         function searchTable() { let input = document.getElementById("facilitySearch").value.toLowerCase(); let rows = document.getElementById("facilityTable").getElementsByTagName("tr"); for (let i = 1; i < rows.length; i++) { rows[i].style.display = rows[i].innerText.toLowerCase().includes(input) ? "" : "none"; } }
         function checkAlerts() { const params = new URLSearchParams(window.location.search); if (params.get('msg') === 'schedule_saved') alert("Timetable updated!"); if (params.get('msg') === 'deleted') alert("Facility removed."); if (params.get('msg') === 'updated') alert("Facility updated!"); if (params.get('msg') === 'status_updated') alert("Status changed."); window.history.replaceState({}, document.title, window.location.pathname); }
+
+        // --- NEW: Preview Timetable logic ---
+        let previewWeekOffset = 0;
+        let previewFacilityId = null;
+        let previewRequestToken = 0; // Guards against out-of-order fetch responses
+
+        function openPreviewModal(fid, fname) {
+            previewFacilityId = fid;
+            previewWeekOffset = 0;
+            document.getElementById('preview_facility_label').innerText = fname;
+            document.getElementById('previewTimetableModal').classList.add('show');
+            loadPreviewSchedule();
+        }
+
+        function changePreviewWeek(dir) {
+            previewWeekOffset += dir;
+            loadPreviewSchedule();
+        }
+
+        function loadPreviewSchedule() {
+            // Reset grid to free before repainting
+            document.querySelectorAll('#previewTimetable .tt-slot').forEach(cell => {
+                cell.classList.remove('free', 'booked', 'priority', 'blocked');
+                cell.classList.add('free');
+            });
+
+            // Tag this specific request so we can tell if a newer one supersedes it
+            const thisRequestToken = ++previewRequestToken;
+            const requestedWeek = previewWeekOffset;
+
+            fetch(`admin-facilities.php?action=get_schedule&fid=${previewFacilityId}&week=${requestedWeek}`)
+                .then(res => res.json())
+                .then(data => {
+                    // If the user has since navigated to a different week, discard this stale response
+                    if (thisRequestToken !== previewRequestToken) return;
+
+                    document.getElementById('preview_week_label').innerText = data.range;
+                    const schedule = data.schedule;
+
+                    document.querySelectorAll('#previewTimetable .tt-slot').forEach(cell => {
+                        const day = cell.dataset.pday;
+                        const hour = cell.dataset.phour;
+                        if (schedule[day] && schedule[day][hour]) {
+                            const type = schedule[day][hour];
+                            cell.classList.remove('free');
+                            if (type === 'fixed') cell.classList.add('blocked');
+                            else if (type === 'priority') cell.classList.add('priority');
+                            else cell.classList.add('booked');
+                        }
+                    });
+                })
+                .catch(err => console.error('Error loading preview schedule:', err));
+        }
     </script>
 </body>
 </html>
