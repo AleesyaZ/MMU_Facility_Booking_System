@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 03, 2026 at 04:02 PM
+-- Generation Time: Jul 04, 2026 at 07:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,6 +32,7 @@ CREATE TABLE `annoucement` (
   `admin_id` int(11) NOT NULL COMMENT 'Admin Identification',
   `title` varchar(255) NOT NULL COMMENT 'Announcement Title',
   `content` text NOT NULL COMMENT 'Announcement Detils',
+  `category` varchar(50) DEFAULT 'Update',
   `publish_date` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date Published',
   `status` varchar(20) DEFAULT 'Live' COMMENT 'Status of Announcement'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -40,8 +41,8 @@ CREATE TABLE `annoucement` (
 -- Dumping data for table `annoucement`
 --
 
-INSERT INTO `annoucement` (`annoucement_id`, `admin_id`, `title`, `content`, `publish_date`, `status`) VALUES
-(18, 10000004, 'lol', 'hehe', '2026-07-02 16:55:52', 'Live');
+INSERT INTO `annoucement` (`annoucement_id`, `admin_id`, `title`, `content`, `category`, `publish_date`, `status`) VALUES
+(18, 10000004, 'lol', 'hehe', 'Update', '2026-07-02 16:55:52', 'Live');
 
 -- --------------------------------------------------------
 
@@ -61,6 +62,14 @@ CREATE TABLE `booking` (
   `is_priority` tinyint(1) DEFAULT 0 COMMENT 'Priority Status',
   `proof_file` varchar(255) DEFAULT NULL COMMENT 'The file for admins to review the lecturers MEMO'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`, `is_priority`, `proof_file`) VALUES
+(1069, 10000000, 187, '2026-07-10', '08:57:00', '09:57:00', 'lo', 'Cancelled', 0, NULL),
+(1070, 10000003, 187, '2026-07-10', '15:58:00', '16:58:00', 'l', 'Cancelled', 1, '');
 
 -- --------------------------------------------------------
 
@@ -95,8 +104,8 @@ CREATE TABLE `equipment` (
 --
 
 INSERT INTO `equipment` (`equip_id`, `name`, `total_qty`, `avail_qty`, `status`, `category`, `campus`) VALUES
-(1000, 'Badminton Racket', 10, 9, 'Available', 'Sport', 'Cyberjaya'),
-(1001, 'Ping Pong Racket', 10, 9, 'Available', 'Sport', 'Cyberjaya'),
+(1000, 'Badminton Racket', 10, 9, 'Available', 'Sports', 'Cyberjaya'),
+(1001, 'Ping Pong Racket', 10, 9, 'Available', 'Sports', 'Cyberjaya'),
 (1003, 'Badminton Net', 4, 4, 'Available', 'Laboratory', 'Cyberjaya'),
 (1005, 'Ping Pong Net', 4, 4, 'Available', 'Lecture Hall', 'Cyberjaya');
 
@@ -205,10 +214,8 @@ CREATE TABLE `notification` (
 --
 
 INSERT INTO `notification` (`notify_id`, `user_id`, `title`, `message`, `is_read`, `date_sent`) VALUES
-(1, 10000000, 'Update on Report #RP-3', 'Your report status is now: Resolved. Message: stupid you liar', 1, '2026-06-30 16:02:42'),
-(2, 10000002, 'Update on Report #RP-4', 'Your report status is now: Under Review. Message: heh', 0, '2026-06-30 16:02:46'),
-(3, 10000002, 'Update on Report #RP-4', 'Your report status is now: Under Review. Message: heh', 0, '2026-07-02 14:08:32'),
-(4, 10000000, 'Update on Report #RP-5', 'Your report status is now: In Progress. Message: okey checking in', 1, '2026-07-02 16:46:45');
+(10, 10000000, 'Booking Cancelled: Schedule Update', 'Your booking for Badminton Court on 2026-07-10 has been cancelled because the slot is now reserved for a recurring Academic Class.', 1, '2026-07-04 12:57:49'),
+(11, 10000003, 'Booking Cancelled: Schedule Update', 'Your booking for Badminton Court on 2026-07-10 has been cancelled because the slot is now reserved for a recurring Academic Class.', 1, '2026-07-04 12:59:15');
 
 -- --------------------------------------------------------
 
@@ -244,30 +251,25 @@ CREATE TABLE `timetable` (
   `day_of_week` enum('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') NOT NULL COMMENT 'Days for the weekly schedule',
   `start_time` time NOT NULL COMMENT 'Starting time for class',
   `end_time` time NOT NULL COMMENT 'Ending time for class',
-  `expiry_date` date NOT NULL COMMENT 'Expiration date of the timetable'
+  `expiry_date` date NOT NULL COMMENT 'Expiration date of the timetable',
+  `start_date` date DEFAULT NULL COMMENT 'Date the recurring schedule begins from'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `timetable`
 --
 
-INSERT INTO `timetable` (`timetable_id`, `facility_id`, `day_of_week`, `start_time`, `end_time`, `expiry_date`) VALUES
-(1, 187, 'Monday', '08:00:00', '09:00:00', '2026-07-06'),
-(2, 187, 'Monday', '09:00:00', '10:00:00', '2026-07-06'),
-(3, 187, 'Monday', '10:00:00', '11:00:00', '2026-07-06'),
-(4, 187, 'Tuesday', '11:00:00', '12:00:00', '2026-07-06'),
-(5, 187, 'Friday', '11:00:00', '12:00:00', '2026-07-06'),
-(6, 187, 'Tuesday', '12:00:00', '13:00:00', '2026-07-06'),
-(7, 187, 'Friday', '12:00:00', '13:00:00', '2026-07-06'),
-(8, 187, 'Tuesday', '13:00:00', '14:00:00', '2026-07-06'),
-(9, 187, 'Friday', '13:00:00', '14:00:00', '2026-07-06'),
-(10, 187, 'Wednesday', '14:00:00', '15:00:00', '2026-07-06'),
-(11, 187, 'Friday', '14:00:00', '15:00:00', '2026-07-06'),
-(12, 187, 'Wednesday', '15:00:00', '16:00:00', '2026-07-06'),
-(13, 187, 'Wednesday', '16:00:00', '17:00:00', '2026-07-06'),
-(14, 187, 'Thursday', '16:00:00', '17:00:00', '2026-07-06'),
-(15, 187, 'Thursday', '17:00:00', '18:00:00', '2026-07-06'),
-(16, 187, 'Thursday', '18:00:00', '19:00:00', '2026-07-06');
+INSERT INTO `timetable` (`timetable_id`, `facility_id`, `day_of_week`, `start_time`, `end_time`, `expiry_date`, `start_date`) VALUES
+(42, 187, 'Monday', '08:00:00', '09:00:00', '2026-08-17', '2026-06-29'),
+(43, 187, 'Monday', '09:00:00', '10:00:00', '2026-08-17', '2026-06-29'),
+(44, 187, 'Tuesday', '10:00:00', '11:00:00', '2026-08-17', '2026-06-29'),
+(45, 187, 'Tuesday', '11:00:00', '12:00:00', '2026-08-17', '2026-06-29'),
+(46, 187, 'Wednesday', '12:00:00', '13:00:00', '2026-08-17', '2026-06-29'),
+(47, 187, 'Wednesday', '13:00:00', '14:00:00', '2026-08-17', '2026-06-29'),
+(48, 187, 'Thursday', '14:00:00', '15:00:00', '2026-08-17', '2026-06-29'),
+(49, 187, 'Thursday', '15:00:00', '16:00:00', '2026-08-17', '2026-06-29'),
+(50, 187, 'Friday', '16:00:00', '17:00:00', '2026-08-17', '2026-06-29'),
+(51, 187, 'Friday', '17:00:00', '18:00:00', '2026-08-17', '2026-06-29');
 
 -- --------------------------------------------------------
 
@@ -389,7 +391,7 @@ ALTER TABLE `annoucement`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1050;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1071;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -413,7 +415,7 @@ ALTER TABLE `issue_report`
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification', AUTO_INCREMENT=5;
+  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification', AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `penalty`
@@ -425,7 +427,7 @@ ALTER TABLE `penalty`
 -- AUTO_INCREMENT for table `timetable`
 --
 ALTER TABLE `timetable`
-  MODIFY `timetable_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Timetable Identification', AUTO_INCREMENT=17;
+  MODIFY `timetable_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Timetable Identification', AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `user`
