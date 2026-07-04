@@ -98,7 +98,7 @@ $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['searc
 $role_filter = isset($_GET['role']) ? mysqli_real_escape_string($conn, $_GET['role']) : 'All Roles';
 
 $query = "SELECT u.*, 
-          (SELECT COUNT(*) FROM booking b WHERE b.user_id = u.user_id AND b.status IN ('Pending', 'Approved')) as active_bookings,
+          (SELECT COUNT(*) FROM booking b WHERE b.user_id = u.user_id AND b.status IN ('Pending', 'Approved') AND (b.is_priority = 0 OR b.is_priority IS NULL)) as active_bookings,
           COALESCE((SELECT strike_count FROM penalty p WHERE p.user_id = u.user_id LIMIT 1), 0) as strike_count 
           FROM user u 
           WHERE u.role != 'Admin'";

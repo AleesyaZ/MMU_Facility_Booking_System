@@ -3,7 +3,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// 2. Require the PHPMailer files (Ensure these paths match your folder)
+// 2. Require the PHPMailer files
 require 'PHPMailer/Exception.php';
 require 'PHPMailer/PHPMailer.php';
 require 'PHPMailer/SMTP.php';
@@ -11,48 +11,43 @@ require 'PHPMailer/SMTP.php';
 // 3. Include your database connection
 include('db_config.php');
 
-// Set timezone to Malaysia (important for OTP expiry tracking)
+// Set timezone to Malaysia
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
 if (isset($_POST['email'])) {
-    // Sanitize and clean user input
     $email = trim(mysqli_real_escape_string($conn, $_POST['email']));
     
-    // 4. Search for the user in the database (Case-insensitive check)
     $query = "SELECT * FROM user WHERE LOWER(TRIM(email)) = LOWER('$email') LIMIT 1";
     $check = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($check) > 0) {
         $user = mysqli_fetch_assoc($check);
         
-        // 5. If account is already activated, stop here
         if ($user['is_activated'] == 1) {
             echo "already_active";
         } else {
-            // 6. Generate a 6-digit OTP and set current time
             $otp = rand(100000, 999999);
             $now = date("Y-m-d H:i:s");
             
-            // 7. Update the database with the generated code
             $user_id = $user['user_id'];
             $update = mysqli_query($conn, "UPDATE user SET otp_code = '$otp', otp_sent_at = '$now' WHERE user_id = '$user_id'");
 
             if($update) {
-                // 8. Prepare PHPMailer to send the real email via Mailtrap
                 $mail = new PHPMailer(true);
 
                 try {
-                    // Server settings
+                    // --- UPDATED PRODUCTION SMTP SETTINGS (GMAIL) ---
                     $mail->isSMTP();
-                    $mail->Host       = 'sandbox.smtp.mailtrap.io';
+                    $mail->Host       = 'smtp.gmail.com'; 
                     $mail->SMTPAuth   = true;
-                    $mail->Username   = '69b575351e511b'; // Your Mailtrap Username
-                    $mail->Password   = 'dd48a002b4d47d'; // Your Mailtrap Password
-                    $mail->Port       = 2525;
+                    $mail->Username   = 'verychill911@gmail.com'; // Your actual Gmail
+                    $mail->Password   = 'nmnr jsut eyne lawl'; // The 16-digit App Password from Step 1
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Enable implicit SSL encryption
+                    $mail->Port       = 465; 
 
                     // Recipients
                     $mail->setFrom('system@mmu.edu.my', 'MMU Facility Booking');
-                    $mail->addAddress($email); 
+                    $mail->addAddress($email); // This now sends to the actual user email
 
                     // HTML Content
                     $mail->isHTML(true);
@@ -72,7 +67,6 @@ if (isset($_POST['email'])) {
                             <p style='font-size: 11px; color: #999; text-align: center;'>This is an automated system message for MMU students. Please do not reply.</p>
                         </div>";
 
-                    // Send the email
                     if($mail->send()) {
                         echo "success";
                     }

@@ -115,7 +115,6 @@ $initials = strtoupper(substr($admin_name, 0, 1));
                     <h2 style="font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">My Profile</h2>
                 </div>
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer;">
-                    <span class="material-symbols-outlined" style="color: var(--text-muted);">notifications</span>
                     <div class="avatar" style="background-color: var(--secondary);"><?php echo $initials; ?></div>
                     <span style="font-weight: 500; font-size: 14px; text-transform: uppercase;"><?php echo htmlspecialchars($admin_name); ?></span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">expand_more</span>

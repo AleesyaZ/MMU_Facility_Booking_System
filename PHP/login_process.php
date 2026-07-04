@@ -18,13 +18,6 @@ if (isset($_POST['login_btn'])) {
             echo "<script>alert('Account not activated. Please verify your email.'); window.location.href='../prototypes/activate.html';</script>";
             exit();
         }
-
-        // 3. Check if the account is suspended
-        if ($user['status'] === 'Suspended') {
-            echo "<script>alert('This account has been suspended due to policy violations.'); window.location.href='../prototypes/login.html';</script>";
-            exit();
-        }
-
         // 4. Verify the hashed password
         // This function compares the typed password with the $2y$10... string in the DB
         if (password_verify($password, $user['password'])) {
