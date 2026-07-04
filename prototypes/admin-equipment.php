@@ -136,9 +136,10 @@ $result = mysqli_query($conn, $query);
                         </select>
                         <select name="category" class="form-control" style="width: 150px; padding: 8px 12px;" onchange="this.form.submit()">
                             <option <?php if($category_f == 'All Categories') echo 'selected'; ?>>All Categories</option>
-                            <option <?php if($category_f == 'Sport') echo 'selected'; ?>>Sport</option>
-                            <option <?php if($category_f == 'Laboratory') echo 'selected'; ?>>Laboratory</option>
+                            <option <?php if($category_f == 'Sports') echo 'selected'; ?>>Sports</option>
+                            <option <?php if($category_f == 'Labaratory') echo 'selected'; ?>>Labaratory</option>
                             <option <?php if($category_f == 'Lecture Hall') echo 'selected'; ?>>Lecture Hall</option>
+                            <option <?php if($category_f == 'Tutorial') echo 'selected'; ?>>Tutorial</option>
                             <option <?php if($category_f == 'General') echo 'selected'; ?>>General</option>
                         </select>
                     </form>
@@ -247,9 +248,10 @@ $result = mysqli_query($conn, $query);
                     <div style="flex: 1;">
                         <label>Item Category</label>
                         <select name="category" id="form_cat" class="form-control">
-                            <option value="Sport">Sport</option>
-                            <option value="Laboratory">Laboratory</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Labaratory">Labaratory</option>
                             <option value="Lecture Hall">Lecture Hall</option>
+                            <option value="Tutorial">Tutorial</option>
                             <option value="General">General</option>
                         </select>
                     </div>
