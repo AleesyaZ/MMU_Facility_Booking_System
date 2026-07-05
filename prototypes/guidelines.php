@@ -245,7 +245,7 @@ function get_notification_link($title) {
                 <h2>Operating Hours</h2>
                 <p>Facilities can only be booked during official campus operating hours.</p>
                 <ul>
-                    <li><strong>Lecture Halls, Labs & Tutorial:</strong> Monday - Friday (8:00 AM - 10:00 PM)</li>
+                    <li><strong>Lecture Halls, Labs & Tutorial:</strong> Monday - Sunday (8:00 AM - 10:00 PM)</li>
                     <li><strong>Sports Courts:</strong> Monday - Sunday (8:00 AM - 10:00 PM)</li>
                 </ul>
             </section>

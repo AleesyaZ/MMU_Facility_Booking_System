@@ -23,17 +23,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // 3. Handle Photo Upload
     $photo_name = NULL;
-    if (isset($_FILES['proofUpload']) && $_FILES['proofUpload']['error'] == 0) {
-        $target_dir = "../public/uploads/issues/";
-        
-        // Create folder if it doesn't exist
-        if (!file_exists($target_dir)) { mkdir($target_dir, 0777, true); }
-        
-        $ext = pathinfo($_FILES["proofUpload"]["name"], PATHINFO_EXTENSION);
-        // unique name: issue_171789012_10000000.jpg
-        $photo_name = "issue_" . time() . "_" . $user_id . "." . $ext;
-        
-        move_uploaded_file($_FILES["proofUpload"]["tmp_name"], $target_dir . $photo_name);
+    if (isset($_FILES['proofUpload']) && $_FILES['proofUpload']['name'] !== '') {
+        $upload_error = $_FILES['proofUpload']['error'];
+
+        if ($upload_error === UPLOAD_ERR_OK) {
+            $target_dir = "../public/uploads/issues/";
+
+            // Create folder if it doesn't exist, and verify it worked
+            if (!file_exists($target_dir)) {
+                mkdir($target_dir, 0777, true);
+            }
+
+            if (!is_writable($target_dir)) {
+                echo "<script>alert('Server error: upload folder is not writable. Please contact IT support.'); window.history.back();</script>";
+                exit();
+            }
+
+            $ext = pathinfo($_FILES["proofUpload"]["name"], PATHINFO_EXTENSION);
+            $photo_name = "issue_" . time() . "_" . $user_id . "." . $ext;
+
+            // Only keep the filename if the file was ACTUALLY moved successfully
+            if (!move_uploaded_file($_FILES["proofUpload"]["tmp_name"], $target_dir . $photo_name)) {
+                $photo_name = NULL;
+                echo "<script>alert('Warning: Your report was not submitted because the photo failed to upload. Please try again with a smaller image.'); window.history.back();</script>";
+                exit();
+            }
+        } else {
+            // A real upload error occurred (e.g. file too large) - stop and tell the user instead of silently continuing
+            $error_messages = [
+                UPLOAD_ERR_INI_SIZE   => 'The photo exceeds the maximum upload size allowed by the server.',
+                UPLOAD_ERR_FORM_SIZE  => 'The photo exceeds the maximum upload size allowed by the form.',
+                UPLOAD_ERR_PARTIAL    => 'The photo was only partially uploaded. Please try again.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Server error: missing temporary upload folder.',
+                UPLOAD_ERR_CANT_WRITE => 'Server error: failed to write the photo to disk.',
+                UPLOAD_ERR_EXTENSION  => 'The upload was blocked by a server extension.',
+            ];
+            $msg = $error_messages[$upload_error] ?? 'An unknown error occurred while uploading the photo.';
+            echo "<script>alert('$msg Please try again with a smaller image or without a photo.'); window.history.back();</script>";
+            exit();
+        }
     }
 
     // 4. INSERT INTO DATABASE
