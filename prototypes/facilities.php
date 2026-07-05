@@ -177,7 +177,7 @@ $facility_result = mysqli_query($conn, $base_query);
             <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 32px;">Select your campus to help us tailor your experience and facility suggestions.</p>
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <a href="?set_campus=Cyberjaya" class="btn btn-primary" style="justify-content: center; width: 100%; height: 48px;">Cyberjaya Campus</a>
-                <a href="?set_campus=Melaka" class="btn btn-outline" style="justify-content: center; width: 100%; height: 48px; border-color: var(--secondary); color: var(--secondary);">Melaka Campus</a>
+                <a href="?set_campus=Melaka" class="btn btn-primary" style="justify-content: center; width: 100%; height: 48px;">Melaka Campus</a>
             </div>
         </div>
     </div>
