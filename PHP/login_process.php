@@ -32,7 +32,7 @@ if (isset($_POST['login_btn'])) {
                 header("Location: ../prototypes/admin-dashboard.php");
             } else {
                 // Both Lecturers and Students go here
-                header("Location: ../prototypes/student-dashboard.php");
+                header("Location: ../prototypes/user-dashboard.php");
             }
             exit();
             

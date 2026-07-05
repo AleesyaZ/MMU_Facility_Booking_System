@@ -8,7 +8,7 @@ if (isset($_GET['id']) && isset($_SESSION['user_id'])) {
     
     $redirect_url = "../prototypes/my-bookings.php";
     if (isset($_GET['source']) && $_GET['source'] == 'dashboard') {
-        $redirect_url = "../prototypes/student-dashboard.php";
+        $redirect_url = "../prototypes/user-dashboard.php";
     }
 
     $check = mysqli_query($conn, "SELECT * FROM booking WHERE booking_id = '$booking_id' AND user_id = '$user_id' LIMIT 1");
@@ -50,6 +50,6 @@ if (isset($_GET['id']) && isset($_SESSION['user_id'])) {
         echo "<script>alert('Error: Unauthorized action.'); window.location.href='$redirect_url';</script>";
     }
 } else {
-    header("Location: ../prototypes/student-dashboard.php");
+    header("Location: ../prototypes/user-dashboard.php");
 }
 ?>

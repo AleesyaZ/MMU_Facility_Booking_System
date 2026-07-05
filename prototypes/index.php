@@ -2,6 +2,11 @@
 session_start();
 include('../PHP/db_config.php');
 
+if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') {
+    header("Location: admin-dashboard.php");
+    exit();
+}
+
 // 1. Check login status
 $is_logged_in = isset($_SESSION['user_id']);
 $unread_count = 0;
@@ -62,7 +67,7 @@ function get_notification_link($title) {
     } elseif (strpos($title_lower, 'Admin Cancellation') !== false || strpos($title_lower, 'Admin') !== false || strpos($title_lower, 'Cancellation') !== false) {
         return 'my-bookings.php';
     } else {
-        return 'student-dashboard.php'; // fallback default
+        return 'user-dashboard.php'; // fallback default
     }
 }
 ?>
@@ -89,7 +94,7 @@ function get_notification_link($title) {
             
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
                 <?php if ($is_logged_in): ?>
-                    <a href="student-dashboard.php">Dashboard</a>
+                    <a href="user-dashboard.php">Dashboard</a>
                     <a href="facilities.php">Browse Facilities</a>
                     <a href="my-bookings.php">My Bookings</a>
                     <a href="report-issue.php">Report Issue</a>

@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             VALUES ('$user_id', '$facility_id', '$issue_type', '$description', '$photo_name', NOW(), 'Under Review')";
 
     if (mysqli_query($conn, $sql)) {
-        echo "<script>alert('Issue reported successfully. The facilities team has been notified.'); window.location.href='../prototypes/student-dashboard.php';</script>";
+        echo "<script>alert('Issue reported successfully. The facilities team has been notified.'); window.location.href='../prototypes/user-dashboard.php';</script>";
     } else {
         echo "Database Error: " . mysqli_error($conn);
     }

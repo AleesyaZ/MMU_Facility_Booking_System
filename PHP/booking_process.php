@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
                 }
             }
         }
-        echo "<script>alert('Booking successful and Auto-Approved!'); window.location.href='../prototypes/student-dashboard.php';</script>";
+        echo "<script>alert('Booking successful and Auto-Approved!'); window.location.href='../prototypes/user-dashboard.php';</script>";
     } else {
         echo "Database Error: " . mysqli_error($conn);
     }

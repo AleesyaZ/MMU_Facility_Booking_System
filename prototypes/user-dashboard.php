@@ -2,6 +2,10 @@
 session_start();
 include('../PHP/db_config.php');
 
+if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') {
+    header("Location: admin-dashboard.php");
+    exit();
+}
 // Set Timezone
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
@@ -98,7 +102,7 @@ function get_notification_link($title) {
     } elseif (strpos($title_lower, 'overridden') !== false) {
         return 'my-bookings.php';
     } else {
-        return 'student-dashboard.php'; 
+        return 'user-dashboard.php'; 
     }
 }
 
@@ -133,14 +137,14 @@ if(isset($_GET['ajax_announcements'])) {
 
     <header class="navbar">
         <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <a href="student-dashboard.php" class="nav-logo" style="display: flex; align-items: center; flex-shrink: 0;">
+            <a href="user-dashboard.php" class="nav-logo" style="display: flex; align-items: center; flex-shrink: 0;">
                 <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
                 <div class="logo-divider"></div>
                 <span class="system-name">Facility Booking</span>
             </a>
             
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
-                <a href="student-dashboard.php" class="active">Dashboard</a>
+                <a href="user-dashboard.php" class="active">Dashboard</a>
                 <a href="facilities.php">Browse Facilities</a>
                 <a href="my-bookings.php">My Bookings</a>
                 <a href="report-issue.php">Report Issue</a>
@@ -343,7 +347,7 @@ if(isset($_GET['ajax_announcements'])) {
             notifMenu.classList.toggle('show'); 
             
             if (notifMenu.classList.contains('show')) {
-                fetch('student-dashboard.php?mark_read=1');
+                fetch('user-dashboard.php?mark_read=1');
                 const badge = document.getElementById('notifBadge');
                 if (badge) badge.style.display = 'none';
             }
@@ -355,7 +359,7 @@ if(isset($_GET['ajax_announcements'])) {
         });
 
         function refreshAnnouncements() {
-            fetch('student-dashboard.php?ajax_announcements=1')
+            fetch('user-dashboard.php?ajax_announcements=1')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('announcement-container').innerHTML = data;

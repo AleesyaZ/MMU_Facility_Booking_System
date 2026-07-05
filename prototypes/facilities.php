@@ -2,6 +2,11 @@
 session_start();
 include('../PHP/db_config.php');
 
+if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') {
+    header("Location: admin-dashboard.php");
+    exit();
+}
+
 // --- NEW: CAMPUS SELECTION LOGIC ---
 // 1. Handle the selection when a button is clicked
 if (isset($_GET['set_campus'])) {
@@ -112,7 +117,7 @@ function get_notification_link($title) {
     if (strpos($title_lower, 'cancel') !== false) return 'my-bookings.php';
     elseif (strpos($title_lower, 'report') !== false) return 'my-reports.php';
     elseif (strpos($title_lower, 'booking') !== false) return 'my-bookings.php';
-    else return 'student-dashboard.php';
+    else return 'user-dashboard.php';
 }
 
 $cat_list_result = mysqli_query($conn, "SELECT DISTINCT category FROM facility ORDER BY category ASC");
@@ -185,7 +190,7 @@ $facility_result = mysqli_query($conn, $base_query);
 
     <header class="navbar">
         <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <a href="student-dashboard.php" class="nav-logo" style="display: flex; align-items: center; flex-shrink: 0;">
+            <a href="user-dashboard.php" class="nav-logo" style="display: flex; align-items: center; flex-shrink: 0;">
                 <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
                 <div class="logo-divider"></div>
                 <span class="system-name">Facility Booking</span>
@@ -193,7 +198,7 @@ $facility_result = mysqli_query($conn, $base_query);
             
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
                 <?php if ($is_logged_in): ?>
-                    <a href="student-dashboard.php">Dashboard</a>
+                    <a href="user-dashboard.php">Dashboard</a>
                     <a href="facilities.php" class="active">Browse Facilities</a>
                     <a href="my-bookings.php">My Bookings</a>
                     <a href="report-issue.php">Report Issue</a>

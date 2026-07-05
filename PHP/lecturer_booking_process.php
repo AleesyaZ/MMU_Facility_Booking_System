@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         }
 
         $msg = ($status == 'Approved') ? "Auto-Approved!" : "Pending Admin Review.";
-        echo "<script>alert('Booking Successful! $msg'); window.location.href='../prototypes/student-dashboard.php';</script>";
+        echo "<script>alert('Booking Successful! $msg'); window.location.href='../prototypes/user-dashboard.php';</script>";
     } else {
         echo "Database Error: " . mysqli_error($conn);
     }

@@ -2,6 +2,11 @@
 session_start();
 include('../PHP/db_config.php');
 
+if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') {
+    header("Location: admin-dashboard.php");
+    exit();
+}
+
 // 1. SECURITY CHECK
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
@@ -63,7 +68,7 @@ function get_notification_link($title) {
     } elseif (strpos($title_lower, 'Admin Cancellation') !== false || strpos($title_lower, 'Admin') !== false || strpos($title_lower, 'Cancellation') !== false) {
         return 'my-bookings.php';
     } else {
-        return 'student-dashboard.php'; // fallback default
+        return 'user-dashboard.php'; // fallback default
     }
 }
 
@@ -85,14 +90,14 @@ $fac_list_result = mysqli_query($conn, "SELECT facility_name FROM facility ORDER
 
     <header class="navbar">
         <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <a href="student-dashboard.php" class="nav-logo" style="display: flex; align-items: center; flex-shrink: 0;">
+            <a href="user-dashboard.php" class="nav-logo" style="display: flex; align-items: center; flex-shrink: 0;">
                 <img src="../public/img/mmulogo.jpg" alt="MMU Logo">
                 <div class="logo-divider"></div>
                 <span class="system-name">Facility Booking</span>
             </a>
             
             <nav class="nav-links" style="display: flex; align-items: center; gap: 20px;">
-                <a href="student-dashboard.php">Dashboard</a>
+                <a href="user-dashboard.php">Dashboard</a>
                 <a href="facilities.php">Browse Facilities</a>
                 <a href="my-bookings.php">My Bookings</a>
                 <a href="report-issue.php" class="active">Report Issue</a>
@@ -203,7 +208,7 @@ $fac_list_result = mysqli_query($conn, "SELECT facility_name FROM facility ORDER
                 </div>
 
                 <div style="display: flex; gap: 16px; margin-top: 32px;">
-                    <a href="student-dashboard.php" class="btn btn-outline" style="flex: 1; justify-content: center;">Cancel</a>
+                    <a href="user-dashboard.php" class="btn btn-outline" style="flex: 1; justify-content: center;">Cancel</a>
                     <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">Submit Report</button>
                 </div>
             </form>
