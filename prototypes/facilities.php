@@ -2,12 +2,36 @@
 session_start();
 include('../PHP/db_config.php');
 
+// --- NEW: CAMPUS SELECTION LOGIC ---
+// 1. Handle the selection when a button is clicked
+if (isset($_GET['set_campus'])) {
+    $choice = $_GET['set_campus'];
+    $_SESSION['selected_campus'] = $choice;
+    // Save in cookie for 30 days so it remembers the device
+    setcookie('mmu_campus', $choice, time() + (86400 * 30), "/"); 
+    
+    // Redirect to the same page without the GET parameter to keep URL clean
+    header("Location: facilities.php");
+    exit();
+}
+
+// 2. Determine if we should show the prompt
+$show_campus_prompt = false;
+if (!isset($_SESSION['selected_campus']) && !isset($_COOKIE['mmu_campus'])) {
+    $show_campus_prompt = true;
+} else {
+    // If cookie exists but session is empty, restore session from cookie
+    if (!isset($_SESSION['selected_campus']) && isset($_COOKIE['mmu_campus'])) {
+        $_SESSION['selected_campus'] = $_COOKIE['mmu_campus'];
+    }
+}
+
 // 1. LOGIN & ROLE LOGIC
 $is_logged_in = isset($_SESSION['user_id']);
 $booking_page = "login.html"; 
 $has_quota = true; 
 $is_suspended = false; 
-$days_left = 0; // New variable for countdown
+$days_left = 0; 
 $used_quota = 0;
 $max_quota = 0;
 $unread_count = 0;
@@ -22,7 +46,7 @@ if ($is_logged_in) {
         $booking_page = "booking-form.php";
     }
 
-    // --- FETCH NOTIFICATIONS ---
+    // FETCH NOTIFICATIONS
     $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
     $unread_res = mysqli_query($conn, $unread_query);
     $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -35,16 +59,13 @@ if ($is_logged_in) {
         exit();
     }
 
-    // UPDATED QUERY: Fetching suspension_start to calculate remaining days
     $user_result = mysqli_query($conn, "SELECT name, booking_quota, status, suspension_start FROM user WHERE user_id = '$user_id' LIMIT 1");
     $user_data = mysqli_fetch_assoc($user_result);
     $full_name = $user_data['name'] ?? "User";
     $max_quota = $user_data['booking_quota'] ?? 0;
     
-    // Check if the user is suspended and calculate days
     if (isset($user_data['status']) && $user_data['status'] === 'Suspended') {
         $is_suspended = true;
-        
         if (!empty($user_data['suspension_start'])) {
             $start = new DateTime($user_data['suspension_start']);
             $now = new DateTime();
@@ -68,12 +89,9 @@ if ($is_logged_in) {
 
     if ($role === 'Student' && $used_quota >= $max_quota) {
         $has_quota = false;
-    } else {
-        $has_quota = true; 
-    }
+    } else { $has_quota = true; }
 }
 
-// Helper for notification timestamps
 function time_ago($timestamp) {
     $time_ago = strtotime($timestamp);
     $current_time = time();
@@ -89,7 +107,6 @@ function time_ago($timestamp) {
     else return date("d M Y", $time_ago);
 }
 
-// Determine where a notification should link to
 function get_notification_link($title) {
     $title_lower = strtolower($title);
     if (strpos($title_lower, 'cancel') !== false) return 'my-bookings.php';
@@ -101,11 +118,22 @@ function get_notification_link($title) {
 $cat_list_result = mysqli_query($conn, "SELECT DISTINCT category FROM facility ORDER BY category ASC");
 $fac_list_result = mysqli_query($conn, "SELECT DISTINCT faculty FROM facility WHERE faculty IS NOT NULL ORDER BY faculty ASC");
 
+// 3. UPDATED FILTERING LOGIC
 $where_clauses = [];
-if (isset($_GET['campus']) && $_GET['campus'] !== 'all') {
-    $campus = mysqli_real_escape_string($conn, $_GET['campus']);
-    $where_clauses[] = "location LIKE '%$campus%'";
+
+// Determine which campus to show. Priority: URL Get > Session/Cookie > All
+$active_campus_filter = 'all';
+if (isset($_GET['campus'])) {
+    $active_campus_filter = $_GET['campus'];
+} elseif (isset($_SESSION['selected_campus'])) {
+    $active_campus_filter = $_SESSION['selected_campus'];
 }
+
+if ($active_campus_filter !== 'all') {
+    $campus_val = mysqli_real_escape_string($conn, $active_campus_filter);
+    $where_clauses[] = "location LIKE '%$campus_val%'";
+}
+
 if (isset($_GET['faculty']) && $_GET['faculty'] !== 'all') {
     $faculty_val = mysqli_real_escape_string($conn, $_GET['faculty']);
     $where_clauses[] = "faculty = '$faculty_val'";
@@ -137,6 +165,23 @@ $facility_result = mysqli_query($conn, $base_query);
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@300,0..1&display=swap" rel="stylesheet"/>
 </head>
 <body>
+
+    <!-- CAMPUS SELECTION MODAL -->
+    <?php if ($show_campus_prompt): ?>
+    <div class="modal-overlay show" style="z-index: 9999;">
+        <div class="modal-box" style="text-align: center; max-width: 400px; padding: 40px 32px;">
+            <div class="modal-icon" style="background: rgba(0, 61, 124, 0.1); color: var(--primary); margin: 0 auto 20px;">
+                <span class="material-symbols-outlined" style="font-size: 32px;">location_on</span>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 12px;">Which campus are you from?</h3>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 32px;">Select your campus to help us tailor your experience and facility suggestions.</p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="?set_campus=Cyberjaya" class="btn btn-primary" style="justify-content: center; width: 100%; height: 48px;">Cyberjaya Campus</a>
+                <a href="?set_campus=Melaka" class="btn btn-outline" style="justify-content: center; width: 100%; height: 48px; border-color: var(--secondary); color: var(--secondary);">Melaka Campus</a>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <header class="navbar">
         <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -188,7 +233,7 @@ $facility_result = mysqli_query($conn, $base_query);
                         </div>
                     </div>
                     <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
-                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;">
+                    <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                         <?php echo htmlspecialchars($full_name); ?>
                     </span>
                     <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted); flex-shrink: 0;">expand_more</span>
@@ -216,7 +261,11 @@ $facility_result = mysqli_query($conn, $base_query);
     <main class="container">
         <form class="filter-bar" action="facilities.php" method="GET" style="flex-wrap: nowrap; gap: 12px;">
             <div class="filter-group" style="min-width: 160px;"><label>Campus Location</label>
-                <select name="campus"><option value="all">All Campuses</option><option value="Cyberjaya" <?php if(isset($_GET['campus']) && $_GET['campus'] == 'Cyberjaya') echo 'selected'; ?>>Cyberjaya</option><option value="Melaka" <?php if(isset($_GET['campus']) && $_GET['campus'] == 'Melaka') echo 'selected'; ?>>Melaka</option></select>
+                <select name="campus">
+                    <option value="all">All Campuses</option>
+                    <option value="Cyberjaya" <?php if($active_campus_filter == 'Cyberjaya') echo 'selected'; ?>>Cyberjaya</option>
+                    <option value="Melaka" <?php if($active_campus_filter == 'Melaka') echo 'selected'; ?>>Melaka</option>
+                </select>
             </div>
             <div class="filter-group" style="min-width: 160px;"><label>Faculty Type</label>
                 <select name="faculty"><option value="all">All Faculties</option><?php mysqli_data_seek($fac_list_result, 0); while ($fac_row = mysqli_fetch_assoc($fac_list_result)): ?><option value="<?php echo $fac_row['faculty']; ?>" <?php echo (isset($_GET['faculty']) && $_GET['faculty'] == $fac_row['faculty']) ? 'selected' : ''; ?>><?php echo $fac_row['faculty']; ?></option><?php endwhile; ?></select>
@@ -246,7 +295,6 @@ $facility_result = mysqli_query($conn, $base_query);
                             <p class="facility-desc"><?php echo htmlspecialchars($row['description']); ?></p>
                             
                             <?php if ($is_available): ?>
-                                <!-- MODIFIED BUTTON: Displaying remaining days if suspended -->
                                 <?php if ($is_suspended): ?>
                                     <button class="btn btn-disabled" style="background-color: #ffebee; color: #bb0013; cursor: not-allowed; width: 100%; justify-content: center;" title="Your account has been suspended" disabled>
                                         Suspended (<?php echo $days_left; ?> Days Left)
@@ -275,7 +323,10 @@ $facility_result = mysqli_query($conn, $base_query);
         const notifMenu = document.getElementById('notifMenu');
         trigger.addEventListener('click', (e) => { e.stopPropagation(); notifMenu.classList.remove('show'); menu.classList.toggle('show'); });
         notifTrigger.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.remove('show'); notifMenu.classList.toggle('show'); if (notifMenu.classList.contains('show')) { fetch('facilities.php?mark_read=1'); const badge = document.getElementById('notifBadge'); if (badge) badge.style.display = 'none'; } });
-        window.addEventListener('click', () => { menu.classList.remove('show'); notifMenu.classList.remove('show'); });
+        window.addEventListener('click', () => {
+            menu.classList.remove('show');
+            notifMenu.classList.remove('show');
+        });
     </script>
 </body>
 </html>
