@@ -19,7 +19,6 @@ $filter_status = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET
 
 // CONSTRUCT DYNAMIC SQL MATCHES
 $where_clauses = [];
-
 if (!empty($search_query)) {
     $where_clauses[] = "(b.booking_id LIKE '%$search_query%' OR u.name LIKE '%$search_query%')";
 }
@@ -35,7 +34,48 @@ if (count($where_clauses) > 0) {
     $where_sql = "WHERE " . implode(" AND ", $where_clauses);
 }
 
-// FETCH LIVE BOOKING ENTRIES
+// --- NEW: CSV EXPORT LOGIC ---
+if (isset($_GET['export']) && $_GET['export'] == '1') {
+    $export_query = "
+        SELECT b.booking_id, u.name, u.role, f.facility_name, f.location, b.booking_date, b.start_time, b.end_time, b.status,
+        GROUP_CONCAT(CONCAT(be.quantity, 'x ', e.name) SEPARATOR ', ') AS equipment
+        FROM booking b
+        JOIN user u ON b.user_id = u.user_id
+        JOIN facility f ON b.facility_id = f.facility_id
+        LEFT JOIN booking_equipment be ON b.booking_id = be.booking_id
+        LEFT JOIN equipment e ON be.equip_id = e.equip_id
+        $where_sql
+        GROUP BY b.booking_id
+        ORDER BY b.booking_date DESC";
+
+    $export_res = mysqli_query($conn, $export_query);
+    
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=MMU_Bookings_Report_' . date('Y-m-d') . '.csv');
+    $output = fopen('php://output', 'w');
+    
+    // Column Headers
+    fputcsv($output, array('Booking ID', 'User Name', 'Role', 'Facility', 'Location', 'Date', 'Start Time', 'End Time', 'Status', 'Equipment'));
+    
+    while ($row = mysqli_fetch_assoc($export_res)) {
+        fputcsv($output, array(
+            '#BK-'.$row['booking_id'], 
+            $row['name'], 
+            $row['role'], 
+            $row['facility_name'], 
+            $row['location'], 
+            $row['booking_date'], 
+            $row['start_time'], 
+            $row['end_time'], 
+            $row['status'], 
+            $row['equipment'] ?: 'None'
+        ));
+    }
+    fclose($output);
+    exit();
+}
+
+// FETCH LIVE BOOKING ENTRIES FOR HTML TABLE
 $bookings_query = "
     SELECT 
         b.*, 
@@ -141,14 +181,14 @@ $bookings_result = mysqli_query($conn, $bookings_query);
                             <option value="Pending" <?php if($filter_status === 'Pending') echo 'selected'; ?>>Pending</option>
                             <option value="Approved" <?php if($filter_status === 'Approved') echo 'selected'; ?>>Approved</option>
                             <option value="Cancelled" <?php if($filter_status === 'Cancelled') echo 'selected'; ?>>Cancelled</option>
-                            <option value="Rejected" <?php if($filter_status === 'Rejected') echo 'selected'; ?>>Rejected</option>
                         </select>
 
                         <?php if(!empty($search_query) || !empty($filter_date) || $filter_status !== 'All Statuses'): ?>
                             <a href="admin-bookings.php" class="btn btn-outline" style="padding: 8px 12px; color: var(--secondary); border: 1px solid var(--secondary); border-radius: 6px; text-decoration: none; font-size: 13px;">Clear</a>
                         <?php endif; ?>
 
-                        <button type="button" class="btn btn-outline" style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; background: #fff;" onclick="window.print();">
+                        <!-- UPDATED: Triggers JavaScript Export Function -->
+                        <button type="button" class="btn btn-outline" style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; background: #fff;" onclick="exportCSV();">
                             <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Export CSV
                         </button>
                     </div>
@@ -189,11 +229,7 @@ $bookings_result = mysqli_query($conn, $bookings_query);
                                     } elseif ($row['status'] === 'Cancelled') { 
                                         $badge_class = 'badge-cancelled'; 
                                         $icon = 'cancel'; 
-                                    } elseif ($row['status'] === 'Rejected') { 
-                                        $badge_class = 'badge-cancelled'; 
-                                        $badge_style = 'style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; font-weight: 500; font-size: 13px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"'; 
-                                        $icon = 'cancel'; 
-                                    }
+                                    } 
                                 ?>
                                     <tr <?php echo $row_style; ?>>
                                         <td style="padding: 12px 8px;"><strong style="color: var(--text-main);">#BK-<?php echo $row['booking_id']; ?></strong></td>
@@ -264,12 +300,11 @@ $bookings_result = mysqli_query($conn, $bookings_query);
         </main>
     </div>
 
+    <!-- Modals REMAINS THE SAME -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-box modal-warning">
             <div class="modal-header" style="display: flex; align-items: center; gap: 8px;">
-                <div class="modal-icon">
-                    <span class="material-symbols-outlined">warning</span>
-                </div>
+                <div class="modal-icon"><span class="material-symbols-outlined">warning</span></div>
                 <h3 class="modal-title" id="confirmTitle">Confirm Action</h3>
             </div>
             <p class="modal-text" id="confirmText">Are you sure you want to proceed with this action?</p>
@@ -283,38 +318,27 @@ $bookings_result = mysqli_query($conn, $bookings_query);
     <div class="modal-overlay" id="detailsModal">
         <div class="modal-box modal-info" style="max-width: 530px; width: 90%; max-height: 90vh; display: flex; flex-direction: column;">
             <div class="modal-header" style="flex-shrink: 0; display: flex; align-items: center; gap: 8px;">
-                <div class="modal-icon">
-                    <span class="material-symbols-outlined">visibility</span>
-                </div>
+                <div class="modal-icon"><span class="material-symbols-outlined">visibility</span></div>
                 <h3 class="modal-title">Booking Details <span id="modal-target-id" style="font-size: 14px; font-weight: 500; color: var(--text-muted);"></span></h3>
             </div>
-            
             <div class="details-modal-body" style="overflow-y: auto; flex-grow: 1; padding-right: 4px; margin-bottom: 16px;">
                 <div class="details-grid" style="display: grid; grid-template-columns: 100px 1fr; gap: 12px 16px; align-items: start;">
                     <div class="details-label" style="font-weight: 600; color: var(--text-muted);">User:</div>
                     <div class="details-value" id="modal-view-user" style="word-break: break-word;"></div>
-                    
                     <div class="details-label" style="font-weight: 600; color: var(--text-muted);">Facility:</div>
                     <div class="details-value" id="modal-view-facility" style="word-break: break-word;"></div>
-                    
                     <div class="details-label" style="font-weight: 600; color: var(--text-muted);">Schedule:</div>
                     <div class="details-value" id="modal-view-schedule" style="word-break: break-word;"></div>
-                    
                     <div class="details-label" style="font-weight: 600; color: var(--text-muted);">Equipment:</div>
                     <div class="details-value" id="modal-view-equipment" style="word-break: break-word;"></div>
-                    
                     <div class="details-label" style="font-weight: 600; color: var(--text-muted);">Proof:</div>
                     <div class="details-value" id="modal-view-proof" style="word-break: break-word;"></div>
-
-                    <div class="details-label" style="grid-column: span 2; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(194, 198, 211, 0.4); font-weight: 600;">
-                        Purpose of Booking:
-                    </div>
+                    <div class="details-label" style="grid-column: span 2; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(194, 198, 211, 0.4); font-weight: 600;">Purpose of Booking:</div>
                     <div class="details-value" style="grid-column: span 2; max-width: 100%;">
                         <div id="modal-view-purpose" style="font-style: italic; line-height: 1.6; color: var(--text-muted); white-space: normal; word-break: break-word; overflow-wrap: break-word; max-height: 105px; overflow-y: auto; padding-right: 6px;"></div>
                     </div>
                 </div>
             </div>
-
             <div class="modal-actions" style="flex-shrink: 0; padding-top: 8px; border-top: 1px solid rgba(194, 198, 211, 0.2);">
                 <button class="btn btn-primary close-modal" style="padding: 10px 24px; width: 100%; justify-content: center; border: none; border-radius: 4px; cursor: pointer; background: var(--primary); color: #fff; font-weight: 600;">Close</button>
             </div>
@@ -322,22 +346,19 @@ $bookings_result = mysqli_query($conn, $bookings_query);
     </div>
 
     <script>
-        // Profile Dropdown Toggle
+        // Profile Dropdown logic
         const profileTrigger = document.getElementById('profileTrigger');
         const profileMenu = document.getElementById('profileMenu');
+        profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); profileMenu.classList.toggle('show'); });
+        window.addEventListener('click', (e) => { if (!profileTrigger.contains(e.target)) profileMenu.classList.remove('show'); });
 
-        profileTrigger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            profileMenu.classList.toggle('show');
-        });
+        // EXPORT CSV FUNCTION (Constructs URL with existing filters)
+        function exportCSV() {
+            const params = new URLSearchParams(window.location.search);
+            params.set('export', '1');
+            window.location.href = 'admin-bookings.php?' + params.toString();
+        }
 
-        window.addEventListener('click', function(e) {
-            if (!profileTrigger.contains(e.target)) {
-                profileMenu.classList.remove('show');
-            }
-        });
-
-        // Modals Assignment Constants
         const confirmModal = document.getElementById('confirmModal');
         const detailsModal = document.getElementById('detailsModal');
         const confirmTitle = document.getElementById('confirmTitle');
@@ -352,7 +373,6 @@ $bookings_result = mysqli_query($conn, $bookings_query);
             });
         });
 
-        // View Details Modal Trigger Data Payload
         document.querySelectorAll('.view-details-trigger').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.getElementById('modal-target-id').textContent = '#BK-' + this.dataset.id;
@@ -361,7 +381,6 @@ $bookings_result = mysqli_query($conn, $bookings_query);
                 document.getElementById('modal-view-schedule').textContent = this.dataset.schedule;
                 document.getElementById('modal-view-equipment').textContent = this.dataset.equipment;
                 document.getElementById('modal-view-purpose').textContent = '"' + this.dataset.purpose + '"';
-                
                 const proofContainer = document.getElementById('modal-view-proof');
                 if (this.dataset.proof && this.dataset.proof !== "") {
                     proofContainer.innerHTML = `<a href="../public/uploads/proofs/${this.dataset.proof}" target="_blank" style="color: var(--primary); display: inline-flex; align-items: center; gap: 4px; font-weight:500;">
@@ -370,12 +389,10 @@ $bookings_result = mysqli_query($conn, $bookings_query);
                 } else {
                     proofContainer.innerHTML = `<span style="color: var(--text-muted); font-size: 13px;">No file proof attached</span>`;
                 }
-                
                 detailsModal.classList.add('show');
             });
         });
 
-        // Action Confirmations Redirection Triggers targeting manage-booking-action.php
         document.querySelectorAll('.approve-trigger').forEach(btn => {
             btn.addEventListener('click', function() {
                 confirmTitle.textContent = 'Approve Booking Request';

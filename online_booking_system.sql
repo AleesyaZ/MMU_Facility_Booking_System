@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 04, 2026 at 07:31 AM
+-- Generation Time: Jul 05, 2026 at 04:02 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,7 +69,10 @@ CREATE TABLE `booking` (
 
 INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`, `is_priority`, `proof_file`) VALUES
 (1069, 10000000, 187, '2026-07-10', '08:57:00', '09:57:00', 'lo', 'Cancelled', 0, NULL),
-(1070, 10000003, 187, '2026-07-10', '15:58:00', '16:58:00', 'l', 'Cancelled', 1, '');
+(1070, 10000003, 187, '2026-07-10', '15:58:00', '16:58:00', 'l', 'Cancelled', 1, ''),
+(1071, 10000000, 187, '2026-07-10', '13:56:00', '14:56:00', 'a', 'Cancelled', 0, NULL),
+(1072, 10000003, 187, '2026-07-10', '13:59:00', '14:59:00', 'a', 'Cancelled', 1, 'proof_1783144775_10000003.png'),
+(1075, 10000003, 163, '2026-07-10', '14:06:00', '15:06:00', 'b', 'Cancelled', 1, '');
 
 -- --------------------------------------------------------
 
@@ -215,7 +218,9 @@ CREATE TABLE `notification` (
 
 INSERT INTO `notification` (`notify_id`, `user_id`, `title`, `message`, `is_read`, `date_sent`) VALUES
 (10, 10000000, 'Booking Cancelled: Schedule Update', 'Your booking for Badminton Court on 2026-07-10 has been cancelled because the slot is now reserved for a recurring Academic Class.', 1, '2026-07-04 12:57:49'),
-(11, 10000003, 'Booking Cancelled: Schedule Update', 'Your booking for Badminton Court on 2026-07-10 has been cancelled because the slot is now reserved for a recurring Academic Class.', 1, '2026-07-04 12:59:15');
+(11, 10000003, 'Booking Cancelled: Schedule Update', 'Your booking for Badminton Court on 2026-07-10 has been cancelled because the slot is now reserved for a recurring Academic Class.', 1, '2026-07-04 12:59:15'),
+(12, 10000003, 'Booking Request Approved', 'Your reservation for Badminton Court on 2026-07-10 (1:59 PM) has been officially approved by the Admin.', 1, '2026-07-04 14:00:13'),
+(13, 10000000, 'Booking Overridden by Admin', 'Your booking for Badminton Court on 2026-07-10 has been cancelled as the slot was needed for an academic priority session.', 1, '2026-07-04 14:00:13');
 
 -- --------------------------------------------------------
 
@@ -226,7 +231,7 @@ INSERT INTO `notification` (`notify_id`, `user_id`, `title`, `message`, `is_read
 CREATE TABLE `penalty` (
   `penalty_id` int(11) NOT NULL COMMENT 'Penalty Identification',
   `user_id` int(11) NOT NULL COMMENT 'Penalised User Identification',
-  `booking_id` int(11) DEFAULT NULL COMMENT 'Booking Identification',
+  `booking_id` int(11) DEFAULT NULL,
   `reason` text NOT NULL COMMENT 'Reason for Penalty',
   `strike_count` int(11) NOT NULL COMMENT 'Total Number of Strikes',
   `status` varchar(50) NOT NULL COMMENT 'Penalty Status'
@@ -237,7 +242,7 @@ CREATE TABLE `penalty` (
 --
 
 INSERT INTO `penalty` (`penalty_id`, `user_id`, `booking_id`, `reason`, `strike_count`, `status`) VALUES
-(100017, 10000003, NULL, '[No-Show] PENALTY', 0, 'Active');
+(100018, 10000000, NULL, '[No-Show] lol', 1, 'Active');
 
 -- --------------------------------------------------------
 
@@ -288,19 +293,20 @@ CREATE TABLE `user` (
   `otp_code` varchar(6) DEFAULT NULL COMMENT 'Verification Code',
   `otp_sent_at` datetime DEFAULT NULL COMMENT 'Expiration OTP time',
   `is_activated` tinyint(1) DEFAULT 0 COMMENT 'Account Activation Status',
-  `status` varchar(20) DEFAULT 'Active' COMMENT 'Penalty Status'
+  `status` varchar(20) DEFAULT 'Active' COMMENT 'Penalty Status',
+  `suspension_start` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`, `otp_code`, `otp_sent_at`, `is_activated`, `status`) VALUES
-(10000000, 'IDRIS BIN SHAH NAHAR', 'idris@student.mmu.edu.my', '$2y$10$f0K2PNQtvfL2V7WxAxox7unJLh7kvLc7jHqGMB8xq6/ZXYGI16CSC', 'Student', '01164425881', 2, NULL, NULL, 1, 'Active'),
-(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', '$2y$10$3uFp8n0THCm1t5NSq1zgy.RSYz06h4dognjKLmrntOu8zdtoTKi..', 'Student', '01154067900', 2, NULL, NULL, 1, 'Active'),
-(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', '$2y$10$bjm8sscxTfQDwzazBzmKC..GJDS4Soo2nWwfhPTQEtJMDzft3vui.', 'Student', '0123211695', 2, NULL, NULL, 1, 'Active'),
-(10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', '$2y$10$q7CSZJ1ZhRfO.wrkRQhv0euy1DCWGK55/hM0rsT2DNqjOImN3htg2', 'Lecturer', '0112223333', 2, NULL, NULL, 1, 'Active'),
-(10000004, 'MR ADMIN', 'admin1@mmu.edu.my', '$2y$10$qftMOyhSssrVZDjmUPjIwuauIL67zHORgCvXQyA0mooUg5AjMpB6C', 'Admin', '0112223333', 2, NULL, NULL, 1, 'Active');
+INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`, `otp_code`, `otp_sent_at`, `is_activated`, `status`, `suspension_start`) VALUES
+(10000000, 'IDRIS BIN SHAH NAHAR', 'idris.shah.nahar@student.mmu.edu.my', '$2y$10$enKHIFtAMnz7BBtYJtf0beeGb6N4MLYu9fXlGGq5sRklIr0XnHEkq', 'Student', '01164425881', 2, NULL, NULL, 1, 'Active', NULL),
+(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', '$2y$10$3uFp8n0THCm1t5NSq1zgy.RSYz06h4dognjKLmrntOu8zdtoTKi..', 'Student', '01154067900', 2, NULL, NULL, 1, 'Active', NULL),
+(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', '$2y$10$bjm8sscxTfQDwzazBzmKC..GJDS4Soo2nWwfhPTQEtJMDzft3vui.', 'Student', '0123211695', 2, NULL, NULL, 1, 'Active', NULL),
+(10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', '$2y$10$q7CSZJ1ZhRfO.wrkRQhv0euy1DCWGK55/hM0rsT2DNqjOImN3htg2', 'Lecturer', '0112223333', 2, NULL, NULL, 1, 'Active', NULL),
+(10000004, 'MR ADMIN', 'admin1@mmu.edu.my', '$2y$10$qftMOyhSssrVZDjmUPjIwuauIL67zHORgCvXQyA0mooUg5AjMpB6C', 'Admin', '0112223333', 2, NULL, NULL, 1, 'Active', NULL);
 
 --
 -- Indexes for dumped tables
@@ -391,7 +397,7 @@ ALTER TABLE `annoucement`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1071;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1076;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -415,13 +421,13 @@ ALTER TABLE `issue_report`
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification', AUTO_INCREMENT=12;
+  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification', AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `penalty`
 --
 ALTER TABLE `penalty`
-  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification', AUTO_INCREMENT=100018;
+  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification', AUTO_INCREMENT=100019;
 
 --
 -- AUTO_INCREMENT for table `timetable`

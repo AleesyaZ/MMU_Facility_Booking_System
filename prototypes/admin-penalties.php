@@ -54,12 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['issue_strike'])) {
     if (mysqli_num_rows($strike_query) > 0) {
         mysqli_query($conn, "UPDATE penalty SET strike_count = '$new_strike_count', reason = '$full_reason' WHERE user_id = '$uid'");
     } else {
-        mysqli_query($conn, "INSERT INTO penalty (user_id, booking_id, reason, strike_count, status) VALUES ('$uid', 0, '$full_reason', '$new_strike_count', 'Active')");
+        // FIX: Use NULL (without quotes) instead of 0 for booking_id
+        mysqli_query($conn, "INSERT INTO penalty (user_id, booking_id, reason, strike_count, status) VALUES ('$uid', NULL, '$full_reason', '$new_strike_count', 'Active')");
     }
 
     if ($new_strike_count >= 3) {
-    // Set status to Suspended AND record the start time
-    mysqli_query($conn, "UPDATE user SET status = 'Suspended', suspension_start = NOW() WHERE user_id = '$uid'");
+        // Set status to Suspended AND record the start time
+        mysqli_query($conn, "UPDATE user SET status = 'Suspended', suspension_start = NOW() WHERE user_id = '$uid'");
     }
     header("Location: admin-penalties.php?msg=issued");
     exit();
@@ -212,7 +213,6 @@ function renderStrikes($count) {
             <form action="admin-penalties.php" method="POST">
                 <div class="form-group">
                     <label>Target User</label>
-                    <!-- NEW SEARCH INPUT -->
                     <input type="text" id="modalUserSearch" class="form-control" placeholder="Type to search user by name or ID..." style="margin-bottom: 8px;">
                     <select name="user_id" id="modal_user_select" class="form-control" required>
                         <option value="">Select User...</option>
@@ -275,7 +275,6 @@ function renderStrikes($count) {
             const userSelect = document.getElementById('modal_user_select');
             const searchField = document.getElementById('modalUserSearch');
             
-            // Reset search and dropdown visibility
             searchField.value = "";
             for (let i = 0; i < userSelect.options.length; i++) {
                 userSelect.options[i].style.display = "";

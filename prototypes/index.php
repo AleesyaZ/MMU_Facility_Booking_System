@@ -158,7 +158,7 @@ function get_notification_link($title) {
         </div>
     </header>
 
-    <section class="hero-fullscreen" style="background-image: url('../public/img/melakalibrary.jpg');">
+    <section class="hero-fullscreen" style="background-image: url('../public/img/mmutopoverview.jpeg');">
         <div class="hero-overlay"></div>
         <div class="hero-center-content">
             <h1>Campus Facilities, <br><span>Fairly Accessible to All.</span></h1>

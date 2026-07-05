@@ -204,7 +204,7 @@ function get_notification_link($title) {
                 <ul>
                     <li>Each user is granted <strong>2 quotas per week</strong>.</li>
                     <li>1 Booking = 1 Quota deduction, regardless of whether the booking is for 1 or 2 hours.</li>
-                    <li>Quotas automatically reset every <strong>Sunday at 11:59 PM</strong>.</li>
+                    <li>Quotas automatically reset every <strong>Sunday at 12:00 AM</strong>.</li>
                 </ul>
                 <div class="guide-alert">
                     <strong>Tip:</strong> If you cancel your booking before the scheduled time, your quota will be automatically refunded to your account!
@@ -238,11 +238,10 @@ function get_notification_link($title) {
 
             <section id="hours" class="guide-section">
                 <h2>Operating Hours</h2>
-                <p>Facilities can only be booked during official campus operating hours. The portal will automatically prevent bookings outside these times.</p>
+                <p>Facilities can only be booked during official campus operating hours.</p>
                 <ul>
-                    <li><strong>Lecture Halls & Labs:</strong> Monday - Friday (8:00 AM - 6:00 PM)</li>
-                    <li><strong>Discussion Rooms:</strong> Monday - Sunday (8:00 AM - 10:00 PM)</li>
-                    <li><strong>Sports Courts:</strong> Monday - Sunday (8:00 AM - 11:00 PM)</li>
+                    <li><strong>Lecture Halls, Labs & Tutorial:</strong> Monday - Friday (8:00 AM - 10:00 PM)</li>
+                    <li><strong>Sports Courts:</strong> Monday - Sunday (8:00 AM - 10:00 PM)</li>
                 </ul>
             </section>
 
