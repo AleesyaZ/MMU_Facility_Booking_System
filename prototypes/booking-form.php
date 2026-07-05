@@ -48,8 +48,11 @@ if ($week_offset != 0) {
 $friday = clone $monday;
 $friday->modify("+4 days");
 
+$sunday = clone $monday;
+$sunday->modify("+6 days");
+
 $start_date = $monday->format('Y-m-d');
-$end_date = $friday->format('Y-m-d');
+$end_date = $sunday->format('Y-m-d');
 
 // --- FETCH GRID DATA ---
 // 1. Fixed Classes
@@ -319,31 +322,33 @@ $occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_tim
                         <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <button type="button" class="btn-icon" onclick="changeWeek(-1)" style="width: 24px; height: 24px;"><span class="material-symbols-outlined" style="font-size: 16px;">chevron_left</span></button>
-                            <span style="font-size: 11px; font-weight: 700; color: var(--primary);"><?php echo $monday->format('d M') . ' - ' . $friday->format('d M'); ?></span>
+                            <span style="font-size: 11px; font-weight: 700; color: var(--primary);"><?php echo $monday->format('d M') . ' - ' . $sunday->format('d M'); ?></span>
                             <button type="button" class="btn-icon" onclick="changeWeek(1)" style="width: 24px; height: 24px;"><span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span></button>
                         </div>
                     </div>
 
-                    <div class="timetable-grid">
-                        <div class="tt-cell tt-head">Time</div><div class="tt-cell tt-head">Mon</div><div class="tt-cell tt-head">Tue</div><div class="tt-cell tt-head">Wed</div><div class="tt-cell tt-head">Thu</div><div class="tt-cell tt-head">Fri</div>
+                    <div style="overflow-x: auto; width: 460px; max-width: 100%;">
+                        <div class="timetable-grid" style="width: 760px; grid-template-columns: 60px repeat(7, 100px);">
+                            <div class="tt-cell tt-head">Time</div><div class="tt-cell tt-head">Mon</div><div class="tt-cell tt-head">Tue</div><div class="tt-cell tt-head">Wed</div><div class="tt-cell tt-head">Thu</div><div class="tt-cell tt-head">Fri</div><div class="tt-cell tt-head">Sat</div><div class="tt-cell tt-head">Sun</div>
 
-                        <?php 
-                        $hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
-                        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-                        foreach($hours as $h): 
-                            $label = ($h >= 12) ? ($h==12 ? "12 PM" : ($h-12)." PM") : $h." AM";
-                        ?>
-                        <div class="tt-cell tt-time"><?php echo $label; ?></div>
-                        <?php foreach($days as $d): 
-                            $class = "free";
-                            if(isset($schedule_map[$d][$h])) {
-                                if($schedule_map[$d][$h] == 'fixed') $class = "blocked";
-                                elseif($schedule_map[$d][$h] == 'priority') $class = "priority";
-                                else $class = "booked";
-                            }
-                        ?>
-                        <div class="tt-cell tt-slot <?php echo $class; ?>"></div>
-                        <?php endforeach; endforeach; ?>
+                            <?php 
+                            $hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+                            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                            foreach($hours as $h): 
+                                $label = ($h >= 12) ? ($h==12 ? "12 PM" : ($h-12)." PM") : $h." AM";
+                            ?>
+                            <div class="tt-cell tt-time"><?php echo $label; ?></div>
+                            <?php foreach($days as $d): 
+                                $class = "free";
+                                if(isset($schedule_map[$d][$h])) {
+                                    if($schedule_map[$d][$h] == 'fixed') $class = "blocked";
+                                    elseif($schedule_map[$d][$h] == 'priority') $class = "priority";
+                                    else $class = "booked";
+                                }
+                            ?>
+                            <div class="tt-cell tt-slot <?php echo $class; ?>"></div>
+                            <?php endforeach; endforeach; ?>
+                        </div>
                     </div>
 
                     <div class="tt-legend">

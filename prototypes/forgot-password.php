@@ -26,7 +26,7 @@
                     <button type="submit" name="request_otp_btn" class="btn btn-primary btn-full">Send OTP</button>
 
                     <div style="margin-top: 24px; display: flex; justify-content: flex-start;">
-                        <a href="login.php" class="back-link-custom">
+                        <a href="login.html" class="back-link-custom">
                             <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
                             Back to Login
                         </a>
