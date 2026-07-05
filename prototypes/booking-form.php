@@ -317,7 +317,8 @@ $occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_tim
                     <div><strong>Quota Notice</strong><br>This reservation will consume 1 of your <?php echo $max_quota; ?> facility quotas.</div>
                 </div>
 
-                <div class="timetable-container">
+                <!-- ADDED: ID "timetableContainer" here to allow targeted AJAX replacements -->
+                <div class="timetable-container" id="timetableContainer">
                     <div class="timetable-header">
                         <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
                         <div style="display: flex; align-items: center; gap: 8px;">
@@ -363,11 +364,33 @@ $occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_tim
     </main>
 
     <script>
+        // UPDATED: Now fetches the target page in the background and replaces the timetable element
         function changeWeek(offset) {
             const urlParams = new URLSearchParams(window.location.search);
             let currentWeek = parseInt(urlParams.get('week') || 0);
             urlParams.set('week', currentWeek + offset);
-            window.location.search = urlParams.toString();
+            
+            const newUrl = window.location.pathname + '?' + urlParams.toString();
+            
+            // Updates URL bar without triggering a hard refresh or reset
+            window.history.pushState({ path: newUrl }, '', newUrl);
+            
+            // Request the same page in the background
+            fetch(newUrl)
+                .then(response => response.text())
+                .then(html => {
+                    // Parse text response back into a temporary DOM object
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Replace the inner content of our designated container
+                    const newTimetable = doc.getElementById('timetableContainer');
+                    const oldTimetable = document.getElementById('timetableContainer');
+                    if (newTimetable && oldTimetable) {
+                        oldTimetable.innerHTML = newTimetable.innerHTML;
+                    }
+                })
+                .catch(err => console.error('Error asynchronously pagination loading schedule:', err));
         }
 
         const trigger = document.getElementById('profileTrigger');

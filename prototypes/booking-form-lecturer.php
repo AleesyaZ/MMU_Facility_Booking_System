@@ -371,8 +371,8 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     <div><strong>Staff Quota</strong><br>Standard bookings consume 1 of your <?php echo $max_quota; ?> weekly quotas. Priority requests require Admin approval.</div>
                 </div>
 
-                <!-- WEEKLY SCHEDULE RE-ADDED -->
-                <div class="timetable-container">
+                <!-- WEEKLY SCHEDULE RE-ADDED WITH ID FOR AJAX TARGETING -->
+                <div class="timetable-container" id="timetableContainer">
                     <div class="timetable-header">
                         <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
                         <div style="display: flex; align-items: center; gap: 8px;">
@@ -418,11 +418,28 @@ $occupied_result = mysqli_query($conn, $occupied_query);
     </main>
 
     <script>
+        // Intercepts week switches asynchronously using fetch API to keep user focus
         function changeWeek(offset) {
             const urlParams = new URLSearchParams(window.location.search);
             let currentWeek = parseInt(urlParams.get('week') || 0);
             urlParams.set('week', currentWeek + offset);
-            window.location.search = urlParams.toString();
+            
+            const newUrl = window.location.pathname + '?' + urlParams.toString();
+            window.history.pushState({ path: newUrl }, '', newUrl);
+            
+            fetch(newUrl)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    const newTimetable = doc.getElementById('timetableContainer');
+                    const oldTimetable = document.getElementById('timetableContainer');
+                    if (newTimetable && oldTimetable) {
+                        oldTimetable.innerHTML = newTimetable.innerHTML;
+                    }
+                })
+                .catch(err => console.error('Error fetching calendar view asynchronously:', err));
         }
 
         const trigger = document.getElementById('profileTrigger');

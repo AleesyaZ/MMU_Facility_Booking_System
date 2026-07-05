@@ -35,29 +35,29 @@ $user_query = "SELECT name, booking_quota, role FROM user WHERE user_id = '$user
 $user_result = mysqli_query($conn, $user_query);
 $user_data = mysqli_fetch_assoc($user_result);
 
-$full_name = $user_data['name'] ?? "User";
-$max_quota = $user_data['booking_quota'] ?? 5;
-$user_role = $user_data['role'];
-
+// FIXED NAME LOGIC: Direct session check for faster loading
+$full_name = !empty($_SESSION['name']) ? $_SESSION['name'] : ($user_data['name'] ?? "User");
 $name_parts = explode(' ', trim($full_name));
-$first_name = $name_parts[0]; 
-$initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
+$first_name = !empty($name_parts[0]) ? $name_parts[0] : "User"; 
+$initials = substr($first_name, 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// 2. QUOTA QUERY - FIXED: 
-// We use >= CURDATE() so that any booking visible in the "Upcoming" section 
-// is counted in the quota. This prevents the "0/2" error on weekends.
+$max_quota = $user_data['booking_quota'] ?? 5;
+$user_role = $user_data['role'] ?? "Student";
+
+// 2. QUOTA QUERY
 $quota_query = "SELECT COUNT(*) as total FROM booking 
                 WHERE user_id = '$user_id' 
                 AND status NOT IN ('Cancelled', 'Rejected') 
                 AND (is_priority = 0 OR is_priority IS NULL) 
-                AND booking_date >= CURDATE()"; 
+                AND YEARWEEK(booking_date, 0) = YEARWEEK(CURDATE(), 0)"; 
 $quota_result = mysqli_query($conn, $quota_query);
 $used_quota = mysqli_fetch_assoc($quota_result)['total'];
 
 // 3. FETCH PENALTY STRIKES
 $penalty_query = "SELECT SUM(strike_count) as total_strikes FROM penalty WHERE user_id = '$user_id' AND LOWER(status) = 'active'";
 $penalty_result = mysqli_query($conn, $penalty_query);
-$strikes = mysqli_fetch_assoc($penalty_result)['total_strikes'] ?? 0;
+$penalty_row = mysqli_fetch_assoc($penalty_result);
+$strikes = $penalty_row['total_strikes'] ?? 0;
 
 // 4. FETCH UPCOMING BOOKINGS
 $bookings_query = "SELECT b.*, f.facility_name, f.category, f.image_path 
@@ -89,21 +89,14 @@ function time_ago($timestamp) {
     else return date("d M Y", $time_ago);
 }
 
-// Determine where a notification should link to, based on its title
+// Determine where a notification should link to
 function get_notification_link($title) {
     $title_lower = strtolower($title);
-
-    if (strpos($title_lower, 'cancel') !== false) {
-        return 'my-bookings.php';
-    } elseif (strpos($title_lower, 'update on report') !== false || strpos($title_lower, 'report') !== false) {
-        return 'my-reports.php';
-    } elseif (strpos($title_lower, 'confirmed') !== false || strpos($title_lower, 'booking') !== false) {
-        return 'my-bookings.php';
-    } elseif (strpos($title_lower, 'overridden') !== false) {
-        return 'my-bookings.php';
-    } else {
-        return 'user-dashboard.php'; 
-    }
+    if (strpos($title_lower, 'cancel') !== false) return 'my-bookings.php';
+    elseif (strpos($title_lower, 'update on report') !== false || strpos($title_lower, 'report') !== false) return 'my-reports.php';
+    elseif (strpos($title_lower, 'confirmed') !== false || strpos($title_lower, 'booking') !== false) return 'my-bookings.php';
+    elseif (strpos($title_lower, 'overridden') !== false) return 'my-bookings.php';
+    else return 'student-dashboard.php'; 
 }
 
 // Handle AJAX Request for Real-Time Update
@@ -182,7 +175,7 @@ if(isset($_GET['ajax_announcements'])) {
                     </div>
                 </div>
 
-                <div class="avatar" style="flex-shrink: 0;"><?php echo strtoupper($initials); ?></div>
+                <div class="avatar" style="flex-shrink: 0; background-color: var(--primary); color: white;"><?php echo strtoupper($initials); ?></div>
 
                 <span style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; text-transform: uppercase;" title="<?php echo htmlspecialchars($full_name); ?>">
                     <?php echo htmlspecialchars($full_name); ?>
@@ -200,9 +193,10 @@ if(isset($_GET['ajax_announcements'])) {
         </div>
     </header>
 
-    <main class="container dashboard-main" style="padding-top: 32px;">
+    <!-- UPDATED: Increased padding-top to 100px to avoid navbar overlap -->
+    <main class="container dashboard-main" style="padding-top: 100px;">
         <div class="dashboard-header" style="margin-bottom: 24px;">
-            <h2 style="color: var(--text-main); margin-bottom: 4px;">Welcome back, <?php echo htmlspecialchars($first_name); ?>!</h2>
+            <h2 style="color: var(--text-main); margin-bottom: 4px; font-size: 28px; font-weight: 700;">Welcome back, <?php echo htmlspecialchars($first_name); ?>!</h2>
             <p style="color: var(--text-muted); margin-bottom: 0;">Here is your campus facility overview for today.</p>
         </div>
 
