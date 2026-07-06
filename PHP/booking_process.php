@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
     $end_time = $_POST['end_time'];
     $purpose = mysqli_real_escape_string($conn, $_POST['purpose']);
 
-    // 1. BACKEND QUOTA SECURITY CHECK
+    // BACKEND QUOTA SECURITY CHECK
     $user_info = mysqli_fetch_assoc(mysqli_query($conn, "SELECT booking_quota FROM user WHERE user_id = '$user_id' LIMIT 1"));
     $max_quota = $user_info['booking_quota'];
 
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         exit();
     }
 
-    // 2. DURATION LIMIT CHECK (1-2 Hours)
+    // DURATION LIMIT CHECK (1-2 Hours)
     $start_ts = strtotime($start_time);
     $end_ts = strtotime($end_time);
     $duration = ($end_ts - $start_ts) / 3600;
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         exit();
     }
 
-    // 3. OVERLAP CHECK (Existing Bookings)
+    // OVERLAP CHECK (Existing Bookings)
     $check_overlap = "SELECT * FROM booking 
                       WHERE facility_id = '$facility_id' 
                       AND booking_date = '$date' 
@@ -56,8 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         exit();
     }
 
-    // --- NEW: 3.5 TIMETABLE OVERLAP CHECK (Fixed Classes) ---
-    $day_name = date('l', strtotime($date)); // Get 'Monday', 'Tuesday', etc.
+    // TIMETABLE OVERLAP CHECK (Fixed Classes) 
+    $day_name = date('l', strtotime($date)); // Get dates
     $check_timetable = "SELECT * FROM timetable 
                         WHERE facility_id = '$facility_id' 
                         AND day_of_week = '$day_name' 
@@ -74,14 +74,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         exit();
     }
 
-    // 4. MAIN INSERT (Auto-Approved for free slots)
+    // MAIN INSERT (Auto-Approved for free slots)
     $sql = "INSERT INTO booking (user_id, facility_id, booking_date, start_time, end_time, purpose, status, is_priority) 
             VALUES ('$user_id', '$facility_id', '$date', '$start_time', '$end_time', '$purpose', 'Approved', 0)";
 
     if (mysqli_query($conn, $sql)) {
         $booking_id = mysqli_insert_id($conn);
 
-        // --- 5. ADD-ON EQUIPMENT LOGIC ---
+        // ADD-ON EQUIPMENT LOGIC 
         if (isset($_POST['equipment']) && is_array($_POST['equipment'])) {
             foreach ($_POST['equipment'] as $equip_id) {
                 $equip_id = mysqli_real_escape_string($conn, $equip_id);

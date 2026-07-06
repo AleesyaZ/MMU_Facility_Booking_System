@@ -7,7 +7,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
     exit();
 }
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -15,7 +15,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// 2. GET USER DETAILS (For Navbar)
+// GET USER DETAILS (For Navbar)
 $user_query = mysqli_query($conn, "SELECT name FROM user WHERE user_id = '$user_id' LIMIT 1");
 $user_data = mysqli_fetch_assoc($user_query);
 $full_name = $user_data['name'] ?? "User";
@@ -23,7 +23,7 @@ $full_name = $user_data['name'] ?? "User";
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// --- FETCH NOTIFICATIONS ---
+// FETCH NOTIFICATIONS 
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -72,7 +72,7 @@ function get_notification_link($title) {
     }
 }
 
-// 3. FETCH ALL FACILITIES (For the searchable datalist)
+// FETCH ALL FACILITIES (For the searchable datalist)
 $fac_list_result = mysqli_query($conn, "SELECT facility_name FROM facility ORDER BY facility_name ASC");
 ?>
 
@@ -105,7 +105,7 @@ $fac_list_result = mysqli_query($conn, "SELECT facility_name FROM facility ORDER
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
 
-                <!-- NOTIFICATION BELL (functional) -->
+                <!-- NOTIFICATION BELL -->
                 <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <?php if ($unread_count > 0): ?>

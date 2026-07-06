@@ -10,10 +10,10 @@ include('db_config.php');
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
 if (isset($_POST['request_otp_btn'])) {
-    // 2. Sanitize email input
+    // Sanitize email input
     $email = trim(mysqli_real_escape_string($conn, $_POST['email']));
     
-    // 3. Search for user (using LOWER/TRIM for better matching)
+    // Search for user (using LOWER/TRIM for better matching)
     $query = "SELECT * FROM user WHERE LOWER(TRIM(email)) = LOWER('$email') LIMIT 1";
     $result = mysqli_query($conn, $query);
 
@@ -21,7 +21,7 @@ if (isset($_POST['request_otp_btn'])) {
         $otp = rand(100000, 999999);
         $now = date("Y-m-d H:i:s");
         
-        // 4. Update the user record with the OTP
+        // Update the user record with the OTP
         mysqli_query($conn, "UPDATE user SET otp_code = '$otp', otp_sent_at = '$now' WHERE LOWER(TRIM(email)) = LOWER('$email')");
 
         $mail = new PHPMailer(true);
@@ -52,7 +52,7 @@ if (isset($_POST['request_otp_btn'])) {
                 </div>";
 
             if($mail->send()) {
-                // 5. SECURITY GATE: Set session flags to allow entry to reset-password.php
+                // Set session flags to allow entry to reset-password.php
                 $_SESSION['reset_allowed'] = true;
                 $_SESSION['reset_email_target'] = $email;
 

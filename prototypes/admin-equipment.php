@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -12,7 +12,7 @@ $admin_id = $_SESSION['user_id'];
 $admin_name = $_SESSION['name'];
 $initials = substr($admin_name, 0, 1);
 
-// --- ACTION: DELETE EQUIPMENT ---
+// ACTION: DELETE EQUIPMENT 
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     $sql = "DELETE FROM equipment WHERE equip_id = '$id'";
@@ -24,7 +24,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     exit();
 }
 
-// --- ACTION: QUICK RESTOCK ---
+// ACTION: QUICK RESTOCK 
 if (isset($_GET['action']) && $_GET['action'] == 'restock' && isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     mysqli_query($conn, "UPDATE equipment SET avail_qty = total_qty, status = 'Available' WHERE equip_id = '$id'");
@@ -32,7 +32,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'restock' && isset($_GET['id'])
     exit();
 }
 
-// --- ACTION: ADD / EDIT EQUIPMENT ---
+// ACTION: ADD / EDIT EQUIPMENT 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['add_equip']) || isset($_POST['edit_equip']))) {
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $campus = mysqli_real_escape_string($conn, $_POST['campus']); 
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['add_equip']) || isset
     exit();
 }
 
-// --- FETCH DATA WITH FILTERS ---
+// FETCH DATA WITH FILTERS 
 $campus_f = isset($_GET['campus']) ? mysqli_real_escape_string($conn, $_GET['campus']) : 'All Campuses';
 $category_f = isset($_GET['category']) ? mysqli_real_escape_string($conn, $_GET['category']) : 'All Categories';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
@@ -166,13 +166,13 @@ $result = mysqli_query($conn, $query);
                                 <?php while($row = mysqli_fetch_assoc($result)): 
                                     $percentage = ($row['total_qty'] > 0) ? ($row['avail_qty'] / $row['total_qty']) * 100 : 0;
                                     
-                                    // --- UPDATED BAR LOGIC ---
+                                    // UPDATED BAR LOGIC 
                                     if($row['avail_qty'] <= 0) {
                                         $bar_class = "stock-critical";
                                         $text_color = "var(--secondary)"; // Red
                                     } else if($percentage < 50) {
                                         $bar_class = "stock-warning";
-                                        $text_color = "#d97706"; // Yellow/Orange
+                                        $text_color = "#d97706"; // Yellow
                                     } else {
                                         $bar_class = "stock-good";
                                         $text_color = "var(--success-text)"; // Green

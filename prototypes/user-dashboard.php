@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// --- 0. FETCH NOTIFICATIONS ---
+// FETCH NOTIFICATIONS 
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -30,12 +30,12 @@ if (isset($_GET['mark_read'])) {
     exit();
 }
 
-// 1. FETCH USER DETAILS
+// FETCH USER DETAILS
 $user_query = "SELECT name, booking_quota, role FROM user WHERE user_id = '$user_id' LIMIT 1";
 $user_result = mysqli_query($conn, $user_query);
 $user_data = mysqli_fetch_assoc($user_result);
 
-// FIXED NAME LOGIC: Direct session check for faster loading
+// Direct session check for faster loading
 $full_name = !empty($_SESSION['name']) ? $_SESSION['name'] : ($user_data['name'] ?? "User");
 $name_parts = explode(' ', trim($full_name));
 $first_name = !empty($name_parts[0]) ? $name_parts[0] : "User"; 
@@ -44,7 +44,7 @@ $initials = substr($first_name, 0, 1) . (isset($name_parts[1]) ? substr($name_pa
 $max_quota = $user_data['booking_quota'] ?? 5;
 $user_role = $user_data['role'] ?? "Student";
 
-// 2. QUOTA QUERY
+// QUOTA QUERY
 $quota_query = "SELECT COUNT(*) as total FROM booking 
                 WHERE user_id = '$user_id' 
                 AND status NOT IN ('Cancelled', 'Rejected') 
@@ -53,13 +53,13 @@ $quota_query = "SELECT COUNT(*) as total FROM booking
 $quota_result = mysqli_query($conn, $quota_query);
 $used_quota = mysqli_fetch_assoc($quota_result)['total'];
 
-// 3. FETCH PENALTY STRIKES
+// FETCH PENALTY STRIKES
 $penalty_query = "SELECT SUM(strike_count) as total_strikes FROM penalty WHERE user_id = '$user_id' AND LOWER(status) = 'active'";
 $penalty_result = mysqli_query($conn, $penalty_query);
 $penalty_row = mysqli_fetch_assoc($penalty_result);
 $strikes = $penalty_row['total_strikes'] ?? 0;
 
-// 4. FETCH UPCOMING BOOKINGS
+// FETCH UPCOMING BOOKINGS
 $bookings_query = "SELECT b.*, f.facility_name, f.category, f.image_path 
                    FROM booking b 
                    JOIN facility f ON b.facility_id = f.facility_id 
@@ -70,7 +70,7 @@ $bookings_query = "SELECT b.*, f.facility_name, f.category, f.image_path
                    LIMIT 3"; 
 $bookings_result = mysqli_query($conn, $bookings_query);
 
-// 5. FETCH CAMPUS ANNOUNCEMENTS
+// FETCH CAMPUS ANNOUNCEMENTS
 $ann_query = "SELECT * FROM annoucement WHERE status = 'Live' ORDER BY publish_date DESC LIMIT 3";
 $ann_result = mysqli_query($conn, $ann_query);
 
@@ -193,7 +193,7 @@ if(isset($_GET['ajax_announcements'])) {
         </div>
     </header>
 
-    <!-- UPDATED: Increased padding-top to 100px to avoid navbar overlap -->
+    <!-- Increased padding-top to 100px to avoid navbar overlap -->
     <main class="container dashboard-main" style="padding-top: 100px;">
         <div class="dashboard-header" style="margin-bottom: 24px;">
             <h2 style="color: var(--text-main); margin-bottom: 4px; font-size: 28px; font-weight: 700;">Welcome back, <?php echo htmlspecialchars($first_name); ?>!</h2>

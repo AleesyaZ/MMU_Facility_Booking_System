@@ -7,10 +7,10 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
     exit();
 }
 
-// Set Timezone to ensure time() matches Malaysia time
+// Ensure time() matches Malaysia time
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -18,7 +18,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// --- FETCH NOTIFICATIONS ---
+// FETCH NOTIFICATIONS 
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -32,7 +32,7 @@ if (isset($_GET['mark_read'])) {
     exit();
 }
 
-// 2. NAVBAR DATA
+// NAVBAR DATA
 $user_result = mysqli_query($conn, "SELECT name, role FROM user WHERE user_id = '$user_id' LIMIT 1");
 $user_data = mysqli_fetch_assoc($user_result);
 $full_name = $user_data['name'] ?? "User";
@@ -41,7 +41,7 @@ $full_name = $user_data['name'] ?? "User";
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// 3. FETCH USER'S REPORTS
+// FETCH USER'S REPORTS
 $query = "SELECT r.*, f.facility_name 
           FROM issue_report r 
           JOIN facility f ON r.facility_id = f.facility_id 
@@ -114,7 +114,7 @@ function get_notification_link($title) {
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
 
-                <!-- NOTIFICATION BELL (functional) -->
+                <!-- NOTIFICATION BELL -->
                 <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <?php if ($unread_count > 0): ?>

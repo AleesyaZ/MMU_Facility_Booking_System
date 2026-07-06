@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -12,7 +12,7 @@ $admin_id = $_SESSION['user_id'];
 $admin_name = $_SESSION['name'];
 $initials = substr($admin_name, 0, 1); 
 
-// --- ACTION LOGIC: WAIVE STRIKE ---
+// ACTION LOGIC: WAIVE STRIKE 
 if (isset($_GET['action']) && $_GET['action'] == 'waive' && isset($_GET['uid'])) {
     $uid = mysqli_real_escape_string($conn, $_GET['uid']);
     
@@ -29,7 +29,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'waive' && isset($_GET['uid']))
     exit();
 }
 
-// --- ACTION LOGIC: LIFT SUSPENSION ---
+// ACTION LOGIC: LIFT SUSPENSION
 if (isset($_GET['action']) && $_GET['action'] == 'lift' && isset($_GET['uid'])) {
     $uid = mysqli_real_escape_string($conn, $_GET['uid']);
     
@@ -40,7 +40,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'lift' && isset($_GET['uid'])) 
     exit();
 }
 
-// --- POST LOGIC: ISSUE MANUAL STRIKE ---
+// POST LOGIC: ISSUE MANUAL STRIKE 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['issue_strike'])) {
     $uid = mysqli_real_escape_string($conn, $_POST['user_id']);
     $category = mysqli_real_escape_string($conn, $_POST['category']);
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['issue_strike'])) {
     if (mysqli_num_rows($strike_query) > 0) {
         mysqli_query($conn, "UPDATE penalty SET strike_count = '$new_strike_count', reason = '$full_reason' WHERE user_id = '$uid'");
     } else {
-        // FIX: Use NULL (without quotes) instead of 0 for booking_id
+        // Use NULL (without quotes) instead of 0 for booking_id
         mysqli_query($conn, "INSERT INTO penalty (user_id, booking_id, reason, strike_count, status) VALUES ('$uid', NULL, '$full_reason', '$new_strike_count', 'Active')");
     }
 

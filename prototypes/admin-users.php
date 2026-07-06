@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -12,7 +12,7 @@ $admin_id = $_SESSION['user_id'];
 $admin_name = $_SESSION['name'];
 $initials = substr($admin_name, 0, 1);
 
-// --- ACTION: DELETE USER ---
+// ACTION: DELETE USER
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     if ($id != $admin_id) {
@@ -24,7 +24,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     exit();
 }
 
-// --- ACTION: ADD NEW USER ---
+// ACTION: ADD NEW USER 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
     exit();
 }
 
-// --- ACTION: EDIT USER (UPDATED TO INCLUDE ACTIVATION) ---
+// ACTION: EDIT USER 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_user'])) {
     $uid = mysqli_real_escape_string($conn, $_POST['user_id']);
     $name = mysqli_real_escape_string($conn, $_POST['name']);
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_user'])) {
     exit();
 }
 
-// --- ACTION: ISSUE PENALTY (STRIKE) ---
+// ACTION: ISSUE PENALTY (STRIKE) 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_penalty'])) {
     $uid = mysqli_real_escape_string($conn, $_POST['user_id']);
     $category = mysqli_real_escape_string($conn, $_POST['category']);
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_penalty'])) {
     exit();
 }
 
-// --- FETCH USERS ---
+// FETCH USERS 
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $role_filter = isset($_GET['role']) ? mysqli_real_escape_string($conn, $_GET['role']) : 'All Roles';
 

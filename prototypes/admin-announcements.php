@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -12,7 +12,7 @@ $admin_id = $_SESSION['user_id'];
 $admin_name = $_SESSION['name'];
 $initials = substr($admin_name, 0, 1);
 
-// --- ACTION: DELETE ANNOUNCEMENT ---
+// ACTION: DELETE ANNOUNCEMENT 
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     mysqli_query($conn, "DELETE FROM annoucement WHERE annoucement_id = '$id'");
@@ -20,7 +20,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     exit();
 }
 
-// --- ACTION: UNPUBLISH (SET TO ARCHIVED) ---
+// ACTION: UNPUBLISH (SET TO ARCHIVED) 
 if (isset($_GET['action']) && $_GET['action'] == 'unpublish' && isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     mysqli_query($conn, "UPDATE annoucement SET status = 'Archived' WHERE annoucement_id = '$id'");
@@ -28,7 +28,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'unpublish' && isset($_GET['id'
     exit();
 }
 
-// --- ACTION: REPUBLISH (SET TO LIVE) ---
+// ACTION: REPUBLISH (SET TO LIVE) 
 if (isset($_GET['action']) && $_GET['action'] == 'republish' && isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     mysqli_query($conn, "UPDATE annoucement SET status = 'Live' WHERE annoucement_id = '$id'");
@@ -36,7 +36,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'republish' && isset($_GET['id'
     exit();
 }
 
-// --- ACTION: POST/UPDATE ANNOUNCEMENT ---
+// ACTION: POST/UPDATE ANNOUNCEMENT
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['publish_announcement'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $content = mysqli_real_escape_string($conn, $_POST['content']);
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['publish_announcement']
     exit();
 }
 
-// --- FETCH ANNOUNCEMENTS ---
+// FETCH ANNOUNCEMENTS
 $query = "SELECT a.*, u.name as publisher_name 
           FROM annoucement a 
           JOIN user u ON a.admin_id = u.user_id 

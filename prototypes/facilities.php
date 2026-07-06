@@ -7,8 +7,8 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
     exit();
 }
 
-// --- NEW: CAMPUS SELECTION LOGIC ---
-// 1. Handle the selection when a button is clicked
+// CAMPUS SELECTION LOGIC
+// Handle the selection when a button is clicked
 if (isset($_GET['set_campus'])) {
     $choice = $_GET['set_campus'];
     $_SESSION['selected_campus'] = $choice;
@@ -20,7 +20,7 @@ if (isset($_GET['set_campus'])) {
     exit();
 }
 
-// 2. Determine if we should show the prompt
+// Determine if we should show the prompt
 $show_campus_prompt = false;
 if (!isset($_SESSION['selected_campus']) && !isset($_COOKIE['mmu_campus'])) {
     $show_campus_prompt = true;
@@ -31,7 +31,7 @@ if (!isset($_SESSION['selected_campus']) && !isset($_COOKIE['mmu_campus'])) {
     }
 }
 
-// 1. LOGIN & ROLE LOGIC
+// LOGIN & ROLE LOGIC
 $is_logged_in = isset($_SESSION['user_id']);
 $booking_page = "login.html"; 
 $has_quota = true; 
@@ -123,7 +123,7 @@ function get_notification_link($title) {
 $cat_list_result = mysqli_query($conn, "SELECT DISTINCT category FROM facility ORDER BY category ASC");
 $fac_list_result = mysqli_query($conn, "SELECT DISTINCT faculty FROM facility WHERE faculty IS NOT NULL ORDER BY faculty ASC");
 
-// 3. UPDATED FILTERING LOGIC
+// UPDATED FILTERING LOGIC
 $where_clauses = [];
 
 // Determine which campus to show. Priority: URL Get > Session/Cookie > All

@@ -18,7 +18,7 @@ if (isset($_GET['id']) && isset($_SESSION['user_id'])) {
         
         if ($booking_data['status'] !== 'Cancelled' && $booking_data['status'] !== 'Rejected') {
             
-            // 1. Fetch all equipment tied to this specific booking to know what to restore
+            // Fetch all equipment tied to this specific booking to know what to restore
             $equip_query = "SELECT equip_id, quantity FROM booking_equipment WHERE booking_id = '$booking_id'";
             $equip_res = mysqli_query($conn, $equip_query);
 
@@ -27,18 +27,17 @@ if (isset($_GET['id']) && isset($_SESSION['user_id'])) {
                     $eid = $item['equip_id'];
                     $qty = $item['quantity'];
 
-                    // 2. Add the quantity back to the equipment's available stock
+                    // Add the quantity back to the equipment's available stock
                     $restore_sql = "UPDATE equipment SET avail_qty = avail_qty + $qty WHERE equip_id = '$eid'";
                     mysqli_query($conn, $restore_sql);
                 }
 
-                // --- NEW STEP: DELETE THE DATA FROM booking_equipment ---
-                // 3. Now that stock is restored, remove the records from the link table
+                // Now that stock is restored, remove the records from the link table
                 $delete_equip_records = "DELETE FROM booking_equipment WHERE booking_id = '$booking_id'";
                 mysqli_query($conn, $delete_equip_records);
             }
 
-            // 4. Finally, update the booking status to Cancelled
+            // Finally, update the booking status to Cancelled
             $update = "UPDATE booking SET status = 'Cancelled' WHERE booking_id = '$booking_id'";
             if (mysqli_query($conn, $update)) {
                 echo "<script>alert('Booking cancelled, stock restored, and equipment records cleared.'); window.location.href='$redirect_url';</script>";

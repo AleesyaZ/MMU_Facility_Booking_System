@@ -5,7 +5,7 @@ include('db_config.php');
 // Set Timezone
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
-// 1. SECURITY CHECK: Only allow Admins
+// SECURITY CHECK: Only allow Admins
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     die("Unauthorized access.");
 }
@@ -14,7 +14,7 @@ if (isset($_GET['booking_id']) && isset($_GET['action'])) {
     $booking_id = intval($_GET['booking_id']);
     $action = $_GET['action'];
 
-    // 2. FETCH DETAILS of the target booking
+    // FETCH DETAILS of the target booking
     $fetch_sql = "SELECT b.*, f.facility_name FROM booking b 
                   JOIN facility f ON b.facility_id = f.facility_id 
                   WHERE b.booking_id = $booking_id LIMIT 1";
@@ -34,18 +34,18 @@ if (isset($_GET['booking_id']) && isset($_GET['action'])) {
     $end = $booking['end_time'];
     $msg = "";
 
-    // 3. HANDLE ACTIONS
+    // HANDLE ACTIONS
     if ($action === 'approve') {
         // Approve current booking
         mysqli_query($conn, "UPDATE booking SET status = 'Approved' WHERE booking_id = $booking_id");
 
-        // --- A. Inform the Lecturer/Requester that their specific request was approved ---
+        // Inform the Lecturer/Requester that their specific request was approved 
         $notif_title = "Booking Request Approved";
         $notif_msg = "Your reservation for $facility_name on $date (" . date("g:i A", strtotime($start)) . ") has been officially approved by the Admin.";
         mysqli_query($conn, "INSERT INTO notification (user_id, title, message, is_read, date_sent) 
                              VALUES ('$target_user_id', '$notif_title', '$notif_msg', 0, NOW())");
 
-        // --- B. Handle Priority Overrides (Notify bumped students) ---
+        // Handle Priority Overrides (Notify bumped students) 
         if ($booking['is_priority'] == 1) {
             $find_conflicts = "SELECT b.booking_id, b.user_id FROM booking b
                                JOIN user u ON b.user_id = u.user_id
@@ -88,7 +88,7 @@ if (isset($_GET['booking_id']) && isset($_GET['action'])) {
     } elseif ($action === 'reject' || $action === 'cancel') {
         $new_status = ($action === 'reject') ? 'Rejected' : 'Cancelled';
         
-        // 1. Restore Equipment stock
+        // Restore Equipment stock
         $eq_res = mysqli_query($conn, "SELECT equip_id, quantity FROM booking_equipment WHERE booking_id = $booking_id");
         while ($eq = mysqli_fetch_assoc($eq_res)) {
             $eid = $eq['equip_id']; $eqy = $eq['quantity'];
@@ -96,10 +96,10 @@ if (isset($_GET['booking_id']) && isset($_GET['action'])) {
         }
         mysqli_query($conn, "DELETE FROM booking_equipment WHERE booking_id = $booking_id");
 
-        // 2. Update status
+        // Update status
         mysqli_query($conn, "UPDATE booking SET status = '$new_status' WHERE booking_id = $booking_id");
 
-        // 3. Inform the Lecturer/Requester of Disapproval
+        // Inform the Lecturer/Requester of Disapproval
         $notif_title = "Booking Request " . $new_status;
         $notif_msg = "We regret to inform you that your booking for $facility_name on $date has been $new_status by the Administration.";
         mysqli_query($conn, "INSERT INTO notification (user_id, title, message, is_read, date_sent) 
@@ -108,7 +108,7 @@ if (isset($_GET['booking_id']) && isset($_GET['action'])) {
         $msg = "Booking has been $new_status. Requester notified.";
     }
 
-    // 4. REDIRECT
+    // REDIRECT
     echo "<script>alert('$msg'); window.location.href='../prototypes/admin-bookings.php';</script>";
     exit();
 

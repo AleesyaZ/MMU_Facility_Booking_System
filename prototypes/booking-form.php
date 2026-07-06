@@ -7,13 +7,13 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
     exit();
 }
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
 }
 
-// 2. GET FACILITY DETAILS
+// GET FACILITY DETAILS
 if (!isset($_GET['id'])) {
     header("Location: facilities.php");
     exit();
@@ -26,7 +26,7 @@ $facility = mysqli_fetch_assoc($fac_result);
 
 if (!$facility) { die("Facility not found."); }
 
-// 3. GET USER DETAILS
+// GET USER DETAILS
 $user_id = $_SESSION['user_id'];
 $user_query = "SELECT name, booking_quota FROM user WHERE user_id = '$user_id'";
 $user_data = mysqli_fetch_assoc(mysqli_query($conn, $user_query));
@@ -36,7 +36,7 @@ $max_quota = $user_data['booking_quota'];
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// --- WEEK CALCULATION FOR TIMETABLE ---
+// WEEK CALCULATION FOR TIMETABLE 
 $week_offset = isset($_GET['week']) ? (int)$_GET['week'] : 0;
 $today = new DateTime();
 $day_of_week = $today->format('N'); 
@@ -54,15 +54,15 @@ $sunday->modify("+6 days");
 $start_date = $monday->format('Y-m-d');
 $end_date = $sunday->format('Y-m-d');
 
-// --- FETCH GRID DATA ---
-// 1. Fixed Classes
+// FETCH GRID DATA 
+// Fixed Classes
 $tt_query = "SELECT day_of_week, start_time, end_time FROM timetable 
              WHERE facility_id = '$facility_id' 
              AND expiry_date >= '$start_date' 
              AND (start_date IS NULL OR start_date <= '$end_date')";
 $tt_res = mysqli_query($conn, $tt_query);
 
-// 2. User Bookings (Normal + Priority)
+// User Bookings (Normal + Priority)
 $bk_query = "SELECT booking_date, start_time, end_time, is_priority, DAYNAME(booking_date) as day_name 
              FROM booking 
              WHERE facility_id = '$facility_id' 
@@ -72,7 +72,7 @@ $bk_res = mysqli_query($conn, $bk_query);
 
 $schedule_map = [];
 
-// Logic Edit: Fill all hour slots covered by the time range
+// Logic Fill all hour slots covered by the time range
 while ($row = mysqli_fetch_assoc($tt_res)) {
     $start_h = (int)substr($row['start_time'], 0, 2);
     $end_h = (int)substr($row['end_time'], 0, 2);
@@ -97,7 +97,7 @@ while ($row = mysqli_fetch_assoc($bk_res)) {
     }
 }
 
-// --- NOTIFICATIONS (REVERTED) ---
+// NOTIFICATIONS
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -144,7 +144,7 @@ function get_notification_link($title) {
     }
 }
 
-// --- EQUIPMENT ---
+// EQUIPMENT 
 $facility_location = $facility['location'];
 $target_campus = (stripos($facility_location, 'Cyberjaya') !== false) ? 'Cyberjaya' : 'Melaka';
 $safe_cat = mysqli_real_escape_string($conn, $facility['category']);
@@ -317,7 +317,7 @@ $occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_tim
                     <div><strong>Quota Notice</strong><br>This reservation will consume 1 of your <?php echo $max_quota; ?> facility quotas.</div>
                 </div>
 
-                <!-- ADDED: ID "timetableContainer" here to allow targeted AJAX replacements -->
+                <!-- ADDED: ID "timetableContainer" -->
                 <div class="timetable-container" id="timetableContainer">
                     <div class="timetable-header">
                         <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
@@ -364,7 +364,7 @@ $occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_tim
     </main>
 
     <script>
-        // UPDATED: Now fetches the target page in the background and replaces the timetable element
+        // Fetches the target page in the background and replaces the timetable element
         function changeWeek(offset) {
             const urlParams = new URLSearchParams(window.location.search);
             let currentWeek = parseInt(urlParams.get('week') || 0);
@@ -379,7 +379,7 @@ $occupied_result = mysqli_query($conn, "SELECT booking_date, start_time, end_tim
             fetch(newUrl)
                 .then(response => response.text())
                 .then(html => {
-                    // Parse text response back into a temporary DOM object
+                    // Parse text response 
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     

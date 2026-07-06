@@ -5,7 +5,7 @@ include('../PHP/db_config.php');
 // Set Timezone
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -15,10 +15,10 @@ $admin_id = $_SESSION['user_id'];
 $admin_name = $_SESSION['name'];
 $initials = substr($admin_name, 0, 1);
 
-// --- AUTO-CLEANUP EXPIRED ENTRIES ---
+// AUTO-CLEANUP EXPIRED ENTRIES
 mysqli_query($conn, "DELETE FROM timetable WHERE expiry_date < CURDATE()");
 
-// --- ACTION: SAVE SCHEDULE ---
+// ACTION: SAVE SCHEDULE 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_timetable'])) {
     $fid = mysqli_real_escape_string($conn, $_POST['facility_id']);
     $weeks = (int)$_POST['recurrence_weeks'];
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_timetable'])) {
     exit();
 }
 
-// --- AJAX PREVIEW ENDPOINT ---
+// AJAX PREVIEW ENDPOINT 
 if (isset($_GET['action']) && $_GET['action'] == 'get_schedule') {
     header('Content-Type: application/json');
     $fid = mysqli_real_escape_string($conn, $_GET['fid']);
@@ -94,7 +94,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_schedule') {
     exit();
 }
 
-// --- STANDARD ACTIONS (DELETE/STATUS) ---
+// STANDARD ACTIONS (DELETE/STATUS)
 if (isset($_GET['action'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     if ($_GET['action'] == 'delete') {
@@ -109,7 +109,7 @@ if (isset($_GET['action'])) {
     exit();
 }
 
-// --- ADD/EDIT FACILITY ---
+// ADD/EDIT FACILITY
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['add_facility']) || isset($_POST['edit_facility']))) {
     $name = mysqli_real_escape_string($conn, $_POST['facility_name']);
     $loc = mysqli_real_escape_string($conn, $_POST['location']);
@@ -296,7 +296,7 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
         </main>
     </div>
 
-    <!-- MODAL: ADD/EDIT FACILITY (UPDATED DROPDOWNS) -->
+    <!-- ADD/EDIT FACILITY -->
     <div class="modal-overlay" id="facilityModal">
         <div class="modal-box" style="max-width: 500px;">
             <h3 id="modalTitle" style="margin-bottom: 20px;">Add New Facility</h3>
@@ -310,7 +310,7 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
                 </div>
                 <div class="form-row" style="display: flex; gap: 12px; margin-bottom: 12px;">
                     <div style="flex: 1;"><label>Campus</label><select name="location" id="form_loc" class="form-control"><option>MMU Cyberjaya</option><option>MMU Melaka</option></select></div>
-                    <!-- EXPANDED FACULTY OPTIONS -->
+                    <!-- FACULTY OPTIONS -->
                     <div style="flex: 1;"><label>Faculty</label><select name="faculty" id="form_faculty" class="form-control">
                         <option value="FCI">FCI</option><option value="FOE">FOE</option><option value="FCM">FCM</option><option value="FOM">FOM</option>
                         <option value="FCA">FCA</option><option value="FAC">FAC</option><option value="FET">FET</option><option value="FIST">FIST</option>
@@ -318,7 +318,7 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
                     </select></div>
                 </div>
                 <div class="form-row" style="display: flex; gap: 12px; margin-bottom: 12px;">
-                    <!-- UPDATED CATEGORY OPTIONS -->
+                    <!-- CATEGORY OPTIONS -->
                     <div style="flex: 1;"><label>Category</label><select name="category" id="form_cat" class="form-control">
                         <option value="Lecture Hall">Lecture Hall</option><option value="Laboratory">Laboratory</option>
                         <option value="Tutorial">Tutorial</option><option value="Sports">Sports</option>
@@ -335,7 +335,7 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
         </div>
     </div>
 
-    <!-- PREVIEW & RECURRENCE MODALS (PRESERVED) -->
+    <!-- PREVIEW & RECURRENCE MODALS -->
     <div class="lightbox-overlay" id="imageLightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; cursor: zoom-out;"><img src="" id="lightboxImage" style="max-width: 90%; max-height: 90%; object-fit: contain;"></div>
     <div class="modal-overlay" id="timetableModal">
         <div class="modal-box modal-box-large" style="max-width: 800px;"> 
@@ -354,19 +354,19 @@ $result = mysqli_query($conn, $query . " ORDER BY facility_name ASC");
     </div>
 
     <script>
-        // --- TIMETABLE SELECTION ---
+        // TIMETABLE SELECTION
         let selectedFacilityId = null;
         function openTimetableModal(fid, fname) { selectedFacilityId = fid; weekOffset = 0; updateWeekDisplay(); document.getElementById('tt_facility_label').innerText = fname; document.querySelectorAll('#adminTimetable .tt-slot').forEach(s => { s.classList.remove('blocked'); s.classList.add('free'); }); document.getElementById('timetableModal').classList.add('show'); }
         document.querySelectorAll('#adminTimetable .tt-slot').forEach(cell => { cell.addEventListener('click', function() { this.classList.toggle('free'); this.classList.toggle('blocked'); }); });
         function openRecurrenceModal() { const slots = []; document.querySelectorAll('#adminTimetable .tt-slot.blocked').forEach(s => { slots.push({ day: s.dataset.day, start: s.dataset.start, end: s.dataset.end }); }); if (slots.length === 0) { alert("Select a slot."); return; } document.getElementById('recur_fid').value = selectedFacilityId; document.getElementById('recur_slots').value = JSON.stringify(slots); document.getElementById('timetableModal').classList.remove('show'); document.getElementById('recurrenceModal').classList.add('show'); }
 
-        // --- PREVIEW LOGIC ---
+        // PREVIEW LOGIC
         let previewWeekOffset = 0; let previewFacilityId = null; let previewToken = 0;
         function openPreviewModal(fid, fname) { previewFacilityId = fid; previewWeekOffset = 0; document.getElementById('preview_facility_label').innerText = fname; document.getElementById('previewTimetableModal').classList.add('show'); loadPreviewSchedule(); }
         function changePreviewWeek(dir) { previewWeekOffset += dir; loadPreviewSchedule(); }
         function loadPreviewSchedule() { document.querySelectorAll('#previewTimetable .tt-slot').forEach(c => { c.classList.remove('free', 'booked', 'priority', 'blocked'); c.classList.add('free'); }); const t = ++previewToken; fetch(`admin-facilities.php?action=get_schedule&fid=${previewFacilityId}&week=${previewWeekOffset}`).then(res => res.json()).then(data => { if(t !== previewToken) return; document.getElementById('preview_week_label').innerText = data.range; Object.keys(data.schedule).forEach(day => { Object.keys(data.schedule[day]).forEach(h => { const cell = document.querySelector(`[data-pday="${day}"][data-phour="${h}"]`); if(cell){ cell.classList.remove('free'); const s = data.schedule[day][h]; if(s==='fixed') cell.classList.add('blocked'); else if(s==='priority') cell.classList.add('priority'); else cell.classList.add('booked'); } }); }); }); }
 
-        // --- GENERAL ---
+        // GENERAL
         document.getElementById('current_img_thumb').addEventListener('click', function() { document.getElementById('lightboxImage').src = this.src; document.getElementById('imageLightbox').style.display = 'flex'; });
         document.getElementById('imageLightbox').addEventListener('click', function() { this.style.display = 'none'; });
         function openAddModal() { document.getElementById('modalTitle').innerText = "Add New Facility"; document.getElementById('submitBtn').name = "add_facility"; document.getElementById('form_fid').value = ""; document.getElementById('image_preview_area').style.display = 'none'; document.getElementById('facilityModal').classList.add('show'); }

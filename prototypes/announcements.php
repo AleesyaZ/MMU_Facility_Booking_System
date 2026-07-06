@@ -7,7 +7,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
     exit();
 }
 
-// Set Timezone to match Malaysia time
+// Timezone to match Malaysia time
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
 if (!isset($_SESSION['user_id'])) {
@@ -17,7 +17,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// --- FETCH NOTIFICATIONS ---
+// FETCH NOTIFICATIONS
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -31,7 +31,7 @@ if (isset($_GET['mark_read'])) {
     exit();
 }
 
-// 1. FETCH USER DETAILS FOR NAV PROFILE
+// FETCH USER DETAILS FOR NAV PROFILE
 $user_query = "SELECT name FROM user WHERE user_id = '$user_id' LIMIT 1";
 $user_result = mysqli_query($conn, $user_query);
 $user_data = mysqli_fetch_assoc($user_result);
@@ -40,10 +40,10 @@ $full_name = $user_data['name'] ?? "User";
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// 2. GET CURRENT FILTER CATEGORY FROM URL
+// GET CURRENT FILTER CATEGORY FROM URL
 $current_category = isset($_GET['category']) ? trim($_GET['category']) : 'All';
 
-// 3. DYNAMIC SIDEBAR COUNTS FROM DATABASE (Mapping DB string values to UI text blocks)
+// DYNAMIC SIDEBAR COUNTS FROM DATABASE 
 $count_query = "SELECT category, COUNT(*) as count FROM annoucement WHERE status = 'Live' GROUP BY category";
 $count_result = mysqli_query($conn, $count_query);
 
@@ -73,7 +73,7 @@ while ($row = mysqli_fetch_assoc($count_result)) {
 }
 $counts['All'] = $total_live;
 
-// 4. BUILD FILTERED ANNOUNCEMENT FEED QUERY
+// BUILD FILTERED ANNOUNCEMENT FEED QUERY
 if ($current_category !== 'All') {
     // Map URL queries back to exact matching DB keywords
     $db_filter_value = '';
@@ -173,7 +173,7 @@ function get_avatar_style($category) {
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
 
-                <!-- NOTIFICATION BELL (functional) -->
+                <!-- NOTIFICATION BELL -->
                 <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <?php if ($unread_count > 0): ?>
@@ -274,7 +274,7 @@ function get_avatar_style($category) {
                         <div class="feed-body">
                             <h2 class="announcement-title" style="overflow-wrap: break-word; word-break: break-word;"><?php echo htmlspecialchars($ann['title']); ?></h2>
                             
-                            <!-- Keep the tags and PHP on a single, continuous line to prevent code indentation from rendering as spaces -->
+                            <!-- Keep the tags and PHP on a single, continuous line -->
                             <p class="feed-text" style="white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; text-align: left;"><?php echo htmlspecialchars($ann['content']); ?></p>
                         </div>
                     </article>

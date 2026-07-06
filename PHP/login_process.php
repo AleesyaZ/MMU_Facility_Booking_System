@@ -4,21 +4,21 @@ include('db_config.php');
 
 if (isset($_POST['login_btn'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password']; // Do not escape the password if using password_verify
+    $password = $_POST['password']; 
 
-    // 1. Look for the user by email only first
+    // Look for the user by email only first
     $query = "SELECT * FROM user WHERE email = '$email' LIMIT 1";
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) == 1) {
         $user = mysqli_fetch_assoc($result);
         
-        // 2. Check if the account is activated
+        // Check if the account is activated
         if ($user['is_activated'] == 0) {
             echo "<script>alert('Account not activated. Please verify your email.'); window.location.href='../prototypes/activate.html';</script>";
             exit();
         }
-        // 4. Verify the hashed password
+        // Verify the hashed password
         // This function compares the typed password with the $2y$10... string in the DB
         if (password_verify($password, $user['password'])) {
             

@@ -6,7 +6,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
     header("Location: admin-dashboard.php");
     exit();
 }
-// 1. Check Login Status
+// Check Login Status
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -16,7 +16,7 @@ $user_id = $_SESSION['user_id'];
 $success_msg = "";
 $error_msg = "";
 
-// --- FETCH NOTIFICATIONS ---
+// FETCH NOTIFICATIONS 
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -65,7 +65,7 @@ function get_notification_link($title) {
     }
 }
 
-// 2. Handle Profile Information Update
+// Handle Profile Information Update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contact_no = mysqli_real_escape_string($conn, trim($_POST['contact_number']));
     $password = trim($_POST['password']);
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 3. Fetch User Details & Account Standings (Sync with Reference Code)
+// Fetch User Details & Account Standings 
 $user_query = "SELECT name, email, contact_no, booking_quota, role FROM user WHERE user_id = '$user_id' LIMIT 1";
 $user_result = mysqli_query($conn, $user_query);
 $user_data = mysqli_fetch_assoc($user_result);
@@ -100,7 +100,7 @@ $user_role = $user_data['role'] ?? "Student";
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// Quota Logic (Sync with Dashboard rule)
+// Quota Logic 
 $quota_query = "SELECT COUNT(*) as total FROM booking 
                 WHERE user_id = '$user_id' 
                 AND status NOT IN ('Cancelled', 'Rejected') 
@@ -110,7 +110,7 @@ $quota_result = mysqli_query($conn, $quota_query);
 $quota_data = mysqli_fetch_assoc($quota_result);
 $used_quota = $quota_data['total'];
 
-// Penalty Logic (Sync with Dashboard rule)
+// Penalty Logic 
 $penalty_query = "SELECT SUM(strike_count) as total_strikes FROM penalty WHERE user_id = '$user_id' AND LOWER(status) = 'active'";
 $penalty_result = mysqli_query($conn, $penalty_query);
 $penalty_row = mysqli_fetch_assoc($penalty_result);
@@ -146,7 +146,7 @@ $strikes = $penalty_row['total_strikes'] ?? 0;
             
             <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
 
-                <!-- NOTIFICATION BELL (functional) -->
+                <!-- NOTIFICATION BELL -->
                 <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                     <?php if ($unread_count > 0): ?>

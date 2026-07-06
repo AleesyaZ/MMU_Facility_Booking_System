@@ -34,7 +34,7 @@ if (count($where_clauses) > 0) {
     $where_sql = "WHERE " . implode(" AND ", $where_clauses);
 }
 
-// --- NEW: CSV EXPORT LOGIC ---
+// CSV EXPORT LOGIC 
 if (isset($_GET['export']) && $_GET['export'] == '1') {
     $export_query = "
         SELECT b.booking_id, u.name, u.role, f.facility_name, f.location, b.booking_date, b.start_time, b.end_time, b.status,
@@ -187,7 +187,7 @@ $bookings_result = mysqli_query($conn, $bookings_query);
                             <a href="admin-bookings.php" class="btn btn-outline" style="padding: 8px 12px; color: var(--secondary); border: 1px solid var(--secondary); border-radius: 6px; text-decoration: none; font-size: 13px;">Clear</a>
                         <?php endif; ?>
 
-                        <!-- UPDATED: Triggers JavaScript Export Function -->
+                        <!-- Triggers JavaScript Export Function -->
                         <button type="button" class="btn btn-outline" style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; background: #fff;" onclick="exportCSV();">
                             <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Export CSV
                         </button>
@@ -300,7 +300,7 @@ $bookings_result = mysqli_query($conn, $bookings_query);
         </main>
     </div>
 
-    <!-- Modals REMAINS THE SAME -->
+    <!-- Modals -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-box modal-warning">
             <div class="modal-header" style="display: flex; align-items: center; gap: 8px;">
@@ -352,7 +352,7 @@ $bookings_result = mysqli_query($conn, $bookings_query);
         profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); profileMenu.classList.toggle('show'); });
         window.addEventListener('click', (e) => { if (!profileTrigger.contains(e.target)) profileMenu.classList.remove('show'); });
 
-        // EXPORT CSV FUNCTION (Constructs URL with existing filters)
+        // EXPORT CSV FUNCTION
         function exportCSV() {
             const params = new URLSearchParams(window.location.search);
             params.set('export', '1');

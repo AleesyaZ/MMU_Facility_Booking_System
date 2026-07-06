@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. SECURITY CHECK: Only allow Admins
+// SECURITY CHECK: Only allow Admins
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -12,7 +12,7 @@ $admin_id = $_SESSION['user_id'];
 $admin_name = $_SESSION['name'];
 $initials = substr($admin_name, 0, 1);
 
-// 2. FETCH METRICS
+// FETCH METRICS
 // Count Pending Priority Overrides
 $priority_count_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking WHERE is_priority = 1 AND status = 'Pending'");
 $priority_count = mysqli_fetch_assoc($priority_count_res)['total'];
@@ -30,7 +30,7 @@ $usage_res = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking WHERE bo
 $usage_count = mysqli_fetch_assoc($usage_res)['total'];
 
 
-// 3. FETCH PENDING OVERRIDES TABLE
+// FETCH PENDING OVERRIDES TABLE
 $overrides_query = "SELECT b.*, u.name as lecturer_name, u.email, f.facility_name, f.location 
                     FROM booking b 
                     JOIN user u ON b.user_id = u.user_id 
@@ -39,7 +39,7 @@ $overrides_query = "SELECT b.*, u.name as lecturer_name, u.email, f.facility_nam
                     ORDER BY b.booking_date ASC";
 $overrides_result = mysqli_query($conn, $overrides_query);
 
-// 4. FETCH RECENT ISSUE REPORTS SIDEBAR
+// FETCH RECENT ISSUE REPORTS SIDEBAR
 $reports_query = "SELECT r.*, f.facility_name, u.name as reporter_name 
                   FROM issue_report r 
                   JOIN facility f ON r.facility_id = f.facility_id 
@@ -201,14 +201,14 @@ $reports_result = mysqli_query($conn, $reports_query);
                                             </td>
                                             <td style="text-align: center;">
                                                 <div style="display: flex; gap: 8px; justify-content: center;">
-                                                    <!-- REACTIVE APPROVE BUTTON -->
+                                                    <!-- APPROVE BUTTON -->
                                                     <a href="../PHP/admin_booking_action.php?action=approve&booking_id=<?php echo $row['booking_id']; ?>" 
                                                        class="btn btn-primary" 
                                                        style="padding: 6px 12px; font-size: 12px; border-radius: 6px; text-decoration: none;"
                                                        onclick="return confirm('Are you sure you want to APPROVE this priority override?')">
                                                        Approve
                                                     </a>
-                                                    <!-- REACTIVE REJECT BUTTON -->
+                                                    <!-- REJECT BUTTON -->
                                                     <a href="../PHP/admin_booking_action.php?action=reject&booking_id=<?php echo $row['booking_id']; ?>" 
                                                        class="btn btn-outline" 
                                                        style="padding: 6px 12px; font-size: 12px; border-radius: 6px; color: var(--secondary); border-color: rgba(187,0,19,0.3); background: rgba(187,0,19,0.02); text-decoration: none;"
@@ -227,7 +227,7 @@ $reports_result = mysqli_query($conn, $reports_query);
                         </div>
                     </div>
 
-                    <!-- Right: Latest Issue Reports -->
+                    <!-- Latest Issue Reports -->
                     <div style="grid-column: span 1;">
                         <div style="margin-bottom: 16px;">
                             <h3 style="font-size: 18px; font-weight: 600; color: var(--text-main);">Recent Issue Reports</h3>

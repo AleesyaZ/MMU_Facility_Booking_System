@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. SECURITY CHECK
+// SECURITY CHECK
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -12,11 +12,11 @@ $admin_id = $_SESSION['user_id'];
 $admin_name = $_SESSION['name'];
 $initials = substr($admin_name, 0, 1);
 
-// --- ACTION LOGIC (QUICK ACTIONS VIA GET) ---
+// ACTION LOGIC (QUICK ACTIONS VIA GET) 
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $rid = mysqli_real_escape_string($conn, $_GET['id']);
     
-    // ACTION 3: ISSUE PENALTY 
+    // ISSUE PENALTY 
     if ($_GET['action'] == 'penalty') {
         $report_query = mysqli_query($conn, "SELECT facility_id, report_date FROM issue_report WHERE report_id = '$rid'");
         $report_data = mysqli_fetch_assoc($report_query);
@@ -65,14 +65,14 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     }
 }
 
-// --- UPDATED POST LOGIC: UPDATE STATUS & SEND NOTIFICATION ---
+// STATUS & SEND NOTIFICATION
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_report'])) {
     $rid = mysqli_real_escape_string($conn, $_POST['report_id']);
     $new_status = mysqli_real_escape_string($conn, $_POST['status']);
     $reply = mysqli_real_escape_string($conn, $_POST['admin_reply']);
     $today = date('Y-m-d');
     
-    // 1. Update the report table
+    // Update the report table
     $update_sql = "UPDATE issue_report SET 
                    status = '$new_status', 
                    admin_reply = '$reply', 
@@ -80,12 +80,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_report'])) {
                    WHERE report_id = '$rid'";
                    
     if(mysqli_query($conn, $update_sql)) {
-        // 2. Fetch reporter user_id to send notification
+        // Fetch reporter user_id to send notification
         $user_res = mysqli_query($conn, "SELECT user_id FROM issue_report WHERE report_id = '$rid'");
         $user_data = mysqli_fetch_assoc($user_res);
         $reporter_id = $user_data['user_id'];
 
-        // 3. Insert notification for the reporter
+        // Insert notification for the reporter
         $notif_title = "Update on Report #RP-" . $rid;
         $notif_message = "Your report status is now: " . $new_status . ". Message: " . $reply;
         

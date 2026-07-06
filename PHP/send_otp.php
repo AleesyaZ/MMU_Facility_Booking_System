@@ -1,14 +1,14 @@
 <?php
-// 1. Include PHPMailer classes into the global namespace
+// Include PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// 2. Require the PHPMailer files
+// PHPMailer files
 require 'PHPMailer/Exception.php';
 require 'PHPMailer/PHPMailer.php';
 require 'PHPMailer/SMTP.php';
 
-// 3. Include your database connection
+//database connection
 include('db_config.php');
 
 // Set timezone to Malaysia
@@ -36,18 +36,18 @@ if (isset($_POST['email'])) {
                 $mail = new PHPMailer(true);
 
                 try {
-                    // --- UPDATED PRODUCTION SMTP SETTINGS (GMAIL) ---
+               
                     $mail->isSMTP();
                     $mail->Host       = 'smtp.gmail.com'; 
                     $mail->SMTPAuth   = true;
-                    $mail->Username   = 'verychill911@gmail.com'; // Your actual Gmail
-                    $mail->Password   = 'nmnr jsut eyne lawl'; // The 16-digit App Password from Step 1
+                    $mail->Username   = 'verychill911@gmail.com'; // Gmail
+                    $mail->Password   = 'nmnr jsut eyne lawl'; // The 16-digit Password 
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Enable implicit SSL encryption
                     $mail->Port       = 465; 
 
                     // Recipients
                     $mail->setFrom('system@mmu.edu.my', 'MMU Facility Booking');
-                    $mail->addAddress($email); // This now sends to the actual user email
+                    $mail->addAddress($email); // Actual user email
 
                     // HTML Content
                     $mail->isHTML(true);

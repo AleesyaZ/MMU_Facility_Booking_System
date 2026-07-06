@@ -7,7 +7,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
     exit();
 }
 
-// 1. Check login status
+// Check login status
 $is_logged_in = isset($_SESSION['user_id']);
 $unread_count = 0;
 
@@ -21,7 +21,7 @@ if ($is_logged_in) {
     $name_parts = explode(' ', trim($full_name));
     $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-    // --- FETCH NOTIFICATIONS ---
+    // FETCH NOTIFICATIONS
     $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
     $unread_res = mysqli_query($conn, $unread_query);
     $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -108,7 +108,7 @@ function get_notification_link($title) {
             <?php if ($is_logged_in): ?>
                 <div class="nav-profile" id="profileTrigger" style="cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; max-width: 300px; flex-shrink: 0;">
 
-                    <!-- NOTIFICATION BELL (functional) -->
+                    <!-- NOTIFICATION BELL -->
                     <div id="notifTrigger" style="position: relative; display: flex; align-items: center; flex-shrink: 0;">
                         <span class="material-symbols-outlined" style="color: var(--text-muted); flex-shrink: 0;">notifications</span>
                         <?php if ($unread_count > 0): ?>

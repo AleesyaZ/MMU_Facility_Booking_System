@@ -4,18 +4,18 @@ include('db_config.php');
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
 if (isset($_POST['reset_btn'])) {
-    // 1. Sanitize inputs
+    
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $otp = mysqli_real_escape_string($conn, $_POST['otp']);
     $password = $_POST['password']; // Get raw password for hashing
 
-    // 2. FINAL SECURITY CHECK: Ensure the session "gate" is still open for this specific email
+    // Open for this specific email
     if (!isset($_SESSION['reset_allowed']) || $_SESSION['reset_allowed'] !== true || $_SESSION['reset_email_target'] !== $_POST['email']) {
         echo "<script>alert('Security session expired. Please request a new OTP.'); window.location.href='../prototypes/forgot-password.php';</script>";
         exit();
     }
 
-    // 3. Search for the user with matching Email and OTP
+    // Search for the user with matching Email and OTP
     $query = "SELECT * FROM user WHERE email = '$email' AND otp_code = '$otp' LIMIT 1";
     $res = mysqli_query($conn, $query);
 
@@ -29,7 +29,7 @@ if (isset($_POST['reset_btn'])) {
             exit();
         }
 
-        // 5. Hash the new password and update the record
+        // Hash the new password and update the record
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
         $update_query = "UPDATE user SET 
@@ -40,7 +40,7 @@ if (isset($_POST['reset_btn'])) {
 
         if (mysqli_query($conn, $update_query)) {
             
-            // 6. SECURITY CLEANUP: Close the security gate (Crucial Step)
+            // Close the security gate (Crucial)
             unset($_SESSION['reset_allowed']);
             unset($_SESSION['reset_email_target']);
 

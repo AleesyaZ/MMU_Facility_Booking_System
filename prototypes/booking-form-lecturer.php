@@ -10,7 +10,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role']
 // Set Timezone
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
-// 1. SECURITY CHECK: Only allow logged-in Lecturers
+// SECURITY CHECK: Only allow logged-in Lecturers
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Lecturer') {
     header("Location: login.html");
     exit();
@@ -18,10 +18,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Lecturer') {
 
 $user_id = $_SESSION['user_id'];
 
-// --- DATE CALCULATION FOR 1 WEEK PRIOR LIMIT ---
+// DATE CALCULATION FOR 1 WEEK PRIOR LIMIT 
 $max_booking_date = date('Y-m-d', strtotime('+7 days'));
 
-// --- FETCH NOTIFICATIONS ---
+// FETCH NOTIFICATIONS
 $unread_query = "SELECT COUNT(*) as total FROM notification WHERE user_id = '$user_id' AND is_read = 0";
 $unread_res = mysqli_query($conn, $unread_query);
 $unread_count = mysqli_fetch_assoc($unread_res)['total'];
@@ -68,7 +68,7 @@ function get_notification_link($title) {
     }
 }
 
-// 2. GET FACILITY DETAILS from URL (?id=X)
+// GET FACILITY DETAILS from URL 
 if (!isset($_GET['id'])) {
     header("Location: facilities.php");
     exit();
@@ -83,7 +83,7 @@ if (!$facility) {
     die("Facility not found in database.");
 }
 
-// 3. GET USER DETAILS
+// GET USER DETAILS
 $user_query = "SELECT name, booking_quota FROM user WHERE user_id = '$user_id' LIMIT 1";
 $user_data = mysqli_fetch_assoc(mysqli_query($conn, $user_query));
 $full_name = $user_data['name'] ?? "Lecturer";
@@ -92,7 +92,7 @@ $max_quota = $user_data['booking_quota'] ?? 2;
 $name_parts = explode(' ', trim($full_name));
 $initials = substr($name_parts[0], 0, 1) . (isset($name_parts[1]) ? substr($name_parts[1], 0, 1) : "");
 
-// --- WEEK CALCULATION FOR TIMETABLE ---
+// WEEK CALCULATION FOR TIMETABLE 
 $week_offset = isset($_GET['week']) ? (int)$_GET['week'] : 0;
 $today = new DateTime();
 $day_of_week = $today->format('N'); 
@@ -110,15 +110,15 @@ $sunday->modify("+6 days");
 $start_date = $monday->format('Y-m-d');
 $end_date = $sunday->format('Y-m-d');
 
-// --- FETCH GRID DATA ---
-// 1. Fixed Classes
+// FETCH GRID DATA 
+// Fixed Classes
 $tt_query = "SELECT day_of_week, start_time, end_time FROM timetable 
              WHERE facility_id = '$facility_id' 
              AND expiry_date >= '$start_date' 
              AND (start_date IS NULL OR start_date <= '$end_date')";
 $tt_res = mysqli_query($conn, $tt_query);
 
-// 2. User Bookings (Normal + Priority)
+// User Bookings (Normal + Priority)
 $bk_query = "SELECT booking_date, start_time, end_time, is_priority, DAYNAME(booking_date) as day_name 
              FROM booking 
              WHERE facility_id = '$facility_id' 
@@ -128,7 +128,7 @@ $bk_res = mysqli_query($conn, $bk_query);
 
 $schedule_map = [];
 
-// Logic Edit: Fill all hour slots covered by the time range
+// Logic Fill all hour slots covered by the time range
 while ($row = mysqli_fetch_assoc($tt_res)) {
     $start_h = (int)substr($row['start_time'], 0, 2);
     $end_h = (int)substr($row['end_time'], 0, 2);
@@ -153,7 +153,7 @@ while ($row = mysqli_fetch_assoc($bk_res)) {
     }
 }
 
-// --- FETCH DYNAMIC EQUIPMENTS BASED ON CAMPUS ---
+// FETCH DYNAMIC EQUIPMENTS BASED ON CAMPUS
 $facility_location = $facility['location'];
 $target_campus = "";
 if (stripos($facility_location, 'Cyberjaya') !== false) {
@@ -172,7 +172,7 @@ $equip_query = "SELECT * FROM equipment
                 ORDER BY name ASC";
 $equip_result = mysqli_query($conn, $equip_query);
 
-// --- FETCH EXISTING BOOKINGS ---
+// FETCH EXISTING BOOKINGS 
 $occupied_query = "SELECT booking_date, start_time, end_time, is_priority FROM booking 
                    WHERE facility_id = '$facility_id' 
                    AND status IN ('Approved', 'Pending') 
@@ -270,7 +270,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
 
                 <div class="form-group">
                     <label>Select Date</label>
-                    <!-- UPDATED: 1 Week limit by default -->
+                    <!-- 1 Week limit by default -->
                     <input type="date" id="booking_date" name="booking_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>" max="<?php echo $max_booking_date; ?>">
                     
                     <div style="margin-top: 12px; padding: 12px; background: #fdf2f2; border-radius: 8px; border-left: 4px solid var(--secondary);">
@@ -371,7 +371,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
                     <div><strong>Staff Quota</strong><br>Standard bookings consume 1 of your <?php echo $max_quota; ?> weekly quotas. Priority requests require Admin approval.</div>
                 </div>
 
-                <!-- WEEKLY SCHEDULE RE-ADDED WITH ID FOR AJAX TARGETING -->
+                <!-- WEEKLY SCHEDULE -->
                 <div class="timetable-container" id="timetableContainer">
                     <div class="timetable-header">
                         <h4><span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">calendar_month</span> Weekly Schedule</h4>
@@ -418,7 +418,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
     </main>
 
     <script>
-        // Intercepts week switches asynchronously using fetch API to keep user focus
+        // Intercepts week switches
         function changeWeek(offset) {
             const urlParams = new URLSearchParams(window.location.search);
             let currentWeek = parseInt(urlParams.get('week') || 0);
@@ -469,7 +469,7 @@ $occupied_result = mysqli_query($conn, $occupied_query);
             notifMenu.classList.remove('show');
         });
 
-        // --- DYNAMIC DATE LIMIT TOGGLE ---
+        // DYNAMIC DATE LIMIT TOGGLE 
         const priorityCheckbox = document.getElementById('priority');
         const dateInput = document.getElementById('booking_date');
         const defaultMaxDate = "<?php echo $max_booking_date; ?>";

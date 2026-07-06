@@ -2,13 +2,13 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. ADMIN REDIRECT (Prevent Admins from seeing student reset page)
+// ADMIN REDIRECT (Prevent Admins from seeing student reset page)
 if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') {
     header("Location: admin-dashboard.php");
     exit();
 }
 
-// 2. SECURITY GATE: Only allow entry if coming from forgot-password logic
+// Only allow entry if coming from forgot-password logic
 if (!isset($_SESSION['reset_allowed']) || $_SESSION['reset_allowed'] !== true || !isset($_GET['email'])) {
     header("Location: forgot-password.php");
     exit();

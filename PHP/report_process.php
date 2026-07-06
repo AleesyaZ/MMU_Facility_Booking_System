@@ -2,7 +2,7 @@
 session_start();
 include('db_config.php');
 
-// 1. SET TIMEZONE so the timestamp matches Malaysia time
+// timestamp matches Malaysia time
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $issue_type = mysqli_real_escape_string($conn, $_POST['issue_type']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
 
-    // 2. Find the Facility ID based on the name typed
+    // Find the Facility ID based on the name typed
     $fac_query = mysqli_query($conn, "SELECT facility_id FROM facility WHERE facility_name = '$facility_name' LIMIT 1");
     if (mysqli_num_rows($fac_query) > 0) {
         $fac_data = mysqli_fetch_assoc($fac_query);
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // 3. Handle Photo Upload
+    // Handle Photo Upload
     $photo_name = NULL;
     if (isset($_FILES['proofUpload']) && $_FILES['proofUpload']['name'] !== '') {
         $upload_error = $_FILES['proofUpload']['error'];
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($upload_error === UPLOAD_ERR_OK) {
             $target_dir = "../public/uploads/issues/";
 
-            // Create folder if it doesn't exist, and verify it worked
+            // Create folder if it doesn't exist
             if (!file_exists($target_dir)) {
                 mkdir($target_dir, 0777, true);
             }
@@ -64,8 +64,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // 4. INSERT INTO DATABASE
-    // UPDATED: Changed '$report_date' to NOW() to capture the exact time (hours/mins/secs)
+    
+    // Changed '$report_date' to NOW() to capture the exact time (hours/mins/secs)
     $sql = "INSERT INTO issue_report (user_id, facility_id, issue_type, description, issue_image, report_date, status) 
             VALUES ('$user_id', '$facility_id', '$issue_type', '$description', '$photo_name', NOW(), 'Under Review')";
 

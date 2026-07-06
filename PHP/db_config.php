@@ -10,12 +10,9 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// --- PHP/db_config.php ---
-
-// 1. Set Timezone
+// Set Timezone
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
-// 2. AUTOMATIC SUSPENSION LIFT LOGIC
 // Checks if 30 days (2592000 seconds) have passed since suspension_start
 $lift_query = "UPDATE user u
                LEFT JOIN penalty p ON u.user_id = p.user_id

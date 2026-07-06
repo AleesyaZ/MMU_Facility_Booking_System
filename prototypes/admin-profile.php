@@ -2,7 +2,7 @@
 session_start();
 include('../PHP/db_config.php');
 
-// 1. SECURITY CHECK: Only allow Admins
+// SECURITY CHECK: Only allow Admins
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: login.html");
     exit();
@@ -12,7 +12,7 @@ $admin_id = $_SESSION['user_id'];
 $success_msg = "";
 $error_msg = "";
 
-// 2. HANDLE PROFILE UPDATE
+// HANDLE PROFILE UPDATE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contact_no = mysqli_real_escape_string($conn, trim($_POST['contact_no']));
     $new_password = $_POST['new_password'];
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 3. FETCH CURRENT ADMIN DATA
+// FETCH CURRENT ADMIN DATA
 $query = mysqli_query($conn, "SELECT name, email, contact_no FROM user WHERE user_id = '$admin_id' LIMIT 1");
 $admin_data = mysqli_fetch_assoc($query);
 
