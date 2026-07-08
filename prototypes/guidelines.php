@@ -197,7 +197,6 @@ function get_notification_link($title) {
                 <h2>General Booking Rules</h2>
                 <p>Welcome to the MMU Campus Space booking portal. To ensure fair and equal access to all students and staff, we have transitioned away from physical QR codes to a fully automated system.</p>
                 <ul>
-                    <li>Bookings must be made at least <strong>2 hours in advance</strong>.</li>
                     <li>The minimum booking duration is <strong>1 hour</strong>, and the maximum is <strong>2 hours</strong> per session.</li>
                     <li>Add-on equipment (e.g., projectors, markers) must be requested during the booking process.</li>
                 </ul>
