@@ -84,7 +84,7 @@ To test the real-time OTP Activation feature, please follow these steps:
 4. Retrieve the code, enter it into the form, and create your own secure password.
 5. Click **Activate & Login** to securely access your role-specific dashboard.
 
-*(Note: To fully evaluate the system's role-based features—such as Priority Overrides vs. Standard Quotas, repeating the process to create both a `Student` and a `Lecturer` account).*
+*(Note: To try out the system's role-based features such as Priority Overrides and Standard Quotas, repeat the process to create both a `Student` and a `Lecturer` account).*
 
 ## Contributors
 ### Aleesya Zaara Binti Edi Zulkarnain - UI/UX Design, System Architecture (ERD/DFD), Documentation.
