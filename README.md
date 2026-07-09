@@ -2,7 +2,6 @@
 
 ![System Status](https://img.shields.io/badge/Status-Completed-success)
 ![Tech Stack](https://img.shields.io/badge/Tech_Stack-PHP_|_MySQL_|_TailwindCSS-blue)
-![Version](https://img.shields.io/badge/Version-1.0.0-informational)
 
 ## Overview
 **MMU Facility Booking System** is a web-based facility management and reservation platform designed specifically for Multimedia University (Cyberjaya & Melaka campuses). 
