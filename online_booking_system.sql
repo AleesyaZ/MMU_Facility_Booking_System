@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 05, 2026 at 12:04 PM
+-- Generation Time: Jul 09, 2026 at 06:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,7 +44,8 @@ CREATE TABLE `annoucement` (
 INSERT INTO `annoucement` (`annoucement_id`, `admin_id`, `title`, `content`, `category`, `publish_date`, `status`) VALUES
 (20, 10000004, 'The Maintenance of Room CQAR3007 is Complete', 'The leak from the roof had been fixed. Sorry for the inconvenience caused from the water leak. Thank you for being patient with us as we appreciate your patience.', 'Update', '2026-07-05 17:31:25', 'Live'),
 (21, 10000004, 'Avoidance of Being Barred', 'We are here to remind you to please pay the tuition fee in order to avoid being barred. Barring could lead you to being unable to get your Exam Slip and therefore aren\'t allowed to participate for any major final exams. Thank you for reading and we thank you for your cooperation.', 'Reminder', '2026-07-05 17:35:08', 'Live'),
-(22, 10000004, 'OARS Club Event', 'The OARS club will be having an event at the MMU Stadium at around 7:00 PM until 10:00 PM. Feel free to participate and watch as there is no ticket fee. Please kindly do not litter trash at the MMU Stadium for it will result in a Penalty Strike. Thank you for your cooperation.', 'Event', '2026-07-05 17:39:50', 'Live');
+(22, 10000004, 'OARS Club Event', 'The OARS club will be having an event at the MMU Stadium at around 7:00 PM until 10:00 PM. Feel free to participate and watch as there is no ticket fee. Please kindly do not litter trash at the MMU Stadium for it will result in a Penalty Strike. Thank you for your cooperation.', 'Event', '2026-07-05 17:39:50', 'Live'),
+(23, 10000004, 'A new event', 'a new event event', 'Event', '2026-07-06 12:01:17', 'Live');
 
 -- --------------------------------------------------------
 
@@ -70,12 +71,18 @@ CREATE TABLE `booking` (
 --
 
 INSERT INTO `booking` (`booking_id`, `user_id`, `facility_id`, `booking_date`, `start_time`, `end_time`, `purpose`, `status`, `is_priority`, `proof_file`) VALUES
-(1077, 10000001, 163, '2026-07-06', '10:16:00', '12:16:00', 'Booked for studying with my friends for the upcoming finals', 'Approved', 0, NULL),
-(1078, 10000001, 163, '2026-07-07', '14:18:00', '16:18:00', 'studying again for our finals', 'Approved', 0, NULL),
-(1079, 10000000, 162, '2026-07-10', '20:00:00', '22:00:00', 'Studying at night with my fellow friends', 'Approved', 0, NULL),
+(1077, 10000001, 163, '2026-07-06', '10:16:00', '12:16:00', 'Booked for studying with my friends for the upcoming finals', 'Cancelled', 0, NULL),
+(1078, 10000001, 163, '2026-07-07', '14:18:00', '16:18:00', 'studying again for our finals', 'Cancelled', 0, NULL),
+(1079, 10000000, 162, '2026-07-10', '20:00:00', '22:00:00', 'Studying at night with my fellow friends', 'Cancelled', 0, NULL),
 (1080, 10000000, 162, '2026-07-06', '17:21:00', '19:21:00', 'Will be doing group studies.', 'Cancelled', 0, NULL),
 (1081, 10000002, 187, '2026-06-29', '19:23:00', '21:23:00', 'Practising badminton', 'Approved', 0, NULL),
-(1082, 10000002, 187, '2026-07-07', '19:24:00', '21:24:00', 'Final practise before the tournament', 'Approved', 0, NULL);
+(1082, 10000002, 187, '2026-07-07', '19:24:00', '21:24:00', 'Final practise before the tournament', 'Cancelled', 0, NULL),
+(1084, 10000000, 162, '2026-07-05', '21:00:00', '22:00:00', 'I want to practice my presentation for my FYP.', 'Cancelled', 0, NULL),
+(1085, 10000000, 161, '2026-07-06', '10:00:00', '11:00:00', 'I will use this lab class to complete my assignments with my friends.', 'Approved', 0, NULL),
+(1086, 10000003, 161, '2026-07-06', '08:12:00', '10:00:00', 'I will be conducting a Kahoot Quiz for a prize!!!', 'Cancelled', 0, ''),
+(1087, 10000003, 165, '2026-07-07', '20:14:00', '21:36:00', 'I will conduct a midterm exam for the subject ', 'Approved', 0, 'proof_1783261638_10000003.pdf'),
+(1088, 10000001, 161, '2026-07-07', '10:19:00', '11:19:00', 'I will be completing my Multimedia Applications assignment with my group members.', 'Cancelled', 0, NULL),
+(1089, 10000003, 161, '2026-07-07', '10:30:00', '12:30:00', 'For Midterm Purposes', 'Cancelled', 1, 'proof_1783308678_10000003.pdf');
 
 -- --------------------------------------------------------
 
@@ -96,8 +103,7 @@ CREATE TABLE `booking_equipment` (
 INSERT INTO `booking_equipment` (`booking_id`, `equip_id`, `quantity`) VALUES
 (1081, 1006, 1),
 (1081, 1008, 4),
-(1082, 1006, 1),
-(1082, 1008, 4);
+(1085, 1027, 1);
 
 -- --------------------------------------------------------
 
@@ -120,9 +126,9 @@ CREATE TABLE `equipment` (
 --
 
 INSERT INTO `equipment` (`equip_id`, `name`, `total_qty`, `avail_qty`, `status`, `category`, `campus`) VALUES
-(1006, 'Badminton Net', 6, 4, 'Available', 'Sports', 'Cyberjaya'),
+(1006, 'Badminton Net', 6, 2, 'Available', 'Sports', 'Cyberjaya'),
 (1007, 'Badminton Net', 6, 6, 'Available', 'Sports', 'Melaka'),
-(1008, 'Badminton Racket', 16, 8, 'Available', 'Sports', 'Cyberjaya'),
+(1008, 'Badminton Racket', 16, 12, 'Available', 'Sports', 'Cyberjaya'),
 (1009, 'Badminton Racket', 16, 16, 'Available', 'Sports', 'Melaka'),
 (1010, 'Football', 8, 8, 'Available', 'Sports', 'Cyberjaya'),
 (1011, 'Football', 6, 6, 'Available', 'Sports', 'Melaka'),
@@ -140,7 +146,7 @@ INSERT INTO `equipment` (`equip_id`, `name`, `total_qty`, `avail_qty`, `status`,
 (1024, 'Projector', 10, 10, 'Available', 'Lecture Hall', 'Melaka'),
 (1025, 'Projector', 10, 10, 'Available', 'Tutorial', 'Cyberjaya'),
 (1026, 'Projector', 10, 10, 'Available', 'Tutorial', 'Melaka'),
-(1027, 'Microphone', 10, 10, 'Available', 'Laboratory', 'Cyberjaya'),
+(1027, 'Microphone', 10, 9, 'Available', 'Laboratory', 'Cyberjaya'),
 (1028, 'Microphone', 10, 10, 'Available', 'Laboratory', 'Melaka'),
 (1029, 'Microphone', 15, 15, 'Available', 'Lecture Hall', 'Cyberjaya'),
 (1030, 'Microphone', 15, 15, 'Available', 'Lecture Hall', 'Melaka'),
@@ -216,7 +222,8 @@ INSERT INTO `facility` (`facility_id`, `facility_name`, `location`, `category`, 
 (203, 'MVMX1001 ', 'MMU Melaka', 'Lecture Hall', 100, 'A lecture hall designed for law lectures, seminars, and academic presentations, equipped with multimedia facilities to support teaching and learning.', 'Available', 'fac_1783080980_414.jpg', 'FOL'),
 (205, 'MVR1001 ', 'MMU Melaka', 'Laboratory', 40, 'A business laboratory equipped with computers and specialized software to support business simulations, financial analysis, accounting applications, and practical learning activities.', 'Available', 'fac_1783081127_883.jpg', 'FOL'),
 (206, 'MLR1002', 'MMU Melaka', 'Tutorial', 40, 'A tutorial room for the faculty of Engineering and Technology.', 'Available', 'fac_1783240006_526.webp', 'FET'),
-(207, 'MVR1003', 'MMU Melaka', 'Tutorial', 40, 'A tutorial class for students from Faculty of Law.', 'Available', 'fac_1783240337_673.jpg', 'FOL');
+(207, 'MVR1003', 'MMU Melaka', 'Tutorial', 40, 'A tutorial class for students from Faculty of Law.', 'Available', 'fac_1783240337_673.jpg', 'FOL'),
+(208, 'FAC Laboratory 1', 'MMU Cyberjaya', 'Laboratory', 40, 'A laboratory for FAC.', 'Available', 'fac_1783310119_383.jpg', 'FAC');
 
 -- --------------------------------------------------------
 
@@ -237,6 +244,13 @@ CREATE TABLE `issue_report` (
   `issue_image` varchar(255) DEFAULT NULL COMMENT 'Image of Issues'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `issue_report`
+--
+
+INSERT INTO `issue_report` (`report_id`, `user_id`, `facility_id`, `issue_type`, `description`, `report_date`, `status`, `admin_reply`, `reply_date`, `issue_image`) VALUES
+(11, 10000000, 187, 'Equipment/Furniture Damage', 'Dirty Badminton Court', '2026-07-06 11:28:45', 'In Progress', 'Okey the facility will be checking it on it', '2026-07-06 00:00:00', 'issue_1783308525_10000000.png');
+
 -- --------------------------------------------------------
 
 --
@@ -251,6 +265,17 @@ CREATE TABLE `notification` (
   `is_read` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Read Status (Y/N)',
   `date_sent` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date and Time Sent'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`notify_id`, `user_id`, `title`, `message`, `is_read`, `date_sent`) VALUES
+(14, 10000002, 'Booking Request Cancelled', 'We regret to inform you that your booking for Badminton Court on 2026-07-07 has been Cancelled by the Administration.', 1, '2026-07-05 21:56:12'),
+(15, 10000003, 'Booking Request Approved', 'Your reservation for CQAR3007  on 2026-07-07 (10:30 AM) has been officially approved by the Admin.', 1, '2026-07-06 11:52:21'),
+(16, 10000001, 'Booking Overridden by Admin', 'Your booking for CQAR3007  on 2026-07-07 has been cancelled as the slot was needed for an academic priority session.', 0, '2026-07-06 11:52:21'),
+(17, 10000003, 'Booking Request Cancelled', 'We regret to inform you that your booking for CQAR3007  on 2026-07-07 has been Cancelled by the Administration.', 1, '2026-07-06 11:54:07'),
+(18, 10000000, 'Update on Report #RP-11', 'Your report status is now: In Progress. Message: Okey the facility will be checking it on it', 1, '2026-07-06 12:00:45');
 
 -- --------------------------------------------------------
 
@@ -272,7 +297,9 @@ CREATE TABLE `penalty` (
 --
 
 INSERT INTO `penalty` (`penalty_id`, `user_id`, `booking_id`, `reason`, `strike_count`, `status`) VALUES
-(100021, 10000000, NULL, '[No-Show] Didn\'t use the booked facility. Wasted facility utilization. ', 2, 'Active');
+(100021, 10000000, NULL, '[Facility Damage] Ruined a projector', 0, 'Active'),
+(100022, 10000002, NULL, '[Priority Abuse] System Testing: Suspended Account Login Strike 3', 3, 'Active'),
+(100023, 10000001, NULL, '[No-Show] didnt come to the facility', 0, 'Active');
 
 -- --------------------------------------------------------
 
@@ -686,7 +713,17 @@ INSERT INTO `timetable` (`timetable_id`, `facility_id`, `day_of_week`, `start_ti
 (454, 207, 'Tuesday', '16:00:00', '17:00:00', '2026-08-10', '2026-06-29'),
 (455, 207, 'Friday', '16:00:00', '17:00:00', '2026-08-10', '2026-06-29'),
 (456, 207, 'Thursday', '17:00:00', '18:00:00', '2026-08-10', '2026-06-29'),
-(457, 207, 'Friday', '17:00:00', '18:00:00', '2026-08-10', '2026-06-29');
+(457, 207, 'Friday', '17:00:00', '18:00:00', '2026-08-10', '2026-06-29'),
+(458, 179, 'Monday', '08:00:00', '09:00:00', '2026-08-17', '2026-07-06'),
+(459, 179, 'Monday', '09:00:00', '10:00:00', '2026-08-17', '2026-07-06'),
+(460, 179, 'Tuesday', '10:00:00', '11:00:00', '2026-08-17', '2026-07-06'),
+(461, 179, 'Tuesday', '11:00:00', '12:00:00', '2026-08-17', '2026-07-06'),
+(462, 179, 'Wednesday', '12:00:00', '13:00:00', '2026-08-17', '2026-07-06'),
+(463, 179, 'Wednesday', '13:00:00', '14:00:00', '2026-08-17', '2026-07-06'),
+(464, 179, 'Thursday', '14:00:00', '15:00:00', '2026-08-17', '2026-07-06'),
+(465, 179, 'Thursday', '15:00:00', '16:00:00', '2026-08-17', '2026-07-06'),
+(466, 179, 'Friday', '16:00:00', '17:00:00', '2026-08-17', '2026-07-06'),
+(467, 179, 'Friday', '17:00:00', '18:00:00', '2026-08-17', '2026-07-06');
 
 -- --------------------------------------------------------
 
@@ -715,8 +752,8 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`, `contact_no`, `booking_quota`, `otp_code`, `otp_sent_at`, `is_activated`, `status`, `suspension_start`) VALUES
 (10000000, 'IDRIS BIN SHAH NAHAR', 'idris.shah.nahar@student.mmu.edu.my', '$2y$10$5a8dT.LbgwR.2.0ytA9NY.BZC/9Gt0pJzj07keaF8SWmZja4Kydau', 'Student', '01164425881', 2, NULL, NULL, 1, 'Active', NULL),
-(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya@student.mmu.edu.my', '$2y$10$3uFp8n0THCm1t5NSq1zgy.RSYz06h4dognjKLmrntOu8zdtoTKi..', 'Student', '01154067900', 2, NULL, NULL, 1, 'Active', NULL),
-(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', '$2y$10$bjm8sscxTfQDwzazBzmKC..GJDS4Soo2nWwfhPTQEtJMDzft3vui.', 'Student', '0123211695', 2, NULL, NULL, 1, 'Active', NULL),
+(10000001, 'ALEESYA ZAARA BINTI EDI ZULKARNAIN\r\n\r\n', 'aleesya.zaara.edi@student.mmu.edu.my', '$2y$10$ZUL.0eSaS6xYCmAODPDRiucR99Ip8Kwr3HzqRJVWTJDoMJ9lcLQ9C', 'Student', '01154067900', 2, NULL, NULL, 1, 'Active', NULL),
+(10000002, 'SURIYA', 'suriya@student.mmu.edu.my', '$2y$10$bjm8sscxTfQDwzazBzmKC..GJDS4Soo2nWwfhPTQEtJMDzft3vui.', 'Student', '0123211695', 2, NULL, NULL, 1, 'Suspended', '2026-07-05 21:44:33'),
 (10000003, 'NOR IDAYU BINTI AHMAD AZAMI', 'idayu.azami@mmu.edu.my', '$2y$10$q7CSZJ1ZhRfO.wrkRQhv0euy1DCWGK55/hM0rsT2DNqjOImN3htg2', 'Lecturer', '0112223333', 2, NULL, NULL, 1, 'Active', NULL),
 (10000004, 'MR ADMIN', 'admin1@mmu.edu.my', '$2y$10$qftMOyhSssrVZDjmUPjIwuauIL67zHORgCvXQyA0mooUg5AjMpB6C', 'Admin', '0112223333', 0, NULL, NULL, 1, 'Active', NULL),
 (10000006, 'MS ADMIN', 'admin2@mmu.edu.my', '$2y$10$dOIn8ITc2Ngf9ZvgqixUjeWf/8He/lAQExPVyEyZdYMl615bHEDtC', 'Admin', '0123211695', 0, NULL, NULL, 1, 'Active', NULL);
@@ -804,13 +841,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `annoucement`
 --
 ALTER TABLE `annoucement`
-  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification', AUTO_INCREMENT=23;
+  MODIFY `annoucement_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Announcement Identification', AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1084;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Booking Identification', AUTO_INCREMENT=1090;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -822,31 +859,31 @@ ALTER TABLE `equipment`
 -- AUTO_INCREMENT for table `facility`
 --
 ALTER TABLE `facility`
-  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=208;
+  MODIFY `facility_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Facility Identification ', AUTO_INCREMENT=209;
 
 --
 -- AUTO_INCREMENT for table `issue_report`
 --
 ALTER TABLE `issue_report`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification', AUTO_INCREMENT=11;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Report Identification', AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification', AUTO_INCREMENT=14;
+  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Notification Identification', AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `penalty`
 --
 ALTER TABLE `penalty`
-  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification', AUTO_INCREMENT=100022;
+  MODIFY `penalty_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Penalty Identification', AUTO_INCREMENT=100024;
 
 --
 -- AUTO_INCREMENT for table `timetable`
 --
 ALTER TABLE `timetable`
-  MODIFY `timetable_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Timetable Identification', AUTO_INCREMENT=458;
+  MODIFY `timetable_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Timetable Identification', AUTO_INCREMENT=468;
 
 --
 -- AUTO_INCREMENT for table `user`
