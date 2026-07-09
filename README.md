@@ -1,7 +1,5 @@
 # MMU_Facility_Booking_System
 
-# MMU Facility Booking System
-
 ![System Status](https://img.shields.io/badge/Status-Completed-success)
 ![Tech Stack](https://img.shields.io/badge/Tech_Stack-PHP_|_MySQL_|_TailwindCSS-blue)
 ![Version](https://img.shields.io/badge/Version-1.0.0-informational)
