@@ -87,9 +87,9 @@ To test the real-time OTP Activation feature, please follow these steps:
 *(Note: To try out the system's role-based features such as Priority Overrides and Standard Quotas, repeat the process to create both a `Student` and a `Lecturer` account).*
 
 ## Contributors
-### Aleesya Zaara Binti Edi Zulkarnain - UI/UX Design, System Architecture (ERD/DFD), Documentation.
-### Idris Bin Shah Nahar - Backend Development (PHP/MySQL), Database Integration, GitHub Management.
-### Suriya - Project Management, System Testing, Quality Assurance.
+* Aleesya Zaara Binti Edi Zulkarnain - UI/UX Design, Project Management, System Architecture (ERD/DFD), Documentation.
+* Idris Bin Shah Nahar - Backend Development (PHP/MySQL), Database Integration.
+* Suriya - System Testing, Quality Assurance, Documentation.
 
 
 
